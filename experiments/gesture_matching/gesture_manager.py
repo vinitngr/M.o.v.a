@@ -1,6 +1,7 @@
 import json
 import os
 
+
 class GestureManager:
     """
     Handles loading and saving of pre-computed gesture features to JSON.
@@ -19,12 +20,19 @@ class GestureManager:
         with open(self.filepath, 'w') as f:
             json.dump(self.data, f, indent=2)
 
-    def add_gesture(self, name, features):
+    def add_gesture(self, name, features, hand_count=1):
         """
-        Appends a new gesture template and saves to disk.
+        Adds a single averaged gesture template and saves to disk.
         """
         self.data["gestures"].append({
             "name": name,
+            "hand_count": hand_count,
             "features": features
         })
         self.save()
+
+    def get_gesture_names(self):
+        """
+        Returns a list of unique gesture names in the database.
+        """
+        return list(set(g["name"] for g in self.data.get("gestures", [])))
