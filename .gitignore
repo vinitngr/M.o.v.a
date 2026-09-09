@@ -1,0 +1,22 @@
+# Virtual environments
+venv/
+win_venv/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# MediaPipe model files
+*.task
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Gesture data (optional, uncomment if you don't want to track)
+# gestures.json

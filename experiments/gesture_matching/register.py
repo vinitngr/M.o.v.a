@@ -6,7 +6,7 @@ from gesture_manager import GestureManager
 
 
 def main():
-    print("=== MOVA Gesture Registration ===\n")
+    print("=== MOVA Gesture Registration (feature version 2) ===\n")
     gesture_name = input("Enter the name of the gesture to register: ").strip()
     if not gesture_name:
         print("Invalid name. Exiting.")

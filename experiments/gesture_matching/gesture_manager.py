@@ -2,13 +2,16 @@ import json
 import os
 
 
+SCHEMA_VERSION = 2
+
+
 class GestureManager:
     """
     Handles loading and saving of pre-computed gesture features to JSON.
     """
     def __init__(self, filepath="gestures.json"):
         self.filepath = filepath
-        self.data = {"gestures": []}
+        self.data = {"schema_version": SCHEMA_VERSION, "gestures": []}
         self.load()
 
     def load(self):
@@ -17,6 +20,7 @@ class GestureManager:
                 self.data = json.load(f)
 
     def save(self):
+        self.data.setdefault("schema_version", SCHEMA_VERSION)
         with open(self.filepath, 'w') as f:
             json.dump(self.data, f, indent=2)
 
@@ -27,6 +31,7 @@ class GestureManager:
         self.data["gestures"].append({
             "name": name,
             "hand_count": hand_count,
+            "feature_version": SCHEMA_VERSION,
             "features": features
         })
         self.save()

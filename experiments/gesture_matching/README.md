@@ -1,64 +1,160 @@
-# FPP Hand Gesture Matching Experiment (Extensive Blueprint)
+# FPP Hand Gesture Matching Experiment (Version 2)
 
-## 1. Core Philosophy & Architecture
+This experiment detects hand landmarks from a webcam frame, converts them into
+normalized geometric features, and compares them with registered gesture
+templates.
 
-This experiment serves as the testing and benchmarking layer for the MOVA gesture recognition pipeline, utilizing a **First-Person Perspective (FPP)** camera.
+```text
+Webcam frame
+     │
+     ▼
+MediaPipe Hands
+     │  21 landmarks per hand + handedness
+     ▼
+Feature extraction
+     │  normalized shape, palm orientation, finger profile
+     ▼
+Template matching
+     │  cosine similarity + weighted feature scores
+     ▼
+Gesture score leaderboard
+```
 
-### The "No Jugaad" (No Hacks) Rule for Occlusion
-In FPP, fingers will inevitably occlude (block) each other (e.g., pointing straight down away from the camera). 
-**Our rule:** We do not write complex, hacky mathematical workarounds ("jugaad") to guess where hidden fingers are. 
-* If MediaPipe cannot see it clearly, the system will naturally output a lower confidence score for that specific gesture.
-* **The Fallback:** The system does not output a single "winner". It outputs the **Top-N Matches** (e.g., `[{"Closed Palm": 88%}, {"Pointing Down": 82%}]`).
-* **The Final Resolution:** Because the ultimate project will feed a sequence of these Top-N matches into an LLM (Large Language Model), the LLM will use contextual natural language processing to deduce the correct sentence. We keep the vision layer fast, simple, and strictly mathematical.
+## 1. Feature representation
 
----
+The matcher does not compare raw webcam coordinates. Each hand is first
+translated so that the wrist is at the origin and scaled by the greatest
+wrist-to-landmark distance.
 
-## 2. The Math Engine (Feature Engineering)
+```text
+                         Version 2 feature vector
+ ┌──────────────────────┬───────────────┬──────────────────────────────┐
+ │ Normalized landmarks │ Palm normal   │ Finger extension profile      │
+ │ 21 × 3 = 63 values   │ 3 values      │ 5 values                     │
+ │ Hand shape            │ Orientation   │ Thumb · Index · Middle       │
+ │                      │               │ Ring · Pinky                 │
+ └──────────────────────┴───────────────┴──────────────────────────────┘
+                              71 values
+```
 
-To ensure the system works regardless of hand distance or slight shifts, we do not match raw XYZ coordinates. We use deterministic feature engineering.
+### Normalized landmarks — 63 values
 
-### Pre-Computation Optimization
-Math costs compute. Therefore, heavy calculations are done **only once during registration**. The `register.py` script calculates the geometric features and saves the final numbers to JSON. During live inference (`live_test.py`), the math engine only calculates features for the single live frame and runs a fast vector distance comparison against the JSON.
+The 21 `(x, y, z)` landmarks are centered on the wrist (landmark `0`) and
+divided by the furthest distance from the wrist. This makes the hand shape
+comparable when the hand moves or changes distance from the camera.
 
-### Extracted Features per Frame
-1. **Handshape (Joint Angles)**
-   * We calculate the 3D angles between the bone segments of the fingers (e.g., Angle at the PIP joint, DIP joint, and MCP joint).
-   * *Benefit:* Angles do not change whether the hand is 5 inches or 15 inches from the camera (Scale/Translation invariant).
-2. **Orientation (Palm Normal Vector)**
-   * We use three points (Wrist `0`, Index Knuckle `5`, Pinky Knuckle `17`) to compute the cross-product, resulting in a 3D Normal Vector pointing out of the palm.
-   * *Benefit:* Solves the "You vs Me" problem. Pointing forward and pointing at your chest have the same finger angles, but opposite Palm Normals.
-3. **Spatial Relation (Two-Handed Gestures)**
-   * If both hands are present, we calculate the normalized 3D directional vector from the Left Wrist `0` to the Right Wrist `0`.
-   * *Benefit:* Solves the "Cup and Tray" problem. We evaluate the left hand's shape, the right hand's shape, and simply check if the left hand is *above/below/beside* the right hand, allowing for flexible distances.
+### Palm normal — 3 values
 
----
+The palm orientation is calculated using the wrist (`0`), index MCP (`5`), and
+pinky MCP (`17`):
 
-## 3. Codebase Architecture
+```text
+                 Index MCP (5)
+                       ●
+                      / \
+                     /   \   cross product
+                    /     \       │
+             Wrist (0)──────●─────▼  Palm normal (x, y, z)
+                         Pinky MCP (17)
+```
 
-The code is strictly decoupled to ensure the Math and Vision engines can be dropped directly into the final hardware/software repositories later.
+### Finger extension profile — 5 values
 
-* **`vision_engine.py`**
-  * Initializes MediaPipe Hands.
-  * Handles reading camera frames, running inference, and returning the raw 42 XYZ landmarks (21 per hand).
-* **`math_engine.py`**
-  * Takes raw XYZ landmarks and converts them into the feature vector (Angles + Palm Normal + Relative Vector).
-  * Contains the `compare_features(live_vec, stored_vec)` function using Cosine Similarity or Euclidean Distance.
-* **`gesture_manager.py`**
-  * File I/O handler. Loads and saves the pre-computed features to `gestures.json`.
-* **`register.py`** (The CLI Tool)
-  * Prompts: `Enter gesture name:`.
-  * Captures $N$ frames of the user holding the pose.
-  * Averages the features across the frames for a stable template.
-  * Calls `gesture_manager.py` to append to the database.
-* **`live_test.py`** (The UI Testing Tool)
-  * Loads `gestures.json` into memory.
-  * Runs continuous FPP camera feed.
-  * UI Overlays: Bounding boxes, MediaPipe skeleton, System FPS.
-  * **Leaderboard Overlay:** Displays the Top 5 gesture matches and their scores to visually verify if the LLM fallback strategy will have the correct data.
+For each finger, the fingertip-to-wrist distance is compared with the
+finger's MCP-to-wrist distance. The result is clamped to `0–1`.
 
----
+| Profile position | Finger | Tip landmark | MCP landmark |
+|---:|---|---:|---:|
+| 1 | Thumb | 4 | 2 |
+| 2 | Index | 8 | 5 |
+| 3 | Middle | 12 | 9 |
+| 4 | Ring | 16 | 13 |
+| 5 | Pinky | 20 | 17 |
 
-## 4. Data Storage Schema (`gestures.json`)
+This gives the matcher a direct signal for which fingers are extended instead
+of relying only on the complete landmark shape.
+
+## 2. Single-hand matching
+
+Version 2 uses a weighted score made from the hand shape and finger profile:
+
+```text
+Single-hand score
+══════════════════════════════════════════════════
+Hand shape + palm orientation       60%
+Finger extension profile             40%
+══════════════════════════════════════════════════
+Total                               100%
+```
+
+The result is shown as a percentage. If multiple templates have the same name,
+the highest score is kept.
+
+## 3. Two-hand matching
+
+A two-hand template contains the complete feature vector for both hands plus a
+normalized direction vector from the left wrist to the right wrist.
+
+```text
+Left hand (71) ────────┐
+                       ├── weighted two-hand score
+Right hand (71) ───────┤
+                       │
+Wrist direction (3) ───┘
+```
+
+| Component | Weight |
+|---|---:|
+| Left-hand score | 40% |
+| Right-hand score | 40% |
+| Left-to-right wrist direction | 20% |
+
+The two-hand mode uses MediaPipe handedness to identify the left and right
+hands before extracting the combined feature vector.
+
+## 4. Codebase architecture
+
+| File | Responsibility |
+|---|---|
+| `vision_engine.py` | Runs MediaPipe Hands and returns landmarks and handedness. |
+| `math_engine.py` | Normalizes landmarks, extracts features, and calculates scores. |
+| `gesture_manager.py` | Loads and saves `gestures.json`. |
+| `register.py` | Captures samples and creates averaged gesture templates. |
+| `live_test.py` | Runs webcam matching and displays landmarks, FPS, latency, and scores. |
+| `test_math_engine.py` | Tests version 2 scoring and version 1 compatibility. |
+
+## 5. Registering a gesture
+
+Run this from the experiment directory:
+
+```bash
+python register.py
+```
+
+Choose a gesture name and whether it uses one or two hands. While holding the
+pose, use the following keys:
+
+```text
+ r  capture one sample
+ s  average captured samples and save the template
+ q  quit without saving
+```
+
+Capture several steady samples with small natural variations. Registration
+averages the extracted feature vectors and stores the averaged template.
+
+## 6. Live testing
+
+```bash
+python live_test.py
+```
+
+The live test draws the detected landmarks and displays a score leaderboard.
+Single-hand templates are checked against each detected hand. Two-hand
+templates are checked when both a left and right hand are detected. Press `q`
+to exit.
+
+## 7. Data Storage Schema (`gestures.json`)
 
 The database stores pre-computed features, not raw coordinates. 
 
@@ -68,23 +164,33 @@ The database stores pre-computed features, not raw coordinates.
     {
       "name": "water",
       "hand_count": 1,
-      "features": {
-        "angles": [12.4, 45.1, 88.0, ...], 
-        "palm_normal": [0.1, -0.9, 0.2],
-        "relative_vector": null
-      }
+      "feature_version": 2,
+      "features": [71 values: normalized points, palm normal, finger profile]
     },
     {
       "name": "cup_and_tray",
       "hand_count": 2,
-      "features": {
-        "left_angles": [...],
-        "right_angles": [...],
-        "left_normal": [...],
-        "right_normal": [...],
-        "relative_vector": [0.0, 1.0, 0.0] 
-      }
+      "feature_version": 2,
+      "features": [145 values: left hand, right hand, relative wrist direction]
     }
   ]
 }
+```
+
+## 8. Version compatibility
+
+Version 1 templates remain readable:
+
+| Template type | Version 1 | Version 2 |
+|---|---:|---:|
+| Single hand | 66 values | 71 values |
+| Two hands | 135 values | 145 values |
+
+Version 1 templates use the legacy shape-only cosine similarity. New
+registrations use the version 2 finger profile and weighted scoring.
+
+## 9. Running the tests
+
+```bash
+python -m unittest discover -s . -p 'test_*.py'
 ```
