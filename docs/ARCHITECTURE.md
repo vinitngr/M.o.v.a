@@ -1,4 +1,4 @@
-# MOVA: Motion-Oriented Virtual Interface & Automation
+# MOVA: Motion-Oriented Varsatile Automation
 
 ## Overview
 MOVA is an integrated hardware and software project. The software layer runs a hand-gesture recognition pipeline that detects motions and sends structured events (actions, data) over Wi-Fi. The hardware layer (MCU) receives these events, interprets them via embedded drivers/adapters, and executes the physical automation.
