@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "author": "Velxio",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-velxio-esp32-s3",
+      "id": "esp32-s3",
+      "top": 0,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led_1789574378137_mp8mtbcrf",
+      "top": -72,
+      "left": -152,
+      "attrs": {
+        "value": false,
+        "brightness": 1,
+        "color": "red",
+        "lightColor": null,
+        "label": "",
+        "flip": false
+      }
+    },
+    {
+      "type": "wokwi-resistor-220",
+      "id": "resistor_220_1789574385640_8ttic6xm9",
+      "top": 17,
+      "left": -296,
+      "rotate": 90,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-hc-sr04",
+      "id": "hc_sr04_1789577942060_2bqvs14dc",
+      "top": 96,
+      "left": -449,
+      "attrs": {}
+    }
+  ],
+  "connections": [
+    [
+      "led_1789574378137_mp8mtbcrf:A",
+      "resistor_220_1789574385640_8ttic6xm9:1",
+      "#22c55e",
+      []
+    ],
+    [
+      "led_1789574378137_mp8mtbcrf:C",
+      "esp32-s3:GND.2",
+      "black",
+      []
+    ],
+    [
+      "hc_sr04_1789577942060_2bqvs14dc:VCC",
+      "esp32-s3:5V",
+      "#cc0000",
+      []
+    ],
+    [
+      "hc_sr04_1789577942060_2bqvs14dc:GND",
+      "esp32-s3:GND.1",
+      "black",
+      []
+    ],
+    [
+      "esp32-s3:4",
+      "resistor_220_1789574385640_8ttic6xm9:2",
+      "#22c55e",
+      []
+    ],
+    [
+      "hc_sr04_1789577942060_2bqvs14dc:TRIG",
+      "esp32-s3:6",
+      "#22c55e",
+      []
+    ],
+    [
+      "hc_sr04_1789577942060_2bqvs14dc:ECHO",
+      "esp32-s3:7",
+      "#22c55e",
+      []
+    ]
+  ]
+}

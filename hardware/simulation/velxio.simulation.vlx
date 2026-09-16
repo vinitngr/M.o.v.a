@@ -1,0 +1,371 @@
+{
+  "format": "velxio-project",
+  "version": 1,
+  "exportedAt": "2026-09-16T19:31:39.764Z",
+  "name": "sketch",
+  "boards": [
+    {
+      "id": "esp32-s3",
+      "name": "ESP32-S3 DevKit",
+      "boardKind": "esp32-s3",
+      "x": 348.05455363012726,
+      "y": 133.10312048136007,
+      "activeFileGroupId": "group-esp32-s3",
+      "languageMode": "arduino",
+      "serialBaudRate": 0
+    }
+  ],
+  "fileGroups": {
+    "group-esp32-s3": [
+      {
+        "name": "sketch.ino",
+        "content": "#include \"component_mapping.h\"\n#include \"component_registry.h\"\n#include \"adaptor_registry.h\"\n\n#include \"gpio_socket.h\"\n\n#include \"led_driver.h\"\n#include \"ultrasonic_driver.h\"\n\n#include \"led_adaptor.h\"\n#include \"ultrasonic_adaptor.h\"\n\n#include \"hook_registry.h\"\n#include \"distance_to_led_hook.h\"\n#include \"timed_blink_hook.h\"\n\n\n// Hardware objects\n\nGpioSocket ledSocket(\n    SOCKET_GPIO_1\n);\n\nLedDriver ledDriver(\n    &ledSocket\n);\n\nLedAdaptor ledAdaptor(\n    &ledDriver\n);\n\n\nGpioSocket ultrasonicSocket(\n    SOCKET_GPIO_2\n);\n\nUltrasonicDriver ultrasonicDriver(\n    &ultrasonicSocket\n);\n\nUltrasonicAdaptor ultrasonicAdaptor(\n    &ultrasonicDriver\n);\n\n\n// Registries\n\nAdaptorRegistry adaptorRegistry;\n\nComponentRegistry componentRegistry(\n    &adaptorRegistry\n);\n\n\n// Hooks\n\nDistanceToLedHook distanceToLedHook(\n    &ultrasonicAdaptor,\n    &ledAdaptor\n);\n\nTimedBlinkHook timedBlinkHook(\n    &ledAdaptor\n);\n\n\nHookRegistry hookRegistry;\n\n\nvoid setup() {\n    Serial.begin(115200);\n\n    // Register available adaptors\n    adaptorRegistry.registerAdaptor(\n        \"led_adaptor\",\n        &ledAdaptor\n    );\n\n    adaptorRegistry.registerAdaptor(\n        \"ultrasonic_adaptor\",\n        &ultrasonicAdaptor\n    );\n\n    componentRegistry.init();\n\n    ledAdaptor.init();\n    ultrasonicAdaptor.init();\n\n    // Hooks\n    hookRegistry.registerHook(\n        &timedBlinkHook\n    );\n\n    // Disabled for the timed blink test.\n    // hookRegistry.registerHook(\n    //     &distanceToLedHook\n    // );\n\n    hookRegistry.initAll();\n}\n\n\nvoid loop() {\n    hookRegistry.tickAll();\n\n    delay(10);\n}"
+      },
+      {
+        "name": "sockets/gpio_socket.h",
+        "content": "#ifndef GPIO_SOCKET_H\r\n#define GPIO_SOCKET_H\r\n\r\n#include <Arduino.h>\r\n\r\nclass GpioSocket {\r\npublic:\r\n    GpioSocket(uint8_t socket);\r\n\r\n    void init(uint8_t signal, uint8_t mode);\r\n\r\n    void write(uint8_t signal, uint8_t value);\r\n\r\n    int read(uint8_t signal);\r\n\r\n    unsigned long pulseInSignal(\r\n        uint8_t signal,\r\n        uint8_t state,\r\n        unsigned long timeout\r\n    );\r\n\r\nprivate:\r\n    uint8_t _socket;\r\n\r\n    uint8_t getPin(uint8_t signal);\r\n};\r\n\r\n#endif"
+      },
+      {
+        "name": "sockets/gpio_socket.cpp",
+        "content": "#include \"gpio_socket.h\"\r\n#include \"socket_mapping.h\"\r\n\r\nGpioSocket::GpioSocket(uint8_t socket)\r\n    : _socket(socket) {\r\n}\r\n\r\nuint8_t GpioSocket::getPin(uint8_t signal) {\r\n    const GpioSocketMapping* mapping =\r\n        getGpioSocketMapping(_socket);\r\n\r\n    if (mapping == nullptr) {\r\n        return 255;\r\n    }\r\n\r\n    if (signal == 1) {\r\n        return mapping->signal1;\r\n    }\r\n\r\n    if (signal == 2) {\r\n        return mapping->signal2;\r\n    }\r\n\r\n    return 255;\r\n}\r\n\r\nvoid GpioSocket::init(uint8_t signal, uint8_t mode) {\r\n    uint8_t pin = getPin(signal);\r\n\r\n    if (pin != 255) {\r\n        pinMode(pin, mode);\r\n    }\r\n}\r\n\r\nvoid GpioSocket::write(uint8_t signal, uint8_t value) {\r\n    uint8_t pin = getPin(signal);\r\n\r\n    if (pin != 255) {\r\n        digitalWrite(pin, value);\r\n    }\r\n}\r\n\r\nint GpioSocket::read(uint8_t signal) {\r\n    uint8_t pin = getPin(signal);\r\n\r\n    if (pin != 255) {\r\n        return digitalRead(pin);\r\n    }\r\n\r\n    return LOW;\r\n}\r\n\r\nunsigned long GpioSocket::pulseInSignal(\r\n    uint8_t signal,\r\n    uint8_t state,\r\n    unsigned long timeout\r\n) {\r\n    uint8_t pin = getPin(signal);\r\n\r\n    if (pin == 255) {\r\n        return 0;\r\n    }\r\n\r\n    return pulseIn(pin, state, timeout);\r\n}"
+      },
+      {
+        "name": "sockets/i2c_socket.h",
+        "content": "#ifndef I2C_SOCKET_H\r\n#define I2C_SOCKET_H\r\n\r\n#include <Arduino.h>\r\n\r\nclass I2cSocket {\r\npublic:\r\n    I2cSocket(uint8_t socket, uint8_t address);\r\n\r\n    void init();\r\n\r\n    bool writeByte(\r\n        uint8_t reg,\r\n        uint8_t value\r\n    );\r\n\r\n    bool readBytes(\r\n        uint8_t reg,\r\n        uint8_t* buffer,\r\n        uint8_t length\r\n    );\r\n\r\nprivate:\r\n    uint8_t _socket;\r\n    uint8_t _address;\r\n    uint8_t _sda;\r\n    uint8_t _scl;\r\n};\r\n\r\n#endif"
+      },
+      {
+        "name": "sockets/i2c_socket.cpp",
+        "content": "#include \"i2c_socket.h\"\r\n\r\n#include \"socket_mapping.h\"\r\n\r\n#include <Wire.h>\r\n\r\n\r\nI2cSocket::I2cSocket(\r\n    uint8_t socket,\r\n    uint8_t address\r\n)\r\n    : _socket(socket),\r\n      _address(address),\r\n      _sda(255),\r\n      _scl(255) {\r\n}\r\n\r\n\r\nvoid I2cSocket::init() {\r\n    const I2cSocketMapping* mapping =\r\n        getI2cSocketMapping(_socket);\r\n\r\n    if (mapping == nullptr) {\r\n        return;\r\n    }\r\n\r\n    _sda = mapping->sda;\r\n    _scl = mapping->scl;\r\n\r\n    if (_sda != 255 && _scl != 255) {\r\n        Wire.begin(_sda, _scl);\r\n    }\r\n}\r\n\r\n\r\nbool I2cSocket::writeByte(\r\n    uint8_t reg,\r\n    uint8_t value\r\n) {\r\n    Wire.beginTransmission(_address);\r\n\r\n    Wire.write(reg);\r\n    Wire.write(value);\r\n\r\n    return Wire.endTransmission() == 0;\r\n}\r\n\r\n\r\nbool I2cSocket::readBytes(\r\n    uint8_t reg,\r\n    uint8_t* buffer,\r\n    uint8_t length\r\n) {\r\n    Wire.beginTransmission(_address);\r\n    Wire.write(reg);\r\n\r\n    if (Wire.endTransmission(false) != 0) {\r\n        return false;\r\n    }\r\n\r\n    Wire.requestFrom(\r\n        (int)_address,\r\n        (int)length\r\n    );\r\n\r\n    for (uint8_t i = 0; i < length; i++) {\r\n        if (!Wire.available()) {\r\n            return false;\r\n        }\r\n\r\n        buffer[i] = Wire.read();\r\n    }\r\n\r\n    return true;\r\n}"
+      },
+      {
+        "name": "drivers/driver_base.h",
+        "content": "#ifndef DRIVER_BASE_H\r\n#define DRIVER_BASE_H\r\n\r\nclass DriverBase {\r\npublic:\r\n    virtual void init() = 0;\r\n    virtual ~DriverBase() {}\r\n};\r\n\r\n#endif"
+      },
+      {
+        "name": "drivers/led_driver.h",
+        "content": "#ifndef LED_DRIVER_H\r\n#define LED_DRIVER_H\r\n\r\n#include \"driver_base.h\"\r\n#include \"gpio_socket.h\"\r\n\r\nclass LedDriver : public DriverBase {\r\npublic:\r\n    LedDriver(GpioSocket* socket);\r\n\r\n    void init() override;\r\n\r\n    void setState(bool on);\r\n\r\nprivate:\r\n    GpioSocket* _socket;\r\n};\r\n\r\n#endif"
+      },
+      {
+        "name": "drivers/led_driver.cpp",
+        "content": "#include \"led_driver.h\"\r\n\r\n\r\nLedDriver::LedDriver(GpioSocket* socket)\r\n    : _socket(socket) {\r\n}\r\n\r\n\r\nvoid LedDriver::init() {\r\n    _socket->init(1, OUTPUT);\r\n    _socket->write(1, LOW);\r\n}\r\n\r\n\r\nvoid LedDriver::setState(bool on) {\r\n    _socket->write(\r\n        1,\r\n        on ? HIGH : LOW\r\n    );\r\n}"
+      },
+      {
+        "name": "drivers/mpu6050_driver.h",
+        "content": "#ifndef MPU6050_DRIVER_H\r\n#define MPU6050_DRIVER_H\r\n\r\n#include \"driver_base.h\"\r\n#include \"i2c_socket.h\"\r\n\r\nclass Mpu6050Driver : public DriverBase {\r\npublic:\r\n    Mpu6050Driver(I2cSocket* socket);\r\n    void init() override;\r\n    bool readRaw(int16_t& ax, int16_t& ay, int16_t& az,\r\n                 int16_t& gx, int16_t& gy, int16_t& gz);\r\n\r\nprivate:\r\n    I2cSocket* _socket;\r\n};\r\n\r\n#endif"
+      },
+      {
+        "name": "drivers/mpu6050_driver.cpp",
+        "content": "#include \"mpu6050_driver.h\"\r\n\r\n#define REG_PWR_MGMT_1   0x6B\r\n#define REG_ACCEL_XOUT_H 0x3B\r\n\r\nMpu6050Driver::Mpu6050Driver(I2cSocket* socket) : _socket(socket) {}\r\n\r\nvoid Mpu6050Driver::init() {\r\n    _socket->init();\r\n    _socket->writeByte(REG_PWR_MGMT_1, 0x00); // wake up device\r\n}\r\n\r\nbool Mpu6050Driver::readRaw(int16_t& ax, int16_t& ay, int16_t& az,\r\n                             int16_t& gx, int16_t& gy, int16_t& gz) {\r\n    uint8_t buf[14];\r\n    if (!_socket->readBytes(REG_ACCEL_XOUT_H, buf, 14)) return false;\r\n\r\n    ax = (buf[0] << 8) | buf[1];\r\n    ay = (buf[2] << 8) | buf[3];\r\n    az = (buf[4] << 8) | buf[5];\r\n    // buf[6],buf[7] = temperature, skipped\r\n    gx = (buf[8] << 8) | buf[9];\r\n    gy = (buf[10] << 8) | buf[11];\r\n    gz = (buf[12] << 8) | buf[13];\r\n    return true;\r\n}"
+      },
+      {
+        "name": "adaptors/led_adaptor.h",
+        "content": "#ifndef LED_ADAPTOR_H\r\n#define LED_ADAPTOR_H\r\n\r\n#include \"led_driver.h\"\r\n\r\nclass LedAdaptor {\r\npublic:\r\n    LedAdaptor(LedDriver* driver);\r\n    void init();\r\n    void on();\r\n    void off();\r\n    void toggle();\r\n    void blink(unsigned long ms); // turns on, auto-off after ms\r\n    void update(); // call every loop() to handle blink timing\r\n\r\nprivate:\r\n    LedDriver* _driver;\r\n    bool _state;\r\n    bool _blinking;\r\n    unsigned long _blinkOffAt;\r\n};\r\n\r\n#endif"
+      },
+      {
+        "name": "adaptors/led_adaptor.cpp",
+        "content": "#include \"led_adaptor.h\"\r\n\r\nLedAdaptor::LedAdaptor(LedDriver* driver)\r\n    : _driver(driver), _state(false), _blinking(false), _blinkOffAt(0) {}\r\n\r\nvoid LedAdaptor::init() {\r\n    _driver->init();\r\n}\r\n\r\nvoid LedAdaptor::on() {\r\n    _blinking = false;\r\n    _state = true;\r\n    _driver->setState(true);\r\n}\r\n\r\nvoid LedAdaptor::off() {\r\n    _blinking = false;\r\n    _state = false;\r\n    _driver->setState(false);\r\n}\r\n\r\nvoid LedAdaptor::toggle() {\r\n    _state ? off() : on();\r\n}\r\n\r\nvoid LedAdaptor::blink(unsigned long ms) {\r\n    _state = true;\r\n    _driver->setState(true);\r\n    _blinking = true;\r\n    _blinkOffAt = millis() + ms;\r\n}\r\n\r\nvoid LedAdaptor::update() {\r\n    if (_blinking && millis() >= _blinkOffAt) {\r\n        _blinking = false;\r\n        _state = false;\r\n        _driver->setState(false);\r\n    }\r\n}"
+      },
+      {
+        "name": "adaptors/motion_adaptor.h",
+        "content": "#ifndef MOTION_ADAPTOR_H\r\n#define MOTION_ADAPTOR_H\r\n\r\n#include \"mpu6050_driver.h\"\r\n\r\nclass MotionAdaptor {\r\npublic:\r\n    MotionAdaptor(Mpu6050Driver* driver);\r\n    void init();\r\n    bool getAcceleration(float& ax, float& ay, float& az);\r\n    bool isMoving(float threshold = 1.5); // in g, deviation from 1g rest\r\n\r\nprivate:\r\n    Mpu6050Driver* _driver;\r\n};\r\n\r\n#endif"
+      },
+      {
+        "name": "adaptors/motion_adaptor.cpp",
+        "content": "#include \"motion_adaptor.h\"\r\n#include <math.h>\r\n\r\nMotionAdaptor::MotionAdaptor(Mpu6050Driver* driver) : _driver(driver) {}\r\n\r\nvoid MotionAdaptor::init() {\r\n    _driver->init();\r\n}\r\n\r\nbool MotionAdaptor::getAcceleration(float& ax, float& ay, float& az) {\r\n    int16_t rax, ray, raz, gx, gy, gz;\r\n    if (!_driver->readRaw(rax, ray, raz, gx, gy, gz)) return false;\r\n\r\n    ax = rax / 16384.0; // LSB sensitivity for ±2g range\r\n    ay = ray / 16384.0;\r\n    az = raz / 16384.0;\r\n    return true;\r\n}\r\n\r\nbool MotionAdaptor::isMoving(float threshold) {\r\n    float ax, ay, az;\r\n    if (!getAcceleration(ax, ay, az)) return false;\r\n\r\n    float magnitude = sqrt(ax * ax + ay * ay + az * az);\r\n    return fabs(magnitude - 1.0) > (threshold - 1.0);\r\n}"
+      },
+      {
+        "name": "hooks/hook_base.h",
+        "content": "#ifndef HOOK_BASE_H\r\n#define HOOK_BASE_H\r\n\r\nclass HookBase {\r\npublic:\r\n    virtual void init() = 0;\r\n    virtual void tick() = 0;\r\n    virtual ~HookBase() {}\r\n};\r\n\r\n#endif"
+      },
+      {
+        "name": "hooks/hook_registry.h",
+        "content": "#ifndef HOOK_REGISTRY_H\r\n#define HOOK_REGISTRY_H\r\n\r\n#include \"hook_base.h\"\r\n\r\n#define MAX_HOOKS 10\r\n\r\nclass HookRegistry {\r\npublic:\r\n    void registerHook(HookBase* hook);\r\n    void initAll();\r\n    void tickAll();\r\n\r\nprivate:\r\n    HookBase* _hooks[MAX_HOOKS];\r\n    int _count = 0;\r\n};\r\n\r\n#endif"
+      },
+      {
+        "name": "hooks/hook_registry.cpp",
+        "content": "#include \"hook_registry.h\"\r\n\r\nvoid HookRegistry::registerHook(HookBase* hook) {\r\n    if (_count < MAX_HOOKS) {\r\n        _hooks[_count++] = hook;\r\n    }\r\n}\r\n\r\nvoid HookRegistry::initAll() {\r\n    for (int i = 0; i < _count; i++) _hooks[i]->init();\r\n}\r\n\r\nvoid HookRegistry::tickAll() {\r\n    for (int i = 0; i < _count; i++) _hooks[i]->tick();\r\n}"
+      },
+      {
+        "name": "hooks/motion_to_led_hook.h",
+        "content": "#ifndef MOTION_TO_LED_HOOK_H\r\n#define MOTION_TO_LED_HOOK_H\r\n\r\n#include \"hook_base.h\"\r\n#include \"motion_adaptor.h\"\r\n#include \"led_adaptor.h\"\r\n\r\nclass MotionToLedHook : public HookBase {\r\npublic:\r\n    MotionToLedHook(MotionAdaptor* motion, LedAdaptor* led);\r\n    void init() override;\r\n    void tick() override;\r\n\r\nprivate:\r\n    MotionAdaptor* _motion;\r\n    LedAdaptor* _led;\r\n};\r\n\r\n#endif"
+      },
+      {
+        "name": "hooks/motion_to_led_hook.cpp",
+        "content": "#include \"motion_to_led_hook.h\"\r\n\r\nMotionToLedHook::MotionToLedHook(MotionAdaptor* motion, LedAdaptor* led)\r\n    : _motion(motion), _led(led) {}\r\n\r\nvoid MotionToLedHook::init() {\r\n    // nothing extra; motion and led already init'd in sketch\r\n}\r\n\r\nvoid MotionToLedHook::tick() {\r\n    if (_motion->isMoving()) {\r\n        _led->on();\r\n    } else {\r\n        _led->off();\r\n    }\r\n}"
+      },
+      {
+        "name": "CMakeLists.txt",
+        "content": "idf_component_register(\r\n    SRCS\r\n        \"sketch.ino\"\r\n\r\n        \"sockets/gpio_socket.cpp\"\r\n        \"sockets/i2c_socket.cpp\"\r\n\r\n        \"drivers/led_driver.cpp\"\r\n        \"drivers/mpu6050_driver.cpp\"\r\n        \"drivers/ultrasonic_driver.cpp\"\r\n\r\n        \"adaptors/led_adaptor.cpp\"\r\n        \"adaptors/motion_adaptor.cpp\"\r\n        \"adaptors/ultrasonic_adaptor.cpp\"\r\n\r\n        \"hooks/hook_registry.cpp\"\r\n        \"hooks/motion_to_led_hook.cpp\"\r\n        \"hooks/distance_to_led_hook.cpp\"\r\n        \"hooks/timed_blink_hook.cpp\"\r\n\r\n    INCLUDE_DIRS\r\n        \".\"\r\n        \"sockets\"\r\n        \"drivers\"\r\n        \"adaptors\"\r\n        \"hooks\"\r\n)"
+      },
+      {
+        "name": "drivers/ultrasonic_driver.h",
+        "content": "#ifndef ULTRASONIC_DRIVER_H\r\n#define ULTRASONIC_DRIVER_H\r\n\r\n#include \"driver_base.h\"\r\n#include \"gpio_socket.h\"\r\n\r\nclass UltrasonicDriver : public DriverBase {\r\npublic:\r\n    UltrasonicDriver(GpioSocket* socket);\r\n\r\n    void init() override;\r\n\r\n    float getDistanceCm();\r\n\r\nprivate:\r\n    GpioSocket* _socket;\r\n};\r\n\r\n#endif"
+      },
+      {
+        "name": "drivers/ultrasonic_driver.cpp",
+        "content": "#include \"ultrasonic_driver.h\"\r\n\r\nUltrasonicDriver::UltrasonicDriver(GpioSocket* socket)\r\n    : _socket(socket) {\r\n}\r\n\r\nvoid UltrasonicDriver::init() {\r\n    _socket->init(1, OUTPUT);\r\n    _socket->init(2, INPUT);\r\n\r\n    _socket->write(1, LOW);\r\n}\r\n\r\nfloat UltrasonicDriver::getDistanceCm() {\r\n    _socket->write(1, LOW);\r\n    delayMicroseconds(2);\r\n\r\n    _socket->write(1, HIGH);\r\n    delayMicroseconds(10);\r\n    _socket->write(1, LOW);\r\n\r\n    unsigned long duration =\r\n        _socket->pulseInSignal(\r\n            2,\r\n            HIGH,\r\n            30000\r\n        );\r\n\r\n    if (duration == 0) {\r\n        return -1.0;\r\n    }\r\n\r\n    return duration * 0.0343 / 2.0;\r\n}"
+      },
+      {
+        "name": "adaptors/ultrasonic_adaptor.h",
+        "content": "#ifndef ULTRASONIC_ADAPTOR_H\r\n#define ULTRASONIC_ADAPTOR_H\r\n\r\n#include \"ultrasonic_driver.h\"\r\n\r\nclass UltrasonicAdaptor {\r\npublic:\r\n    UltrasonicAdaptor(UltrasonicDriver* driver);\r\n\r\n    void init();\r\n    float getDistanceCm();\r\n\r\nprivate:\r\n    UltrasonicDriver* _driver;\r\n};\r\n\r\n#endif"
+      },
+      {
+        "name": "adaptors/ultrasonic_adaptor.cpp",
+        "content": "#include \"ultrasonic_adaptor.h\"\r\n\r\nUltrasonicAdaptor::UltrasonicAdaptor(UltrasonicDriver* driver)\r\n    : _driver(driver) {}\r\n\r\nvoid UltrasonicAdaptor::init() {\r\n    _driver->init();\r\n}\r\n\r\nfloat UltrasonicAdaptor::getDistanceCm() {\r\n    return _driver->getDistanceCm();\r\n}"
+      },
+      {
+        "name": "hooks/distance_to_led_hook.h",
+        "content": "#ifndef DISTANCE_TO_LED_HOOK_H\r\n#define DISTANCE_TO_LED_HOOK_H\r\n\r\n#include \"hook_base.h\"\r\n#include \"ultrasonic_adaptor.h\"\r\n#include \"led_adaptor.h\"\r\n\r\nclass DistanceToLedHook : public HookBase {\r\npublic:\r\n    DistanceToLedHook(\r\n        UltrasonicAdaptor* ultrasonic,\r\n        LedAdaptor* led\r\n    );\r\n\r\n    void init() override;\r\n    void tick() override;\r\n\r\nprivate:\r\n    UltrasonicAdaptor* _ultrasonic;\r\n    LedAdaptor* _led;\r\n};\r\n\r\n#endif"
+      },
+      {
+        "name": "hooks/distance_to_led_hook.cpp",
+        "content": "#include \"distance_to_led_hook.h\"\r\n\r\nDistanceToLedHook::DistanceToLedHook(\r\n    UltrasonicAdaptor* ultrasonic,\r\n    LedAdaptor* led\r\n)\r\n    : _ultrasonic(ultrasonic),\r\n      _led(led) {}\r\n\r\nvoid DistanceToLedHook::init() {\r\n}\r\n\r\nvoid DistanceToLedHook::tick() {\r\n    static bool ledState = false;\r\n\r\n    float distance = _ultrasonic->getDistanceCm();\r\n\r\n    if (!ledState && distance > 0 && distance < 45) {\r\n        ledState = true;\r\n        _led->on();\r\n    }\r\n    else if (ledState && distance > 55) {\r\n        ledState = false;\r\n        _led->off();\r\n    }\r\n}"
+      },
+      {
+        "name": "socket_mapping.h",
+        "content": "#ifndef SOCKET_MAPPING_H\r\n#define SOCKET_MAPPING_H\r\n\r\n#include <Arduino.h>\r\n\r\n// Logical socket IDs\r\n#define SOCKET_I2C_1   1\r\n#define SOCKET_I2C_2   2\r\n#define SOCKET_I2C_3   3\r\n\r\n#define SOCKET_GPIO_1  4\r\n#define SOCKET_GPIO_2  5\r\n#define SOCKET_GPIO_3  6\r\n\r\n\r\n// Physical board mapping\r\n// signal1/signal2 are the signal pins of the physical socket.\r\n\r\nstruct GpioSocketMapping {\r\n    uint8_t signal1;\r\n    uint8_t signal2;\r\n};\r\n\r\nstruct I2cSocketMapping {\r\n    uint8_t sda;\r\n    uint8_t scl;\r\n};\r\n\r\n\r\n// GPIO Socket 4\r\n// LED uses signal 1 → GPIO 4\r\nstatic const GpioSocketMapping GPIO_SOCKET_4 = {\r\n    4,\r\n    5\r\n};\r\n\r\n\r\n// GPIO Socket 5\r\n// Ultrasonic uses:\r\n// signal 1 → GPIO 5\r\n// signal 2 → GPIO 6\r\nstatic const GpioSocketMapping GPIO_SOCKET_5 = {\r\n    6,\r\n    7\r\n};\r\n\r\n\r\n// GPIO Socket 6\r\nstatic const GpioSocketMapping GPIO_SOCKET_6 = {\r\n    10,\r\n    11\r\n};\r\n\r\n\r\n// I2C Socket 1\r\nstatic const I2cSocketMapping I2C_SOCKET_1 = {\r\n    8,\r\n    9\r\n};\r\n\r\n\r\n// I2C Socket 2/3 are reserved\r\nstatic const I2cSocketMapping I2C_SOCKET_2 = {\r\n    255,\r\n    255\r\n};\r\n\r\nstatic const I2cSocketMapping I2C_SOCKET_3 = {\r\n    255,\r\n    255\r\n};\r\n\r\n\r\ninline const GpioSocketMapping* getGpioSocketMapping(uint8_t socket) {\r\n    switch (socket) {\r\n        case SOCKET_GPIO_1:\r\n            return &GPIO_SOCKET_4;\r\n\r\n        case SOCKET_GPIO_2:\r\n            return &GPIO_SOCKET_5;\r\n\r\n        case SOCKET_GPIO_3:\r\n            return &GPIO_SOCKET_6;\r\n\r\n        default:\r\n            return nullptr;\r\n    }\r\n}\r\n\r\n\r\ninline const I2cSocketMapping* getI2cSocketMapping(uint8_t socket) {\r\n    switch (socket) {\r\n        case SOCKET_I2C_1:\r\n            return &I2C_SOCKET_1;\r\n\r\n        case SOCKET_I2C_2:\r\n            return &I2C_SOCKET_2;\r\n\r\n        case SOCKET_I2C_3:\r\n            return &I2C_SOCKET_3;\r\n\r\n        default:\r\n            return nullptr;\r\n    }\r\n}\r\n\r\n#endif"
+      },
+      {
+        "name": "component_mapping.h",
+        "content": "#ifndef COMPONENT_MAPPING_H\r\n#define COMPONENT_MAPPING_H\r\n\r\n#include \"socket_mapping.h\"\r\n\r\nstruct ComponentConfig {\r\n    const char* name;\r\n    const char* adaptor;\r\n    uint8_t socket;\r\n};\r\n\r\nstatic const ComponentConfig COMPONENTS[] = {\r\n    { \"led_1\",        \"led_adaptor\",        SOCKET_GPIO_1 },\r\n    { \"ultrasonic_1\", \"ultrasonic_adaptor\", SOCKET_GPIO_2 },\r\n};\r\n\r\nstatic const uint8_t COMPONENT_COUNT =\r\n    sizeof(COMPONENTS) / sizeof(COMPONENTS[0]);\r\n\r\n#endif"
+      },
+      {
+        "name": "hooks/timed_blink_hook.h",
+        "content": "#ifndef TIMED_BLINK_HOOK_H\r\n#define TIMED_BLINK_H\r\n\r\n#include \"hook_base.h\"\r\n#include \"led_adaptor.h\"\r\n\r\nclass TimedBlinkHook : public HookBase {\r\npublic:\r\n    TimedBlinkHook(LedAdaptor* led);\r\n\r\n    void init() override;\r\n    void tick() override;\r\n\r\nprivate:\r\n    LedAdaptor* _led;\r\n\r\n    unsigned long _startTime;\r\n    unsigned long _lastToggle;\r\n    unsigned long _interval;\r\n\r\n    bool _started;\r\n    bool _running;\r\n};\r\n\r\n#endif"
+      },
+      {
+        "name": "hooks/timed_blink_hook.cpp",
+        "content": "#include \"timed_blink_hook.h\"\r\n\r\nTimedBlinkHook::TimedBlinkHook(LedAdaptor* led)\r\n    : _led(led),\r\n      _startTime(0),\r\n      _lastToggle(0),\r\n      _interval(1000),\r\n      _started(false),\r\n      _running(false) {}\r\n\r\nvoid TimedBlinkHook::init() {\r\n    _startTime = millis();\r\n    _lastToggle = _startTime;\r\n    _interval = 1000;\r\n\r\n    _started = false;\r\n    _running = false;\r\n\r\n    _led->off();\r\n\r\n    Serial.println(\"[TimedBlink] Initialized\");\r\n}\r\n\r\nvoid TimedBlinkHook::tick() {\r\n    unsigned long now = millis();\r\n    unsigned long elapsed = now - _startTime;\r\n\r\n    if (!_started && elapsed >= 2000) {\r\n        _started = true;\r\n        _running = true;\r\n        _lastToggle = now;\r\n        _interval = 1000;\r\n\r\n        _led->on();\r\n\r\n        Serial.println(\"[TimedBlink] Started - LED ON\");\r\n        return;\r\n    }\r\n\r\n    if (!_running) return;\r\n\r\n    if (elapsed >= 50000) {\r\n        _running = false;\r\n        _led->off();\r\n\r\n        Serial.println(\"[TimedBlink] Stopped - LED OFF\");\r\n        return;\r\n    }\r\n\r\n    if (now - _lastToggle >= _interval) {\r\n        _lastToggle = now;\r\n\r\n        _led->toggle();\r\n\r\n        Serial.print(\"[TimedBlink] Toggle at \");\r\n        Serial.print(elapsed);\r\n        Serial.print(\" ms, next interval = \");\r\n        Serial.print(_interval * 2);\r\n        Serial.println(\" ms\");\r\n\r\n        _interval *= 2;\r\n    }\r\n}"
+      },
+      {
+        "name": "adaptor_registry.h",
+        "content": "#ifndef ADAPTOR_REGISTRY_H\r\n#define ADAPTOR_REGISTRY_H\r\n\r\nclass AdaptorRegistry {\r\npublic:\r\n    void registerAdaptor(const char* name, void* adaptor);\r\n    void* getAdaptor(const char* name);\r\n\r\nprivate:\r\n    struct Entry {\r\n        const char* name;\r\n        void* adaptor;\r\n    };\r\n\r\n    static const int MAX_ADAPTORS = 20;\r\n\r\n    Entry _entries[MAX_ADAPTORS];\r\n    int _count = 0;\r\n};\r\n\r\n#endif"
+      },
+      {
+        "name": "adaptor_registry.cpp",
+        "content": "#include \"adaptor_registry.h\"\r\n#include <string.h>\r\n\r\nvoid AdaptorRegistry::registerAdaptor(const char* name, void* adaptor) {\r\n    if (_count >= MAX_ADAPTORS) return;\r\n\r\n    _entries[_count].name = name;\r\n    _entries[_count].adaptor = adaptor;\r\n    _count++;\r\n}\r\n\r\nvoid* AdaptorRegistry::getAdaptor(const char* name) {\r\n    for (int i = 0; i < _count; i++) {\r\n        if (strcmp(_entries[i].name, name) == 0) {\r\n            return _entries[i].adaptor;\r\n        }\r\n    }\r\n\r\n    return nullptr;\r\n}"
+      },
+      {
+        "name": "component_registry.h",
+        "content": "#ifndef COMPONENT_REGISTRY_H\r\n#define COMPONENT_REGISTRY_H\r\n\r\n#include \"component_mapping.h\"\r\n#include \"adaptor_registry.h\"\r\n\r\nclass ComponentRegistry {\r\npublic:\r\n    ComponentRegistry(AdaptorRegistry* adaptorRegistry);\r\n\r\n    void init();\r\n\r\n    void* get(const char* name);\r\n\r\nprivate:\r\n    struct Entry {\r\n        const char* name;\r\n        const char* adaptor;\r\n        uint8_t socket;\r\n        void* adaptorObject;\r\n    };\r\n\r\n    static const int MAX_COMPONENTS = 20;\r\n\r\n    Entry _components[MAX_COMPONENTS];\r\n    int _count = 0;\r\n\r\n    AdaptorRegistry* _adaptorRegistry;\r\n};\r\n\r\n#endif"
+      },
+      {
+        "name": "component_registry.cpp",
+        "content": "#include \"component_registry.h\"\r\n#include <string.h>\r\n\r\nComponentRegistry::ComponentRegistry(AdaptorRegistry* adaptorRegistry)\r\n    : _adaptorRegistry(adaptorRegistry) {}\r\n\r\nvoid ComponentRegistry::init() {\r\n    _count = 0;\r\n\r\n    for (int i = 0; i < COMPONENT_COUNT && i < MAX_COMPONENTS; i++) {\r\n\r\n        void* adaptor =\r\n            _adaptorRegistry->getAdaptor(COMPONENTS[i].adaptor);\r\n\r\n        if (adaptor == nullptr) {\r\n            continue;\r\n        }\r\n\r\n        _components[_count].name = COMPONENTS[i].name;\r\n        _components[_count].adaptor = COMPONENTS[i].adaptor;\r\n        _components[_count].socket = COMPONENTS[i].socket;\r\n        _components[_count].adaptorObject = adaptor;\r\n\r\n        _count++;\r\n    }\r\n}\r\n\r\nvoid* ComponentRegistry::get(const char* name) {\r\n    for (int i = 0; i < _count; i++) {\r\n        if (strcmp(_components[i].name, name) == 0) {\r\n            return _components[i].adaptorObject;\r\n        }\r\n    }\r\n\r\n    return nullptr;\r\n}"
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "led_1789574378137_mp8mtbcrf",
+      "metadataId": "led",
+      "x": 195.77524942987986,
+      "y": 60.91992147049372,
+      "properties": {
+        "value": false,
+        "brightness": 1,
+        "color": "red",
+        "lightColor": null,
+        "label": "",
+        "flip": false
+      }
+    },
+    {
+      "id": "resistor_220_1789574385640_8ttic6xm9",
+      "metadataId": "resistor-220",
+      "x": 52,
+      "y": 149.79999160766602,
+      "properties": {
+        "value": "220",
+        "rotation": 90
+      }
+    },
+    {
+      "id": "hc_sr04_1789577942060_2bqvs14dc",
+      "metadataId": "hc-sr04",
+      "x": -100.70516133397223,
+      "y": 228.84388772886552,
+      "properties": {}
+    }
+  ],
+  "wires": [
+    {
+      "waypoints": [
+        {
+          "x": 226.77524942987986,
+          "y": 128.29999160766602
+        }
+      ],
+      "id": "wire-1789574398232",
+      "start": {
+        "componentId": "led_1789574378137_mp8mtbcrf",
+        "pinName": "A",
+        "x": 226.77524942987986,
+        "y": 108.91992147049372
+      },
+      "end": {
+        "componentId": "resistor_220_1789574385640_8ttic6xm9",
+        "pinName": "1",
+        "x": 116.85,
+        "y": 128.29999160766602
+      },
+      "color": "#22c55e",
+      "autoRouted": true
+    },
+    {
+      "waypoints": [
+        {
+          "x": 96.91668269546952,
+          "y": 108.91992147049372
+        },
+        {
+          "x": 116.85,
+          "y": 108
+        },
+        {
+          "x": 116.85,
+          "y": 44.39773241893755
+        },
+        {
+          "x": 469.05455363012726,
+          "y": 44.39773241893755
+        }
+      ],
+      "id": "wire-1789574653630",
+      "start": {
+        "componentId": "led_1789574378137_mp8mtbcrf",
+        "pinName": "C",
+        "x": 216.77524942987986,
+        "y": 108.91992147049372
+      },
+      "end": {
+        "componentId": "esp32-s3",
+        "pinName": "GND.2",
+        "x": 469.05455363012726,
+        "y": 171.10312048136007
+      },
+      "color": "#000000",
+      "autoRouted": false
+    },
+    {
+      "waypoints": [
+        {
+          "x": -24.609262226696686,
+          "y": 425.10312048136007
+        }
+      ],
+      "id": "wire-1789577954627",
+      "start": {
+        "componentId": "hc_sr04_1789577942060_2bqvs14dc",
+        "pinName": "VCC",
+        "x": -23.40516133397223,
+        "y": 329.3438877288655
+      },
+      "end": {
+        "componentId": "esp32-s3",
+        "pinName": "5V",
+        "x": 355.05455363012726,
+        "y": 425.10312048136007
+      },
+      "color": "#cc0000",
+      "autoRouted": false
+    },
+    {
+      "waypoints": [
+        {
+          "x": 311.2040990606276,
+          "y": 327.53773638977884
+        },
+        {
+          "x": 311.2040990606276,
+          "y": 438.10312048136007
+        }
+      ],
+      "id": "wire-1789577962356",
+      "start": {
+        "componentId": "hc_sr04_1789577942060_2bqvs14dc",
+        "pinName": "GND",
+        "x": 6.594838666027769,
+        "y": 329.3438877288655
+      },
+      "end": {
+        "componentId": "esp32-s3",
+        "pinName": "GND.1",
+        "x": 355.05455363012726,
+        "y": 438.10312048136007
+      },
+      "color": "#000000",
+      "autoRouted": false
+    },
+    {
+      "waypoints": [
+        {
+          "x": 116.85,
+          "y": 209.10312048136007
+        }
+      ],
+      "id": "wire-1789582550876",
+      "start": {
+        "componentId": "esp32-s3",
+        "pinName": "4",
+        "x": 355.05455363012726,
+        "y": 209.10312048136007
+      },
+      "end": {
+        "componentId": "resistor_220_1789574385640_8ttic6xm9",
+        "pinName": "2",
+        "x": 116.85,
+        "y": 187.09999160766603
+      },
+      "color": "#22c55e",
+      "autoRouted": true
+    },
+    {
+      "waypoints": [
+        {
+          "x": -13.40516133397223,
+          "y": 235.10312048136007
+        }
+      ],
+      "id": "wire-1789582562481",
+      "start": {
+        "componentId": "hc_sr04_1789577942060_2bqvs14dc",
+        "pinName": "TRIG",
+        "x": -13.40516133397223,
+        "y": 329.3438877288655
+      },
+      "end": {
+        "componentId": "esp32-s3",
+        "pinName": "6",
+        "x": 355.05455363012726,
+        "y": 235.10312048136007
+      },
+      "color": "#22c55e",
+      "autoRouted": true
+    },
+    {
+      "waypoints": [
+        {
+          "x": -3.405161333972231,
+          "y": 248.10312048136007
+        }
+      ],
+      "id": "wire-1789582564831",
+      "start": {
+        "componentId": "hc_sr04_1789577942060_2bqvs14dc",
+        "pinName": "ECHO",
+        "x": -3.405161333972231,
+        "y": 329.3438877288655
+      },
+      "end": {
+        "componentId": "esp32-s3",
+        "pinName": "7",
+        "x": 355.05455363012726,
+        "y": 248.10312048136007
+      },
+      "color": "#22c55e",
+      "autoRouted": true
+    }
+  ],
+  "activeBoardId": "esp32-s3"
+}
