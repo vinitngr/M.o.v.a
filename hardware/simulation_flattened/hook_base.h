@@ -2,8 +2,7 @@
 #define HOOK_BASE_H
 
 #include "component_ref.h"
-
-class ComponentRegistry;
+#include "component_registry.h"
 
 class HookBase {
 
@@ -20,7 +19,9 @@ public:
 protected:
 
     template <typename T>
-    ComponentRef<T> use(const char* componentName);
+    ComponentRef<T> use(const char* componentName) {
+        return _registry->use<T>(componentName);
+    }
 
     ComponentRegistry* _registry;
 };
