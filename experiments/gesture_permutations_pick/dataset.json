@@ -1,0 +1,169 @@
+{
+  "_note": "Every gesture = hands held IN FRAME of a narrow head-mounted FPV camera. No body touch, no face, no head. Each entry documents the physical hand shape so a vision model can detect it. meanings = plausible vision readings of that same shape (never grammar variants).",
+  "gestures": {
+    "wave_hand": {
+      "shape": "Open hand raised in frame, waving side to side. Same wave greets and farewells — context decides.",
+      "meanings": ["hello", "hi", "bye"]
+    },
+    "point_toward_self": {
+      "shape": "Index finger pointing back toward self/camera, hand held in frame. STRESS: also reads as 'I am' — same hand, grammar role unresolved.",
+      "meanings": ["I", "I am"]
+    },
+    "point_at_person": {
+      "shape": "Index finger extended pointing at another person or group. Referent resolved by pointing direction + context. STRESS: also reads as 'you are' — same hand.",
+      "meanings": ["you", "he", "she", "they", "you are"]
+    },
+    "point_somewhere": {
+      "shape": "Index finger extended pointing at a direction or spot.",
+      "meanings": ["here", "there"]
+    },
+    "point_down_low": {
+      "shape": "MOVA CONVENTION: finger pointing steeply down in frame, in the direction of one's own belly region. Reads as stomach area.",
+      "meanings": ["stomach"]
+    },
+    "open_palm_request": {
+      "shape": "Open palm facing up/forward toward partner, held steady (asking/receiving hand).",
+      "meanings": ["want", "need"]
+    },
+    "cup_hold_mime": {
+      "shape": "Hand in C-shape as if holding an invisible cup, held steady in frame. Vessel AND action AND liquid all read from one shape — 'drink' is the honest reading when liquid is unknown.",
+      "meanings": ["tea", "coffee", "water", "drink", "juice"]
+    },
+    "spoon_scoop_mime": {
+      "shape": "Hand scooping air in small repeated arcs as if eating with a spoon, staying in frame. Ongoing action reads as eating; wanting-food state reads as hungry.",
+      "meanings": ["eat", "eating", "hungry"]
+    },
+    "food_bowl_hold": {
+      "shape": "Both hands cupped side by side as if holding a bowl toward camera. Dish inside is unknown.",
+      "meanings": ["pasta", "rice", "food"]
+    },
+    "where_sign": {
+      "shape": "FIXED: both palms up, hands shaking side to side (universal where-shrug), face never needed.",
+      "meanings": ["where"]
+    },
+    "what_sign": {
+      "shape": "FIXED: single palm up flicked upward once.",
+      "meanings": ["what"]
+    },
+    "who_sign": {
+      "shape": "FIXED: index finger extended, sweeping sideways across people.",
+      "meanings": ["who"]
+    },
+    "why_sign": {
+      "shape": "MOVA CONVENTION: index finger traces a ? shape in the air, in frame.",
+      "meanings": ["why"]
+    },
+    "when_sign": {
+      "shape": "FIXED: index finger draws a small clock-circle in the air, in frame.",
+      "meanings": ["when"]
+    },
+    "how_sign": {
+      "shape": "FIXED: both open palms rolling around each other (universal how gesture).",
+      "meanings": ["how"]
+    },
+    "which_sign": {
+      "shape": "FIXED: open hand tilting side to side between two options (weighing gesture), in frame.",
+      "meanings": ["which"]
+    },
+    "toilet_fist_sign": {
+      "shape": "MOVA CONVENTION (common S-Asian colloquial sign): fist with thumb protruding between index and middle finger, shaken lightly in frame.",
+      "meanings": ["washroom", "toilet"]
+    },
+    "folded_hands": {
+      "shape": "Both palms pressed together, fingers up, held STATIC in frame (namaste hold).",
+      "meanings": ["thank you", "sorry"]
+    },
+    "begging_palms": {
+      "shape": "Palms together RUBBING repeatedly (pleading motion). Dynamic, distinguishable from static folded_hands by motion.",
+      "meanings": ["please"]
+    },
+    "one_finger": {
+      "shape": "FIXED: single index finger held up facing camera. One shape, many readings — counting, ranking, pointing up.",
+      "meanings": ["one", "first", "top"]
+    },
+    "two_fingers": {
+      "shape": "FIXED: index + middle fingers in V held up facing camera. Count and victory share one shape.",
+      "meanings": ["two", "victory"]
+    },
+    "three_fingers": {
+      "shape": "FIXED: three fingers held up facing camera.",
+      "meanings": ["three"]
+    },
+    "phone_hand_shape": {
+      "shape": "Shaka/call handshape (thumb + pinky out) held up IN FRAME, never taken to ear.",
+      "meanings": ["call"]
+    },
+    "prescription_scribble": {
+      "shape": "Index finger scribbling fast on the open other palm, both hands in frame (writing-prescription mime).",
+      "meanings": ["doctor"]
+    },
+    "fist_clench_shake": {
+      "shape": "Tightly clenched fist shaken in frame (pain/grams of hurt). Distinct from toilet fist by thumb position + shake size.",
+      "meanings": ["pain", "hurts"]
+    },
+    "beckon_fingers": {
+      "shape": "Fingers curling repeatedly toward self (beckoning), hand in frame. Ongoing invitation also reads as coming.",
+      "meanings": ["come", "coming"]
+    },
+    "push_palm": {
+      "shape": "Open palm pushing outward away from self, in frame. Setting-off motion also reads as going. (Walking needs its own fingers-walking gesture — deferred.)",
+      "meanings": ["go", "going"]
+    },
+    "roof_hands": {
+      "shape": "Fingertips of both hands meeting in an upside-V roof shape, in frame.",
+      "meanings": ["home"]
+    },
+    "tap_wrist": {
+      "shape": "Index finger tapping the other wrist, both hands held in frame. Exact day is unknown — today/now/tomorrow share one tap.",
+      "meanings": ["now", "today", "tomorrow"]
+    },
+    "thumbs_up": {
+      "shape": "Thumb extended upward facing camera. Affirmation in all its shades — one shape.",
+      "meanings": ["yes", "good", "ok"]
+    },
+    "thumbs_down": {
+      "shape": "Thumb pointed down facing camera. The mirror of thumbs_up — disapproval in all shades.",
+      "meanings": ["bad", "no"]
+    },
+    "finger_wag_no": {
+      "shape": "Index finger wagging side to side (universal no-no), hand in frame.",
+      "meanings": ["no"]
+    },
+    "money_rub_fingers": {
+      "shape": "Thumb rubbing against index/middle fingertips repeatedly (universal money/bill sign), in frame.",
+      "meanings": ["bill", "money"]
+    },
+    "offer_hands": {
+      "shape": "Both palms extended forward presenting toward partner (giving motion), in frame. Distinct from open_palm_request (single palm up toward self).",
+      "meanings": ["give"]
+    },
+    "with_link": {
+      "shape": "FIXED: both index fingers hooked together (universal together/with sign), in frame.",
+      "meanings": ["with"]
+    },
+    "repeat_sign": {
+      "shape": "REGISTERED EMBLEM: index finger drawing small circles in the air (universal again/repeat), in frame. 'Repeat that' vs 'come again' share the circles — context decides.",
+      "meanings": ["repeat", "again"]
+    },
+    "cross_forearms": {
+      "shape": "REGISTERED EMBLEM: both forearms crossed in a big X in frame (forbidden/unsafe/stop). Distinct from finger_wag_no by size and two-arm involvement.",
+      "meanings": ["unsafe", "stop"]
+    },
+    "joke_wave": {
+      "shape": "REGISTERED EMBLEM: open palm waving loosely side to side (just-kidding wave), in frame.",
+      "meanings": ["joking"]
+    },
+    "talk_flap": {
+      "shape": "Fingers + thumb opening-closing repeatedly (talking-mouth mime), hand in frame.",
+      "meanings": ["talk", "speak"]
+    },
+    "hold_palm_wait": {
+      "shape": "Open palm facing partner held STATIC (hold-on), no pushing motion. Distinct from push_palm by zero motion. Waiting and holding-on share one still palm.",
+      "meanings": ["wait", "hold on"]
+    },
+    "ok_ring": {
+      "shape": "Thumb + index forming a circle facing camera (OK sign). Reads as ok / got-it / understand.",
+      "meanings": ["understand", "ok"]
+    }
+  }
+}

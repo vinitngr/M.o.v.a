@@ -1,0 +1,1380 @@
+{
+  "timestamp": "2026-10-13T23:18:20.493917Z",
+  "model": "typesafe/jev-1.13",
+  "results": [
+    {
+      "testId": "test1_cafe",
+      "level": 1,
+      "category": "daily",
+      "gestures": [
+        "wave_hand",
+        "point_toward_self",
+        "open_palm_request",
+        "cup_hold_mime"
+      ],
+      "candidates": [
+        "hello I want tea",
+        "hello I need tea",
+        "hello I am want tea",
+        "hello I am need tea",
+        "hi I need tea",
+        "bye I need tea",
+        "bye I am want tea",
+        "bye I am need tea"
+      ],
+      "expected": "hi I want tea",
+      "accepted": [
+        "hi I want tea",
+        "hello I want tea",
+        "hi I need tea",
+        "hello I need tea",
+        "hi I want drink",
+        "hello I want drink",
+        "hi I need drink",
+        "hello I need drink"
+      ],
+      "selected": "hello I want tea",
+      "correct": true,
+      "confidence": 0.81,
+      "probabilities": {
+        "hello I want tea": 0.83,
+        "hello I need tea": 0.11,
+        "hello I am want tea": 0.02,
+        "hello I am need tea": 0,
+        "hi I need tea": 0.04,
+        "bye I need tea": 0,
+        "bye I am want tea": 0,
+        "bye I am need tea": 0
+      },
+      "latencyMs": 636.8303299996114,
+      "optionsBefore": 60,
+      "optionsAfter": 8,
+      "filterMs": 2341.823364999982,
+      "filterTop1": "hello I am want tea",
+      "filterKeptAnswer": true,
+      "error": null
+    },
+    {
+      "testId": "test2_refused_water",
+      "level": 2,
+      "category": "correction",
+      "gestures": [
+        "point_toward_self",
+        "open_palm_request",
+        "cup_hold_mime"
+      ],
+      "candidates": [
+        "I want tea",
+        "I want water",
+        "I need tea",
+        "I need water",
+        "I am want tea",
+        "I am want water",
+        "I am need tea",
+        "I am need water"
+      ],
+      "expected": "I want tea",
+      "accepted": [
+        "I want tea",
+        "I need tea",
+        "I want drink",
+        "I need drink"
+      ],
+      "selected": "I want tea",
+      "correct": true,
+      "confidence": 0.98,
+      "probabilities": {
+        "I want tea": 0.98,
+        "I want water": 0.01,
+        "I need tea": 0,
+        "I need water": 0,
+        "I am want tea": 0.01,
+        "I am want water": 0,
+        "I am need tea": 0,
+        "I am need water": 0
+      },
+      "latencyMs": 678.5628240004371,
+      "optionsBefore": 20,
+      "optionsAfter": 8,
+      "filterMs": 1425.612258000001,
+      "filterTop1": "I am want water",
+      "filterKeptAnswer": true,
+      "error": null
+    },
+    {
+      "testId": "test3_stomach_pain",
+      "level": 1,
+      "category": "medical",
+      "gestures": [
+        "point_toward_self",
+        "point_down_low",
+        "fist_clench_shake"
+      ],
+      "candidates": [
+        "I stomach pain",
+        "I stomach hurts",
+        "I am stomach pain",
+        "I am stomach hurts"
+      ],
+      "expected": "I stomach hurts",
+      "accepted": [
+        "I stomach hurts"
+      ],
+      "selected": "I stomach hurts",
+      "correct": true,
+      "confidence": 0.73,
+      "probabilities": {
+        "I stomach pain": 0.2,
+        "I stomach hurts": 0.8,
+        "I am stomach pain": 0,
+        "I am stomach hurts": 0
+      },
+      "latencyMs": 800.4409949999172,
+      "optionsBefore": 4,
+      "optionsAfter": 4,
+      "filterMs": 0.0,
+      "filterTop1": "I stomach pain",
+      "filterKeptAnswer": true,
+      "error": null
+    },
+    {
+      "testId": "test4_call_doctor",
+      "level": 1,
+      "category": "medical",
+      "gestures": [
+        "point_toward_self",
+        "open_palm_request",
+        "phone_hand_shape",
+        "prescription_scribble"
+      ],
+      "candidates": [
+        "I want call doctor",
+        "I need call doctor",
+        "I am want call doctor",
+        "I am need call doctor"
+      ],
+      "expected": "I want call doctor",
+      "accepted": [
+        "I want call doctor",
+        "I need call doctor"
+      ],
+      "selected": "I need call doctor",
+      "correct": true,
+      "confidence": 0.45,
+      "probabilities": {
+        "I want call doctor": 0.38,
+        "I need call doctor": 0.59,
+        "I am want call doctor": 0.01,
+        "I am need call doctor": 0.02
+      },
+      "latencyMs": 749.200481999651,
+      "optionsBefore": 4,
+      "optionsAfter": 4,
+      "filterMs": 0.0,
+      "filterTop1": "I want call doctor",
+      "filterKeptAnswer": true,
+      "error": null
+    },
+    {
+      "testId": "test5_thanks",
+      "level": 1,
+      "category": "social",
+      "gestures": [
+        "point_toward_self",
+        "folded_hands"
+      ],
+      "candidates": [
+        "I thank you",
+        "I sorry",
+        "I am thank you",
+        "I am sorry"
+      ],
+      "expected": "I thank you",
+      "accepted": [
+        "I thank you"
+      ],
+      "selected": "I thank you",
+      "correct": true,
+      "confidence": 0.92,
+      "probabilities": {
+        "I thank you": 0.94,
+        "I sorry": 0.02,
+        "I am thank you": 0.03,
+        "I am sorry": 0.01
+      },
+      "latencyMs": 755.2533269999913,
+      "optionsBefore": 4,
+      "optionsAfter": 4,
+      "filterMs": 0.0,
+      "filterTop1": "I thank you",
+      "filterKeptAnswer": true,
+      "error": null
+    },
+    {
+      "testId": "test6_washroom",
+      "level": 1,
+      "category": "direction",
+      "gestures": [
+        "where_sign",
+        "toilet_fist_sign",
+        "begging_palms"
+      ],
+      "candidates": [
+        "where washroom please",
+        "where toilet please"
+      ],
+      "expected": "where washroom please",
+      "accepted": [
+        "where washroom please",
+        "where toilet please"
+      ],
+      "selected": "where toilet please",
+      "correct": true,
+      "confidence": 0.04,
+      "probabilities": {
+        "where washroom please": 0.48,
+        "where toilet please": 0.52
+      },
+      "latencyMs": 809.19490100041,
+      "optionsBefore": 2,
+      "optionsAfter": 2,
+      "filterMs": 0.0,
+      "filterTop1": "where washroom please",
+      "filterKeptAnswer": true,
+      "error": null
+    },
+    {
+      "testId": "test7_dinner_correction",
+      "level": 3,
+      "category": "correction",
+      "gestures": [
+        "point_toward_self",
+        "spoon_scoop_mime",
+        "food_bowl_hold"
+      ],
+      "candidates": [
+        "I eat rice",
+        "I eating rice",
+        "I hungry pasta",
+        "I hungry rice",
+        "I am eat rice",
+        "I am eating rice",
+        "I am hungry pasta",
+        "I am hungry rice"
+      ],
+      "expected": "I eat pasta",
+      "accepted": [
+        "I eat pasta",
+        "I eating pasta"
+      ],
+      "selected": "I am eating rice",
+      "correct": false,
+      "confidence": 0.27,
+      "probabilities": {
+        "I eat rice": 0.12,
+        "I eating rice": 0.06,
+        "I hungry pasta": 0.16,
+        "I hungry rice": 0.18,
+        "I am eat rice": 0.03,
+        "I am eating rice": 0.36,
+        "I am hungry pasta": 0.05,
+        "I am hungry rice": 0.04
+      },
+      "latencyMs": 679.6744720004426,
+      "optionsBefore": 18,
+      "optionsAfter": 8,
+      "filterMs": 1061.3706889998866,
+      "filterTop1": "I am eat rice",
+      "filterKeptAnswer": false,
+      "error": null
+    },
+    {
+      "testId": "test8_come_here",
+      "level": 2,
+      "category": "social",
+      "gestures": [
+        "point_at_person",
+        "beckon_fingers",
+        "point_somewhere"
+      ],
+      "candidates": [
+        "you come here",
+        "you come there",
+        "she come here",
+        "she come there",
+        "they come here",
+        "they come there",
+        "you are come here",
+        "you are come there"
+      ],
+      "expected": "you come here",
+      "accepted": [
+        "you come here",
+        "you coming here"
+      ],
+      "selected": "you come here",
+      "correct": true,
+      "confidence": 0.61,
+      "probabilities": {
+        "you come here": 0.66,
+        "you come there": 0.34,
+        "she come here": 0,
+        "she come there": 0,
+        "they come here": 0,
+        "they come there": 0,
+        "you are come here": 0,
+        "you are come there": 0
+      },
+      "latencyMs": 686.8405429995619,
+      "optionsBefore": 20,
+      "optionsAfter": 8,
+      "filterMs": 1247.6113510001596,
+      "filterTop1": "they come here",
+      "filterKeptAnswer": true,
+      "error": null
+    },
+    {
+      "testId": "test9_two_teas",
+      "level": 1,
+      "category": "daily",
+      "gestures": [
+        "two_fingers",
+        "cup_hold_mime",
+        "begging_palms"
+      ],
+      "candidates": [
+        "two tea please",
+        "two coffee please",
+        "two water please",
+        "two drink please",
+        "two juice please",
+        "victory tea please",
+        "victory coffee please",
+        "victory drink please"
+      ],
+      "expected": "two tea please",
+      "accepted": [
+        "two tea please"
+      ],
+      "selected": "two tea please",
+      "correct": true,
+      "confidence": 1,
+      "probabilities": {
+        "two tea please": 1,
+        "two coffee please": 0,
+        "two water please": 0,
+        "two drink please": 0,
+        "two juice please": 0,
+        "victory tea please": 0,
+        "victory coffee please": 0,
+        "victory drink please": 0
+      },
+      "latencyMs": 689.854084000217,
+      "optionsBefore": 10,
+      "optionsAfter": 8,
+      "filterMs": 1007.2312000002057,
+      "filterTop1": "two tea please",
+      "filterKeptAnswer": true,
+      "error": null
+    },
+    {
+      "testId": "test10_order_for_friend",
+      "level": 3,
+      "category": "social",
+      "gestures": [
+        "point_at_person",
+        "open_palm_request",
+        "cup_hold_mime"
+      ],
+      "candidates": [
+        "you want coffee",
+        "he want coffee",
+        "he need coffee",
+        "she want coffee",
+        "they want coffee",
+        "they need coffee",
+        "you are want coffee",
+        "you are need coffee"
+      ],
+      "expected": "you want tea",
+      "accepted": [
+        "you want tea"
+      ],
+      "selected": "you want coffee",
+      "correct": false,
+      "confidence": 0.79,
+      "probabilities": {
+        "you want coffee": 0.82,
+        "he want coffee": 0.11,
+        "he need coffee": 0.01,
+        "she want coffee": 0.01,
+        "they want coffee": 0.02,
+        "they need coffee": 0,
+        "you are want coffee": 0.03,
+        "you are need coffee": 0
+      },
+      "latencyMs": 654.4544910002514,
+      "optionsBefore": 50,
+      "optionsAfter": 8,
+      "filterMs": 2393.0905209999764,
+      "filterTop1": "they want coffee",
+      "filterKeptAnswer": false,
+      "error": null
+    },
+    {
+      "testId": "test11_full_meal",
+      "level": 3,
+      "category": "daily",
+      "gestures": [
+        "wave_hand",
+        "point_toward_self",
+        "spoon_scoop_mime",
+        "food_bowl_hold",
+        "begging_palms"
+      ],
+      "candidates": [
+        "hello I eat pasta please",
+        "hello I eating pasta please",
+        "hello I hungry pasta please",
+        "hello I am eat pasta please",
+        "hello I am eating pasta please",
+        "hello I am hungry pasta please",
+        "bye I eat pasta please",
+        "bye I am eating pasta please"
+      ],
+      "expected": "hi I eat pasta please",
+      "accepted": [
+        "hi I eat pasta please",
+        "hello I eat pasta please",
+        "hi I eating pasta please",
+        "hello I eating pasta please"
+      ],
+      "selected": "hello I eat pasta please",
+      "correct": true,
+      "confidence": 0.44,
+      "probabilities": {
+        "hello I eat pasta please": 0.51,
+        "hello I eating pasta please": 0.03,
+        "hello I hungry pasta please": 0.15,
+        "hello I am eat pasta please": 0.04,
+        "hello I am eating pasta please": 0.22,
+        "hello I am hungry pasta please": 0.05,
+        "bye I eat pasta please": 0,
+        "bye I am eating pasta please": 0
+      },
+      "latencyMs": 625.1677779991951,
+      "optionsBefore": 54,
+      "optionsAfter": 8,
+      "filterMs": 2458.1722490001994,
+      "filterTop1": "hello I eat pasta please",
+      "filterKeptAnswer": true,
+      "error": null
+    },
+    {
+      "testId": "test12_go_home",
+      "level": 3,
+      "category": "travel",
+      "gestures": [
+        "wave_hand",
+        "point_toward_self",
+        "push_palm",
+        "roof_hands",
+        "tap_wrist"
+      ],
+      "candidates": [
+        "hello I go home tomorrow",
+        "hello I going home tomorrow",
+        "hello I am go home tomorrow",
+        "hello I am going home tomorrow",
+        "hi I going home tomorrow",
+        "bye I going home tomorrow",
+        "bye I am go home tomorrow",
+        "bye I am going home tomorrow"
+      ],
+      "expected": "hi I go home tomorrow",
+      "accepted": [
+        "hi I go home tomorrow",
+        "hello I go home tomorrow",
+        "hi I going home tomorrow",
+        "hello I going home tomorrow"
+      ],
+      "selected": "hello I am going home tomorrow",
+      "correct": false,
+      "confidence": 0.47,
+      "probabilities": {
+        "hello I go home tomorrow": 0.13,
+        "hello I going home tomorrow": 0.17,
+        "hello I am go home tomorrow": 0.01,
+        "hello I am going home tomorrow": 0.54,
+        "hi I going home tomorrow": 0.08,
+        "bye I going home tomorrow": 0.03,
+        "bye I am go home tomorrow": 0,
+        "bye I am going home tomorrow": 0.04
+      },
+      "latencyMs": 697.1926609994625,
+      "optionsBefore": 36,
+      "optionsAfter": 8,
+      "filterMs": 2039.332985999863,
+      "filterTop1": "hello I am going home tomorrow",
+      "filterKeptAnswer": true,
+      "error": null
+    },
+    {
+      "testId": "test13_bill",
+      "level": 1,
+      "category": "daily",
+      "gestures": [
+        "point_toward_self",
+        "open_palm_request",
+        "money_rub_fingers",
+        "begging_palms"
+      ],
+      "candidates": [
+        "I want bill please",
+        "I want money please",
+        "I need bill please",
+        "I need money please",
+        "I am want bill please",
+        "I am want money please",
+        "I am need bill please",
+        "I am need money please"
+      ],
+      "expected": "I want bill please",
+      "accepted": [
+        "I want bill please",
+        "I need bill please"
+      ],
+      "selected": "I want bill please",
+      "correct": true,
+      "confidence": 0.97,
+      "probabilities": {
+        "I want bill please": 0.97,
+        "I want money please": 0.01,
+        "I need bill please": 0.02,
+        "I need money please": 0,
+        "I am want bill please": 0,
+        "I am want money please": 0,
+        "I am need bill please": 0,
+        "I am need money please": 0
+      },
+      "latencyMs": 734.1056559998833,
+      "optionsBefore": 8,
+      "optionsAfter": 8,
+      "filterMs": 0.0,
+      "filterTop1": "I want bill please",
+      "filterKeptAnswer": true,
+      "error": null
+    },
+    {
+      "testId": "test14_which_toilet",
+      "level": 2,
+      "category": "direction",
+      "gestures": [
+        "which_sign",
+        "toilet_fist_sign",
+        "point_somewhere"
+      ],
+      "candidates": [
+        "which washroom here",
+        "which washroom there",
+        "which toilet here",
+        "which toilet there"
+      ],
+      "expected": "which toilet there",
+      "accepted": [
+        "which toilet there",
+        "which washroom there"
+      ],
+      "selected": "which washroom there",
+      "correct": true,
+      "confidence": 0.19,
+      "probabilities": {
+        "which washroom here": 0.28,
+        "which washroom there": 0.39,
+        "which toilet here": 0.06,
+        "which toilet there": 0.27
+      },
+      "latencyMs": 737.2831480006425,
+      "optionsBefore": 4,
+      "optionsAfter": 4,
+      "filterMs": 0.0,
+      "filterTop1": "which washroom here",
+      "filterKeptAnswer": true,
+      "error": null
+    },
+    {
+      "testId": "test15_how_come",
+      "level": 2,
+      "category": "social",
+      "gestures": [
+        "how_sign",
+        "point_at_person",
+        "beckon_fingers",
+        "point_somewhere"
+      ],
+      "candidates": [
+        "how you coming here",
+        "how you coming there",
+        "how he coming here",
+        "how she coming here",
+        "how they coming here",
+        "how they coming there",
+        "how you are coming here",
+        "how you are coming there"
+      ],
+      "expected": "how you come here",
+      "accepted": [
+        "how you come here",
+        "how you coming here"
+      ],
+      "selected": "how you coming here",
+      "correct": true,
+      "confidence": 0.53,
+      "probabilities": {
+        "how you coming here": 0.59,
+        "how you coming there": 0.06,
+        "how he coming here": 0,
+        "how she coming here": 0,
+        "how they coming here": 0,
+        "how they coming there": 0,
+        "how you are coming here": 0.32,
+        "how you are coming there": 0.03
+      },
+      "latencyMs": 711.1602430004496,
+      "optionsBefore": 20,
+      "optionsAfter": 8,
+      "filterMs": 1428.033358999528,
+      "filterTop1": "how you are coming there",
+      "filterKeptAnswer": true,
+      "error": null
+    },
+    {
+      "testId": "test16_who_coffee",
+      "level": 2,
+      "category": "daily",
+      "gestures": [
+        "who_sign",
+        "open_palm_request",
+        "cup_hold_mime"
+      ],
+      "candidates": [
+        "who want tea",
+        "who want coffee",
+        "who want drink",
+        "who want juice",
+        "who need tea",
+        "who need coffee",
+        "who need drink",
+        "who need juice"
+      ],
+      "expected": "who want coffee",
+      "accepted": [
+        "who want coffee"
+      ],
+      "selected": "who want coffee",
+      "correct": true,
+      "confidence": 0.91,
+      "probabilities": {
+        "who want tea": 0.01,
+        "who want coffee": 0.92,
+        "who want drink": 0.03,
+        "who want juice": 0,
+        "who need tea": 0,
+        "who need coffee": 0.04,
+        "who need drink": 0,
+        "who need juice": 0
+      },
+      "latencyMs": 765.9716479993222,
+      "optionsBefore": 10,
+      "optionsAfter": 8,
+      "filterMs": 712.862330000462,
+      "filterTop1": "who want coffee",
+      "filterKeptAnswer": true,
+      "error": null
+    },
+    {
+      "testId": "test17_why_home",
+      "level": 2,
+      "category": "social",
+      "gestures": [
+        "why_sign",
+        "point_at_person",
+        "push_palm",
+        "roof_hands"
+      ],
+      "candidates": [
+        "why you go home",
+        "why you going home",
+        "why he going home",
+        "why she going home",
+        "why they go home",
+        "why they going home",
+        "why you are go home",
+        "why you are going home"
+      ],
+      "expected": "why you go home",
+      "accepted": [
+        "why you go home",
+        "why you going home"
+      ],
+      "selected": "why you going home",
+      "correct": true,
+      "confidence": 0.46,
+      "probabilities": {
+        "why you go home": 0.13,
+        "why you going home": 0.53,
+        "why he going home": 0.04,
+        "why she going home": 0.01,
+        "why they go home": 0,
+        "why they going home": 0,
+        "why you are go home": 0,
+        "why you are going home": 0.28
+      },
+      "latencyMs": 697.0414080005867,
+      "optionsBefore": 10,
+      "optionsAfter": 8,
+      "filterMs": 686.0371580005449,
+      "filterTop1": "why you are going home",
+      "filterKeptAnswer": true,
+      "error": null
+    },
+    {
+      "testId": "test18_when_come",
+      "level": 2,
+      "category": "social",
+      "gestures": [
+        "when_sign",
+        "point_at_person",
+        "beckon_fingers",
+        "point_somewhere"
+      ],
+      "candidates": [
+        "when you come here",
+        "when you come there",
+        "when you coming there",
+        "when they come here",
+        "when they come there",
+        "when they coming here",
+        "when you are come here",
+        "when you are come there"
+      ],
+      "expected": "when you come here",
+      "accepted": [
+        "when you come here",
+        "when you coming here"
+      ],
+      "selected": "when you come here",
+      "correct": true,
+      "confidence": 0.57,
+      "probabilities": {
+        "when you come here": 0.62,
+        "when you come there": 0.35,
+        "when you coming there": 0.03,
+        "when they come here": 0,
+        "when they come there": 0,
+        "when they coming here": 0,
+        "when you are come here": 0,
+        "when you are come there": 0
+      },
+      "latencyMs": 757.1084770006564,
+      "optionsBefore": 20,
+      "optionsAfter": 8,
+      "filterMs": 1381.2218289995144,
+      "filterTop1": "when you are come here",
+      "filterKeptAnswer": true,
+      "error": null
+    },
+    {
+      "testId": "test19_emergency_now",
+      "level": 3,
+      "category": "correction",
+      "gestures": [
+        "finger_wag_no",
+        "point_toward_self",
+        "open_palm_request",
+        "prescription_scribble",
+        "tap_wrist"
+      ],
+      "candidates": [
+        "no I want doctor today",
+        "no I want doctor tomorrow",
+        "no I need doctor today",
+        "no I need doctor tomorrow",
+        "no I am want doctor tomorrow",
+        "no I am need doctor now",
+        "no I am need doctor today",
+        "no I am need doctor tomorrow"
+      ],
+      "expected": "no I need doctor now",
+      "accepted": [
+        "no I need doctor now",
+        "no I want doctor now"
+      ],
+      "selected": "no I am need doctor now",
+      "correct": false,
+      "confidence": 0.66,
+      "probabilities": {
+        "no I want doctor today": 0.04,
+        "no I want doctor tomorrow": 0,
+        "no I need doctor today": 0.21,
+        "no I need doctor tomorrow": 0.03,
+        "no I am want doctor tomorrow": 0,
+        "no I am need doctor now": 0.7,
+        "no I am need doctor today": 0.02,
+        "no I am need doctor tomorrow": 0
+      },
+      "latencyMs": 748.261654000089,
+      "optionsBefore": 12,
+      "optionsAfter": 8,
+      "filterMs": 1242.575683000723,
+      "filterTop1": "no I am need doctor tomorrow",
+      "filterKeptAnswer": false,
+      "error": null
+    },
+    {
+      "testId": "test20_want_go_home",
+      "level": 2,
+      "category": "travel",
+      "gestures": [
+        "point_toward_self",
+        "open_palm_request",
+        "push_palm",
+        "roof_hands"
+      ],
+      "candidates": [
+        "I want go home",
+        "I want going home",
+        "I need go home",
+        "I need going home",
+        "I am want go home",
+        "I am want going home",
+        "I am need go home",
+        "I am need going home"
+      ],
+      "expected": "I want go home",
+      "accepted": [
+        "I want go home",
+        "I need go home"
+      ],
+      "selected": "I want go home",
+      "correct": true,
+      "confidence": 0.91,
+      "probabilities": {
+        "I want go home": 0.92,
+        "I want going home": 0,
+        "I need go home": 0.07,
+        "I need going home": 0,
+        "I am want go home": 0.01,
+        "I am want going home": 0,
+        "I am need go home": 0,
+        "I am need going home": 0
+      },
+      "latencyMs": 763.8557499994931,
+      "optionsBefore": 8,
+      "optionsAfter": 8,
+      "filterMs": 0.0,
+      "filterTop1": "I want go home",
+      "filterKeptAnswer": true,
+      "error": null
+    },
+    {
+      "testId": "test21_where_going",
+      "level": 2,
+      "category": "direction",
+      "gestures": [
+        "where_sign",
+        "point_at_person",
+        "push_palm"
+      ],
+      "candidates": [
+        "where you go",
+        "where you going",
+        "where she go",
+        "where she going",
+        "where they go",
+        "where they going",
+        "where you are go",
+        "where you are going"
+      ],
+      "expected": "where you going",
+      "accepted": [
+        "where you going",
+        "where you go"
+      ],
+      "selected": "where you going",
+      "correct": true,
+      "confidence": 0.41,
+      "probabilities": {
+        "where you go": 0.03,
+        "where you going": 0.48,
+        "where she go": 0.01,
+        "where she going": 0.06,
+        "where they go": 0,
+        "where they going": 0,
+        "where you are go": 0,
+        "where you are going": 0.42
+      },
+      "latencyMs": 669.9537590002365,
+      "optionsBefore": 10,
+      "optionsAfter": 8,
+      "filterMs": 505.3623380008503,
+      "filterTop1": "where they go",
+      "filterKeptAnswer": true,
+      "error": null
+    },
+    {
+      "testId": "test22_coming_with",
+      "level": 3,
+      "category": "social",
+      "gestures": [
+        "point_toward_self",
+        "beckon_fingers",
+        "with_link",
+        "point_at_person"
+      ],
+      "candidates": [
+        "I coming with they",
+        "I am come with you",
+        "I am come with she",
+        "I am come with they",
+        "I am come with you are",
+        "I am coming with you",
+        "I am coming with they",
+        "I am coming with you are"
+      ],
+      "expected": "I coming with you",
+      "accepted": [
+        "I coming with you",
+        "I come with you",
+        "I am coming with you"
+      ],
+      "selected": "I am coming with you",
+      "correct": true,
+      "confidence": 0.94,
+      "probabilities": {
+        "I coming with they": 0,
+        "I am come with you": 0.04,
+        "I am come with she": 0,
+        "I am come with they": 0,
+        "I am come with you are": 0,
+        "I am coming with you": 0.95,
+        "I am coming with they": 0.01,
+        "I am coming with you are": 0
+      },
+      "latencyMs": 722.5551329993323,
+      "optionsBefore": 20,
+      "optionsAfter": 8,
+      "filterMs": 1509.1576179993353,
+      "filterTop1": "I am coming with you are",
+      "filterKeptAnswer": true,
+      "error": null
+    },
+    {
+      "testId": "test23_where_home",
+      "level": 2,
+      "category": "direction",
+      "gestures": [
+        "where_sign",
+        "point_at_person",
+        "roof_hands"
+      ],
+      "candidates": [
+        "where you home",
+        "where he home",
+        "where she home",
+        "where they home",
+        "where you are home"
+      ],
+      "expected": "where you home",
+      "accepted": [
+        "where you home"
+      ],
+      "selected": "where you home",
+      "correct": true,
+      "confidence": 0.89,
+      "probabilities": {
+        "where you home": 0.91,
+        "where he home": 0.03,
+        "where she home": 0,
+        "where they home": 0,
+        "where you are home": 0.06
+      },
+      "latencyMs": 750.3829249999399,
+      "optionsBefore": 5,
+      "optionsAfter": 5,
+      "filterMs": 0.0,
+      "filterTop1": "where you home",
+      "filterKeptAnswer": true,
+      "error": null
+    },
+    {
+      "testId": "test24_hungry",
+      "level": 2,
+      "category": "daily",
+      "gestures": [
+        "point_toward_self",
+        "spoon_scoop_mime"
+      ],
+      "candidates": [
+        "I eat",
+        "I eating",
+        "I hungry",
+        "I am eat",
+        "I am eating",
+        "I am hungry"
+      ],
+      "expected": "I am hungry",
+      "accepted": [
+        "I am hungry"
+      ],
+      "selected": "I am hungry",
+      "correct": true,
+      "confidence": 0.68,
+      "probabilities": {
+        "I eat": 0,
+        "I eating": 0.01,
+        "I hungry": 0.21,
+        "I am eat": 0,
+        "I am eating": 0.05,
+        "I am hungry": 0.73
+      },
+      "latencyMs": 796.967811000286,
+      "optionsBefore": 6,
+      "optionsAfter": 6,
+      "filterMs": 0.0,
+      "filterTop1": "I eat",
+      "filterKeptAnswer": true,
+      "error": null
+    },
+    {
+      "testId": "test25_give_water",
+      "level": 1,
+      "category": "daily",
+      "gestures": [
+        "begging_palms",
+        "offer_hands",
+        "cup_hold_mime"
+      ],
+      "candidates": [
+        "please give tea",
+        "please give coffee",
+        "please give water",
+        "please give drink",
+        "please give juice"
+      ],
+      "expected": "please give water",
+      "accepted": [
+        "please give water"
+      ],
+      "selected": "please give water",
+      "correct": true,
+      "confidence": 0.96,
+      "probabilities": {
+        "please give tea": 0,
+        "please give coffee": 0,
+        "please give water": 0.97,
+        "please give drink": 0.03,
+        "please give juice": 0
+      },
+      "latencyMs": 756.7115589999958,
+      "optionsBefore": 5,
+      "optionsAfter": 5,
+      "filterMs": 0.0,
+      "filterTop1": "please give tea",
+      "filterKeptAnswer": true,
+      "error": null
+    },
+    {
+      "testId": "test26_wait_moment",
+      "level": 1,
+      "category": "social",
+      "gestures": [
+        "begging_palms",
+        "hold_palm_wait",
+        "tap_wrist"
+      ],
+      "candidates": [
+        "please wait now",
+        "please wait today",
+        "please wait tomorrow",
+        "please hold on now",
+        "please hold on today",
+        "please hold on tomorrow"
+      ],
+      "expected": "please wait now",
+      "accepted": [
+        "please wait now",
+        "please hold on now"
+      ],
+      "selected": "please wait now",
+      "correct": true,
+      "confidence": 0.75,
+      "probabilities": {
+        "please wait now": 0.79,
+        "please wait today": 0,
+        "please wait tomorrow": 0,
+        "please hold on now": 0.21,
+        "please hold on today": 0,
+        "please hold on tomorrow": 0
+      },
+      "latencyMs": 737.0397429995137,
+      "optionsBefore": 6,
+      "optionsAfter": 6,
+      "filterMs": 0.0,
+      "filterTop1": "please wait now",
+      "filterKeptAnswer": true,
+      "error": null
+    },
+    {
+      "testId": "test27_repeat",
+      "level": 3,
+      "category": "social",
+      "gestures": [
+        "point_toward_self",
+        "open_palm_request",
+        "point_at_person",
+        "repeat_sign"
+      ],
+      "candidates": [
+        "I want you repeat",
+        "I want he repeat",
+        "I want they repeat",
+        "I need he repeat",
+        "I need you are repeat",
+        "I am want they repeat",
+        "I am need he repeat",
+        "I am need they repeat"
+      ],
+      "expected": "I need you repeat",
+      "accepted": [
+        "I need you repeat",
+        "I want you repeat"
+      ],
+      "selected": "I want you repeat",
+      "correct": true,
+      "confidence": 0.81,
+      "probabilities": {
+        "I want you repeat": 0.83,
+        "I want he repeat": 0.13,
+        "I want they repeat": 0.03,
+        "I need he repeat": 0.01,
+        "I need you are repeat": 0,
+        "I am want they repeat": 0,
+        "I am need he repeat": 0,
+        "I am need they repeat": 0
+      },
+      "latencyMs": 740.3300120004133,
+      "optionsBefore": 40,
+      "optionsAfter": 8,
+      "filterMs": 2220.6353390001823,
+      "filterTop1": "I want he repeat",
+      "filterKeptAnswer": true,
+      "error": null
+    },
+    {
+      "testId": "test28_unsafe",
+      "level": 3,
+      "category": "safety",
+      "gestures": [
+        "point_toward_self",
+        "cross_forearms",
+        "point_somewhere"
+      ],
+      "candidates": [
+        "I unsafe here",
+        "I unsafe there",
+        "I stop here",
+        "I stop there",
+        "I am unsafe here",
+        "I am unsafe there",
+        "I am stop here",
+        "I am stop there"
+      ],
+      "expected": "I unsafe here",
+      "accepted": [
+        "I unsafe here"
+      ],
+      "selected": "I am unsafe here",
+      "correct": false,
+      "confidence": 0.41,
+      "probabilities": {
+        "I unsafe here": 0.14,
+        "I unsafe there": 0.12,
+        "I stop here": 0.03,
+        "I stop there": 0.01,
+        "I am unsafe here": 0.48,
+        "I am unsafe there": 0.22,
+        "I am stop here": 0,
+        "I am stop there": 0
+      },
+      "latencyMs": 800.5779710001661,
+      "optionsBefore": 8,
+      "optionsAfter": 8,
+      "filterMs": 0.0,
+      "filterTop1": "I unsafe here",
+      "filterKeptAnswer": true,
+      "error": null
+    },
+    {
+      "testId": "test29_joking",
+      "level": 1,
+      "category": "social",
+      "gestures": [
+        "point_toward_self",
+        "joke_wave"
+      ],
+      "candidates": [
+        "I joking",
+        "I am joking"
+      ],
+      "expected": "I am joking",
+      "accepted": [
+        "I am joking",
+        "I joking"
+      ],
+      "selected": "I am joking",
+      "correct": true,
+      "confidence": 0.72,
+      "probabilities": {
+        "I joking": 0.14,
+        "I am joking": 0.86
+      },
+      "latencyMs": 800.3517019997162,
+      "optionsBefore": 2,
+      "optionsAfter": 2,
+      "filterMs": 0.0,
+      "filterTop1": "I joking",
+      "filterKeptAnswer": true,
+      "error": null
+    },
+    {
+      "testId": "test30_no_understand",
+      "level": 2,
+      "category": "social",
+      "gestures": [
+        "point_toward_self",
+        "finger_wag_no",
+        "ok_ring"
+      ],
+      "candidates": [
+        "I no understand",
+        "I no ok",
+        "I am no understand",
+        "I am no ok"
+      ],
+      "expected": "I no understand",
+      "accepted": [
+        "I no understand"
+      ],
+      "selected": "I no understand",
+      "correct": true,
+      "confidence": 0.89,
+      "probabilities": {
+        "I no understand": 0.92,
+        "I no ok": 0.02,
+        "I am no understand": 0.05,
+        "I am no ok": 0.01
+      },
+      "latencyMs": 771.8608539998968,
+      "optionsBefore": 4,
+      "optionsAfter": 4,
+      "filterMs": 0.0,
+      "filterTop1": "I no understand",
+      "filterKeptAnswer": true,
+      "error": null
+    },
+    {
+      "testId": "test31_talk_you",
+      "level": 3,
+      "category": "social",
+      "gestures": [
+        "point_toward_self",
+        "open_palm_request",
+        "talk_flap",
+        "point_at_person"
+      ],
+      "candidates": [
+        "I want talk you",
+        "I want talk they",
+        "I need talk they",
+        "I need talk you are",
+        "I am want talk they",
+        "I am want talk you are",
+        "I am need talk you",
+        "I am need talk you are"
+      ],
+      "expected": "I want talk you",
+      "accepted": [
+        "I want talk you",
+        "I need talk you",
+        "I want speak you",
+        "I need speak you"
+      ],
+      "selected": "I want talk you",
+      "correct": true,
+      "confidence": 0.7,
+      "probabilities": {
+        "I want talk you": 0.74,
+        "I want talk they": 0.21,
+        "I need talk they": 0.02,
+        "I need talk you are": 0,
+        "I am want talk they": 0.01,
+        "I am want talk you are": 0.01,
+        "I am need talk you": 0.01,
+        "I am need talk you are": 0
+      },
+      "latencyMs": 638.7640709999687,
+      "optionsBefore": 40,
+      "optionsAfter": 8,
+      "filterMs": 2056.3340480002807,
+      "filterTop1": "I am want talk you are",
+      "filterKeptAnswer": true,
+      "error": null
+    }
+  ],
+  "summary": {
+    "totalTests": 31,
+    "successful": 31,
+    "errors": 0,
+    "correct": 26,
+    "incorrect": 5,
+    "accuracyPercent": 83.87,
+    "byLevel": {
+      "L1": {
+        "correct": 10,
+        "total": 10,
+        "accuracyPercent": 100.0
+      },
+      "L2": {
+        "correct": 12,
+        "total": 12,
+        "accuracyPercent": 100.0
+      },
+      "L3": {
+        "correct": 4,
+        "total": 9,
+        "accuracyPercent": 44.44
+      }
+    },
+    "filter": {
+      "recallPercent": 90.32,
+      "avgOptionsBefore": 16.77,
+      "avgOptionsAfter": 6.65,
+      "avgMs": 829.56
+    },
+    "confidence": {
+      "all": 0.673,
+      "correct": 0.703,
+      "incorrect": 0.52
+    },
+    "latencyMs": {
+      "min": 625.1677779991951,
+      "average": 727.84,
+      "p50": 737.28,
+      "p90": 800.35,
+      "p95": 800.51,
+      "p99": 806.61,
+      "max": 809.19490100041
+    }
+  }
+}

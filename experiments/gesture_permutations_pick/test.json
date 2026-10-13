@@ -1,0 +1,382 @@
+{
+  "_note": "Scene = one plain line. History = captured 2-person chatter, may include U's own previous gesture replies and partner's wrong guesses that U already refused.",
+  "tests": [
+    {
+      "id": "test1_cafe",
+      "level": 1,
+      "category": "daily",
+      "answer": "hi I want tea",
+      "accept": ["hi I want tea", "hello I want tea", "hi I need tea", "hello I need tea", "hi I want drink", "hello I want drink", "hi I need drink", "hello I need drink"],
+      "gestures": ["wave_hand", "point_toward_self", "open_palm_request", "cup_hold_mime"],
+      "scene": "Two friends at a tea stall.",
+      "history": [
+        { "speaker": "F", "mode": "speech", "text": "What will you have, tea or coffee?" }
+      ]
+    },
+    {
+      "id": "test2_refused_water",
+      "level": 2,
+      "category": "correction",
+      "answer": "I want tea",
+      "accept": ["I want tea", "I need tea", "I want drink", "I need drink"],
+      "gestures": ["point_toward_self", "open_palm_request", "cup_hold_mime"],
+      "scene": "Two friends at a tea stall.",
+      "history": [
+        { "speaker": "F", "mode": "speech", "text": "Water for you?" },
+        { "speaker": "U", "mode": "gesture_fragment", "text": "no" },
+        { "speaker": "F", "mode": "speech", "text": "Okay, not water. Then what do you want?" }
+      ]
+    },
+    {
+      "id": "test3_stomach_pain",
+      "level": 1,
+      "category": "medical",
+      "answer": "I stomach hurts",
+      "gestures": ["point_toward_self", "point_down_low", "fist_clench_shake"],
+      "scene": "A patient and a doctor in a clinic room.",
+      "history": [
+        { "speaker": "D", "mode": "speech", "text": "Tell me, head or stomach — where does it hurt?" }
+      ]
+    },
+    {
+      "id": "test4_call_doctor",
+      "level": 1,
+      "category": "medical",
+      "answer": "I want call doctor",
+      "accept": ["I want call doctor", "I need call doctor"],
+      "gestures": ["point_toward_self", "open_palm_request", "phone_hand_shape", "prescription_scribble"],
+      "scene": "A patient and a nurse in an emergency room.",
+      "history": [
+        { "speaker": "N", "mode": "speech", "text": "You look pale. Should I call the doctor?" }
+      ]
+    },
+    {
+      "id": "test5_thanks",
+      "level": 1,
+      "category": "social",
+      "answer": "I thank you",
+      "gestures": ["point_toward_self", "folded_hands"],
+      "scene": "Two strangers on the street.",
+      "history": [
+        { "speaker": "S", "mode": "speech", "text": "Here is your bag, you dropped it." }
+      ]
+    },
+    {
+      "id": "test6_washroom",
+      "level": 1,
+      "category": "direction",
+      "answer": "where washroom please",
+      "accept": ["where washroom please", "where toilet please"],
+      "gestures": ["where_sign", "toilet_fist_sign", "begging_palms"],
+      "scene": "A visitor and a guard inside a mall.",
+      "history": [
+        { "speaker": "S", "mode": "speech", "text": "You look lost. Do you need something?" }
+      ]
+    },
+    {
+      "id": "test7_dinner_correction",
+      "level": 3,
+      "category": "correction",
+      "answer": "I eat pasta",
+      "accept": ["I eat pasta", "I eating pasta"],
+      "gestures": ["point_toward_self", "spoon_scoop_mime", "food_bowl_hold"],
+      "scene": "A customer and a waiter in a restaurant.",
+      "history": [
+        { "speaker": "W", "mode": "speech", "text": "Rice for you?" },
+        { "speaker": "U", "mode": "gesture_fragment", "text": "no" },
+        { "speaker": "W", "mode": "speech", "text": "Sorry! So pasta instead of rice?" }
+      ]
+    },
+    {
+      "id": "test8_come_here",
+      "level": 2,
+      "category": "social",
+      "answer": "you come here",
+      "accept": ["you come here", "you coming here"],
+      "gestures": ["point_at_person", "beckon_fingers", "point_somewhere"],
+      "scene": "Two friends, one downstairs and one on the balcony.",
+      "history": [
+        { "speaker": "F", "mode": "speech", "text": "I am downstairs. Should I come over?" }
+      ]
+    },
+    {
+      "id": "test9_two_teas",
+      "level": 1,
+      "category": "daily",
+      "answer": "two tea please",
+      "gestures": ["two_fingers", "cup_hold_mime", "begging_palms"],
+      "scene": "A customer and a waiter at a tea stall.",
+      "history": [
+        { "speaker": "W", "mode": "speech", "text": "How many teas for the table? Two?" },
+        { "speaker": "U", "mode": "gesture_fragment", "text": "two" },
+        { "speaker": "W", "mode": "speech", "text": "Two teas, confirmed." }
+      ]
+    },
+    {
+      "id": "test10_order_for_friend",
+      "level": 3,
+      "category": "social",
+      "answer": "you want tea",
+      "gestures": ["point_at_person", "open_palm_request", "cup_hold_mime"],
+      "scene": "Two friends and a waiter at a cafe.",
+      "history": [
+        { "speaker": "F", "mode": "speech", "text": "Coffee keeps me awake at night, but I love the smell." },
+        { "speaker": "W", "mode": "speech", "text": "Our evening tea is calming, many people take that." },
+        { "speaker": "F", "mode": "speech", "text": "Hmm. You pick for me?" }
+      ]
+    },
+    {
+      "id": "test11_full_meal",
+      "level": 3,
+      "category": "daily",
+      "answer": "hi I eat pasta please",
+      "accept": ["hi I eat pasta please", "hello I eat pasta please", "hi I eating pasta please", "hello I eating pasta please"],
+      "gestures": ["wave_hand", "point_toward_self", "spoon_scoop_mime", "food_bowl_hold", "begging_palms"],
+      "scene": "A customer, a friend and a waiter in a restaurant.",
+      "history": [
+        { "speaker": "W", "mode": "speech", "text": "Welcome! Pasta or rice for you today?" },
+        { "speaker": "F", "mode": "speech", "text": "The pasta here is really great." }
+      ]
+    },
+    {
+      "id": "test12_go_home",
+      "level": 3,
+      "category": "travel",
+      "answer": "hi I go home tomorrow",
+      "accept": ["hi I go home tomorrow", "hello I go home tomorrow", "hi I going home tomorrow", "hello I going home tomorrow"],
+      "gestures": ["wave_hand", "point_toward_self", "push_palm", "roof_hands", "tap_wrist"],
+      "scene": "A traveler and a clerk at a ticket counter.",
+      "history": [
+        { "speaker": "C", "mode": "speech", "text": "Going home? Today or tomorrow?" },
+        { "speaker": "U", "mode": "gesture_fragment", "text": "tomorrow" }
+      ]
+    },
+    {
+      "id": "test13_bill",
+      "level": 1,
+      "category": "daily",
+      "answer": "I want bill please",
+      "accept": ["I want bill please", "I need bill please"],
+      "gestures": ["point_toward_self", "open_palm_request", "money_rub_fingers", "begging_palms"],
+      "scene": "A customer and a waiter in a restaurant.",
+      "history": [
+        { "speaker": "W", "mode": "speech", "text": "Finished eating? Anything else for you?" }
+      ]
+    },
+    {
+      "id": "test14_which_toilet",
+      "level": 2,
+      "category": "direction",
+      "answer": "which toilet there",
+      "accept": ["which toilet there", "which washroom there"],
+      "gestures": ["which_sign", "toilet_fist_sign", "point_somewhere"],
+      "scene": "A visitor and a guard inside a mall.",
+      "history": [
+        { "speaker": "S", "mode": "speech", "text": "Toilets are down that corridor, gents on the left and ladies on the right." }
+      ]
+    },
+    {
+      "id": "test15_how_come",
+      "level": 2,
+      "category": "social",
+      "answer": "how you come here",
+      "accept": ["how you come here", "how you coming here"],
+      "gestures": ["how_sign", "point_at_person", "beckon_fingers", "point_somewhere"],
+      "scene": "Two friends chatting, one at home and one outside.",
+      "history": [
+        { "speaker": "F", "mode": "speech", "text": "I am coming over to your place." }
+      ]
+    },
+    {
+      "id": "test16_who_coffee",
+      "level": 2,
+      "category": "daily",
+      "answer": "who want coffee",
+      "gestures": ["who_sign", "open_palm_request", "cup_hold_mime"],
+      "scene": "A group of friends sitting together at a cafe.",
+      "history": [
+        { "speaker": "F", "mode": "speech", "text": "Should we order coffee for everyone?" }
+      ]
+    },
+    {
+      "id": "test17_why_home",
+      "level": 2,
+      "category": "social",
+      "answer": "why you go home",
+      "accept": ["why you go home", "why you going home"],
+      "gestures": ["why_sign", "point_at_person", "push_palm", "roof_hands"],
+      "scene": "Two friends at an evening party.",
+      "history": [
+        { "speaker": "F", "mode": "speech", "text": "I am going home now." }
+      ]
+    },
+    {
+      "id": "test18_when_come",
+      "level": 2,
+      "category": "social",
+      "answer": "when you come here",
+      "accept": ["when you come here", "when you coming here"],
+      "gestures": ["when_sign", "point_at_person", "beckon_fingers", "point_somewhere"],
+      "scene": "Two friends talking, one in another city.",
+      "history": [
+        { "speaker": "F", "mode": "speech", "text": "I will visit you soon." }
+      ]
+    },
+    {
+      "id": "test19_emergency_now",
+      "level": 3,
+      "category": "correction",
+      "answer": "no I need doctor now",
+      "accept": ["no I need doctor now", "no I want doctor now"],
+      "gestures": ["finger_wag_no", "point_toward_self", "open_palm_request", "prescription_scribble", "tap_wrist"],
+      "scene": "A patient and a nurse in an emergency room.",
+      "history": [
+        { "speaker": "N", "mode": "speech", "text": "Doctor appointment tomorrow morning?" },
+        { "speaker": "U", "mode": "gesture_fragment", "text": "no" },
+        { "speaker": "N", "mode": "speech", "text": "So you need the doctor right now?" }
+      ]
+    },
+    {
+      "id": "test20_want_go_home",
+      "level": 2,
+      "category": "travel",
+      "answer": "I want go home",
+      "accept": ["I want go home", "I need go home"],
+      "gestures": ["point_toward_self", "open_palm_request", "push_palm", "roof_hands"],
+      "scene": "Two friends at an evening party.",
+      "history": [
+        { "speaker": "F", "mode": "speech", "text": "Are you leaving already? The night is young." }
+      ]
+    },
+    {
+      "id": "test21_where_going",
+      "level": 2,
+      "category": "direction",
+      "answer": "where you going",
+      "accept": ["where you going", "where you go"],
+      "gestures": ["where_sign", "point_at_person", "push_palm"],
+      "scene": "Two friends at home, one picking up keys.",
+      "history": [
+        { "speaker": "F", "mode": "speech", "text": "I am leaving now." }
+      ]
+    },
+    {
+      "id": "test22_coming_with",
+      "level": 3,
+      "category": "social",
+      "answer": "I coming with you",
+      "accept": ["I coming with you", "I come with you", "I am coming with you"],
+      "gestures": ["point_toward_self", "beckon_fingers", "with_link", "point_at_person"],
+      "scene": "Two friends at home, one heading out.",
+      "history": [
+        { "speaker": "F", "mode": "speech", "text": "I am going to the shop." }
+      ]
+    },
+    {
+      "id": "test23_where_home",
+      "level": 2,
+      "category": "direction",
+      "answer": "where you home",
+      "gestures": ["where_sign", "point_at_person", "roof_hands"],
+      "scene": "Two new friends chatting on the street.",
+      "history": [
+        { "speaker": "F", "mode": "speech", "text": "I live nearby now, just moved." }
+      ]
+    },
+    {
+      "id": "test24_hungry",
+      "level": 2,
+      "category": "daily",
+      "answer": "I am hungry",
+      "gestures": ["point_toward_self", "spoon_scoop_mime"],
+      "scene": "Two friends at home in the evening.",
+      "history": [
+        { "speaker": "F", "mode": "speech", "text": "Your stomach is growling. Are you hungry?" }
+      ]
+    },
+    {
+      "id": "test25_give_water",
+      "level": 1,
+      "category": "daily",
+      "answer": "please give water",
+      "gestures": ["begging_palms", "offer_hands", "cup_hold_mime"],
+      "scene": "A guest and a host in a living room.",
+      "history": [
+        { "speaker": "H", "mode": "speech", "text": "Would you like some water?" }
+      ]
+    },
+    {
+      "id": "test26_wait_moment",
+      "level": 1,
+      "category": "social",
+      "answer": "please wait now",
+      "accept": ["please wait now", "please hold on now"],
+      "gestures": ["begging_palms", "hold_palm_wait", "tap_wrist"],
+      "scene": "Two friends at home, one rushing out.",
+      "history": [
+        { "speaker": "F", "mode": "speech", "text": "Come on, let's go right now!" }
+      ]
+    },
+    {
+      "id": "test27_repeat",
+      "level": 3,
+      "category": "social",
+      "answer": "I need you repeat",
+      "accept": ["I need you repeat", "I want you repeat"],
+      "gestures": ["point_toward_self", "open_palm_request", "point_at_person", "repeat_sign"],
+      "scene": "Two friends talking fast on a call.",
+      "history": [
+        { "speaker": "F", "mode": "speech", "text": "So then I told him that we already left and blah blah blah." },
+        { "speaker": "F", "mode": "speech", "text": "Did you get all that?" }
+      ]
+    },
+    {
+      "id": "test28_unsafe",
+      "level": 3,
+      "category": "safety",
+      "answer": "I unsafe here",
+      "gestures": ["point_toward_self", "cross_forearms", "point_somewhere"],
+      "scene": "Two friends on a dark street at night.",
+      "history": [
+        { "speaker": "F", "mode": "speech", "text": "Are you okay? You look scared." }
+      ]
+    },
+    {
+      "id": "test29_joking",
+      "level": 1,
+      "category": "social",
+      "answer": "I am joking",
+      "accept": ["I am joking", "I joking"],
+      "gestures": ["point_toward_self", "joke_wave"],
+      "scene": "Two friends joking at home.",
+      "history": [
+        { "speaker": "U", "mode": "gesture_fragment", "text": "I sold your bike" },
+        { "speaker": "F", "mode": "speech", "text": "Wait, WHAT? Really?!" }
+      ]
+    },
+    {
+      "id": "test30_no_understand",
+      "level": 2,
+      "category": "social",
+      "answer": "I no understand",
+      "gestures": ["point_toward_self", "finger_wag_no", "ok_ring"],
+      "scene": "A teacher explaining homework to a student.",
+      "history": [
+        { "speaker": "T", "mode": "speech", "text": "So x equals 5 and y equals x plus 3. Got it?" }
+      ]
+    },
+    {
+      "id": "test31_talk_you",
+      "level": 3,
+      "category": "social",
+      "answer": "I want talk you",
+      "accept": ["I want talk you", "I need talk you", "I want speak you", "I need speak you"],
+      "gestures": ["point_toward_self", "open_palm_request", "talk_flap", "point_at_person"],
+      "scene": "A group of friends chatting, the mute user left out.",
+      "history": [
+        { "speaker": "F", "mode": "speech", "text": "And then we all laughed so hard." },
+        { "speaker": "F", "mode": "speech", "text": "What do you think about all this?" }
+      ]
+    }
+  ]
+}
