@@ -1,0 +1,219 @@
+{
+  "sessions": [
+    {
+      "id": "travel_ticket",
+      "participants": [
+        { "id": "U", "role": "mute_user" },
+        { "id": "C", "role": "clerk" }
+      ],
+      "scene": "The mute user is at a train ticket counter.",
+      "turns": [
+        { "speaker": "C", "mode": "speech", "text": "Next in line, please." },
+        { "speaker": "U", "mode": "gesture_fragment", "text": "ticket... Jaipur" }
+      ],
+      "decisions": [
+        {
+          "id": "travel_01",
+          "current_fragment": "ticket Jaipur",
+          "gesture": "QUESTION_TIME",
+          "candidates": ["when", "duration", "frequency"],
+          "expected": "when"
+        },
+        {
+          "id": "travel_02",
+          "current_fragment": "ticket Jaipur",
+          "gesture": "QUESTION_LOCATION",
+          "candidates": ["where", "direction", "distance"],
+          "expected": "where"
+        }
+      ]
+    },
+    {
+      "id": "clothing_shop",
+      "participants": [
+        { "id": "U", "role": "mute_user" },
+        { "id": "S", "role": "shopkeeper" }
+      ],
+      "scene": "The user points at blue shirts on a rack.",
+      "turns": [
+        { "speaker": "S", "mode": "speech", "text": "We have medium and large sizes in blue." },
+        { "speaker": "U", "mode": "gesture_fragment", "text": "blue... shirt... size" }
+      ],
+      "decisions": [
+        {
+          "id": "shop_01",
+          "current_fragment": "blue shirt size",
+          "gesture": "QUESTION_ENTITY",
+          "candidates": ["which", "who", "what"],
+          "expected": "which"
+        }
+      ]
+    },
+    {
+      "id": "hospital_visit",
+      "participants": [
+        { "id": "U", "role": "mute_user" },
+        { "id": "D", "role": "doctor" }
+      ],
+      "scene": "The mute patient is sitting in a clinic room.",
+      "turns": [
+        { "speaker": "D", "mode": "speech", "text": "When did the headache start?" },
+        { "speaker": "U", "mode": "gesture_fragment", "text": "headache... morning" }
+      ],
+      "decisions": [
+        {
+          "id": "hosp_01",
+          "current_fragment": "headache morning",
+          "gesture": "QUESTION_TIME",
+          "candidates": ["when", "duration", "frequency"],
+          "expected": "when"
+        }
+      ]
+    },
+    {
+      "id": "compliment_male",
+      "participants": [
+        { "id": "U", "role": "mute_user" },
+        { "id": "F", "role": "friend" }
+      ],
+      "scene": "The mute user is looking at a male friend wearing a formal suit.",
+      "turns": [
+        { "speaker": "F", "mode": "speech", "text": "How do I look for the interview?" },
+        { "speaker": "U", "mode": "gesture_fragment", "text": "you... suit... looking" }
+      ],
+      "decisions": [
+        {
+          "id": "comp_01",
+          "current_fragment": "you suit looking",
+          "gesture": "COMPLIMENT",
+          "candidates": ["handsome", "beautiful", "delicious", "spicy"],
+          "expected": "handsome"
+        }
+      ]
+    },
+    {
+      "id": "compliment_female",
+      "participants": [
+        { "id": "U", "role": "mute_user" },
+        { "id": "F", "role": "female_friend" }
+      ],
+      "scene": "The mute user is looking at a female friend in a party dress.",
+      "turns": [
+        { "speaker": "F", "mode": "speech", "text": "Do you like this new dress?" },
+        { "speaker": "U", "mode": "gesture_fragment", "text": "dress... looking" }
+      ],
+      "decisions": [
+        {
+          "id": "comp_02",
+          "current_fragment": "dress looking",
+          "gesture": "COMPLIMENT",
+          "candidates": ["handsome", "beautiful", "delicious", "tasty"],
+          "expected": "beautiful"
+        }
+      ]
+    },
+    {
+      "id": "food_compliment",
+      "participants": [
+        { "id": "U", "role": "mute_user" },
+        { "id": "W", "role": "waiter" }
+      ],
+      "scene": "The mute user is eating hot pasta at a restaurant.",
+      "turns": [
+        { "speaker": "W", "mode": "speech", "text": "How is your food?" },
+        { "speaker": "U", "mode": "gesture_fragment", "text": "pasta... food... tasting" }
+      ],
+      "decisions": [
+        {
+          "id": "comp_03",
+          "current_fragment": "pasta food tasting",
+          "gesture": "COMPLIMENT",
+          "candidates": ["handsome", "beautiful", "delicious", "smart"],
+          "expected": "delicious"
+        }
+      ]
+    },
+    {
+      "id": "need_doctor",
+      "participants": [
+        { "id": "U", "role": "mute_patient" },
+        { "id": "N", "role": "nurse" }
+      ],
+      "scene": "The mute user is in an emergency hospital room with high fever.",
+      "turns": [
+        { "speaker": "U", "mode": "gesture_fragment", "text": "fever... high... call" }
+      ],
+      "decisions": [
+        {
+          "id": "need_01",
+          "current_fragment": "fever high call",
+          "gesture": "NEED_HELP",
+          "candidates": ["doctor", "mechanic", "police", "waiter"],
+          "expected": "doctor"
+        }
+      ]
+    },
+    {
+      "id": "need_mechanic",
+      "participants": [
+        { "id": "U", "role": "mute_driver" },
+        { "id": "P", "role": "passerby" }
+      ],
+      "scene": "The mute user is stranded on a highway beside a broken car.",
+      "turns": [
+        { "speaker": "U", "mode": "gesture_fragment", "text": "car engine... broken... call" }
+      ],
+      "decisions": [
+        {
+          "id": "need_02",
+          "current_fragment": "car engine broken call",
+          "gesture": "NEED_HELP",
+          "candidates": ["doctor", "mechanic", "police", "waiter"],
+          "expected": "mechanic"
+        }
+      ]
+    },
+    {
+      "id": "hot_tea_winter",
+      "participants": [
+        { "id": "U", "role": "mute_user" },
+        { "id": "H", "role": "host" }
+      ],
+      "scene": "The mute user is shivering indoors during freezing snowfall.",
+      "turns": [
+        { "speaker": "H", "mode": "speech", "text": "What can I get you to drink?" },
+        { "speaker": "U", "mode": "gesture_fragment", "text": "cold... drink... want" }
+      ],
+      "decisions": [
+        {
+          "id": "drink_01",
+          "current_fragment": "cold drink want",
+          "gesture": "WANT_DRINK",
+          "candidates": ["hot_tea", "ice_water", "cold_soda"],
+          "expected": "hot_tea"
+        }
+      ]
+    },
+    {
+      "id": "ice_water_summer",
+      "participants": [
+        { "id": "U", "role": "mute_user" },
+        { "id": "H", "role": "host" }
+      ],
+      "scene": "The mute user is sweating at a sunny beach on a hot 40°C day.",
+      "turns": [
+        { "speaker": "H", "mode": "speech", "text": "It is so hot today!" },
+        { "speaker": "U", "mode": "gesture_fragment", "text": "sweating... drink... want" }
+      ],
+      "decisions": [
+        {
+          "id": "drink_02",
+          "current_fragment": "sweating drink want",
+          "gesture": "WANT_DRINK",
+          "candidates": ["hot_tea", "ice_water", "hot_coffee"],
+          "expected": "ice_water"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,2073 @@
+{
+  "timestamp": "2026-09-26T20:02:19.159Z",
+  "model": "typesafe/jev-1.13",
+  "decisionCount": 30,
+  "strategyA": {
+    "results": [
+      {
+        "strategy": "A",
+        "sessionId": "solo_trip",
+        "decisionId": "solo_trip_01",
+        "currentFragment": "train Jaipur",
+        "gesture": "QUESTION_TIME",
+        "candidates": [
+          "when",
+          "what_time",
+          "how_long",
+          "date"
+        ],
+        "expected": "when",
+        "selected": "what_time",
+        "correct": false,
+        "confidence": 0.39,
+        "probabilities": {
+          "how_long": 0,
+          "when": 0.38,
+          "date": 0.07,
+          "what_time": 0.55
+        },
+        "latencyMs": 449.18640000000005,
+        "usage": {
+          "cost": 0.000025536,
+          "inputTokens": 608,
+          "outputTokens": 48
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452900-simt7p6hwOvoxWhS2O0p",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "solo_trip",
+        "decisionId": "solo_trip_02",
+        "currentFragment": "need ticket",
+        "gesture": "QUESTION_LOCATION",
+        "candidates": [
+          "where",
+          "which_counter",
+          "which_website",
+          "near"
+        ],
+        "expected": "where",
+        "selected": "where",
+        "correct": true,
+        "confidence": 0.66,
+        "probabilities": {
+          "which_website": 0.13,
+          "where": 0.75,
+          "which_counter": 0.12,
+          "near": 0
+        },
+        "latencyMs": 391.26986099999976,
+        "usage": {
+          "cost": 0.00002562,
+          "inputTokens": 610,
+          "outputTokens": 48
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452901-PcZ4pu39ADiefoHH6ui8",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "railway_station",
+        "decisionId": "railway_01",
+        "currentFragment": "brother meet station",
+        "gesture": "QUESTION_LOCATION",
+        "candidates": [
+          "where",
+          "which_gate",
+          "near"
+        ],
+        "expected": "where",
+        "selected": "where",
+        "correct": true,
+        "confidence": 0.84,
+        "probabilities": {
+          "near": 0,
+          "which_gate": 0.1,
+          "where": 0.9
+        },
+        "latencyMs": 426.1326600000002,
+        "usage": {
+          "cost": 0.000029694,
+          "inputTokens": 707,
+          "outputTokens": 39
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452901-7cSNCheHmGhyWjr7E1AC",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "railway_station",
+        "decisionId": "railway_02",
+        "currentFragment": "I go platform",
+        "gesture": "QUESTION_ENTITY",
+        "candidates": [
+          "which",
+          "what_number",
+          "what_platform"
+        ],
+        "expected": "which",
+        "selected": "what_platform",
+        "correct": false,
+        "confidence": 0.76,
+        "probabilities": {
+          "what_platform": 0.84,
+          "which": 0.05,
+          "what_number": 0.11
+        },
+        "latencyMs": 393.8344069999994,
+        "usage": {
+          "cost": 0.000029778,
+          "inputTokens": 709,
+          "outputTokens": 41
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452902-Loe5w1jHbmuGrRvkMy14",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "railway_station",
+        "decisionId": "railway_03",
+        "currentFragment": "brother train",
+        "gesture": "QUESTION_TIME",
+        "candidates": [
+          "when",
+          "what_time",
+          "delay"
+        ],
+        "expected": "when",
+        "selected": "what_time",
+        "correct": false,
+        "confidence": 0.8,
+        "probabilities": {
+          "delay": 0,
+          "what_time": 0.87,
+          "when": 0.13
+        },
+        "latencyMs": 456.57646399999976,
+        "usage": {
+          "cost": 0.000029652,
+          "inputTokens": 706,
+          "outputTokens": 40
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452902-9t3L1izXHAUpQPZCTKMJ",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "shop",
+        "decisionId": "shop_01",
+        "currentFragment": "blue shirt this",
+        "gesture": "QUESTION_ENTITY",
+        "candidates": [
+          "which",
+          "what_price",
+          "what_material"
+        ],
+        "expected": "which",
+        "selected": "which",
+        "correct": true,
+        "confidence": 0.26,
+        "probabilities": {
+          "which": 0.5,
+          "what_price": 0.47,
+          "what_material": 0.03
+        },
+        "latencyMs": 472.7278580000002,
+        "usage": {
+          "cost": 0.00002793,
+          "inputTokens": 665,
+          "outputTokens": 40
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452903-394BXabIfarHgo8X6Vcl",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "shop",
+        "decisionId": "shop_02",
+        "currentFragment": "another size",
+        "gesture": "QUESTION_ENTITY",
+        "candidates": [
+          "which",
+          "what_sizes",
+          "what_color"
+        ],
+        "expected": "which",
+        "selected": "what_sizes",
+        "correct": false,
+        "confidence": 0.94,
+        "probabilities": {
+          "what_color": 0,
+          "which": 0.04,
+          "what_sizes": 0.96
+        },
+        "latencyMs": 406.8286339999995,
+        "usage": {
+          "cost": 0.000027888,
+          "inputTokens": 664,
+          "outputTokens": 41
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452903-4Zc9d0MYvoGOMPcdnuZD",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "shop",
+        "decisionId": "shop_03",
+        "currentFragment": "medium large",
+        "gesture": "QUESTION_ENTITY",
+        "candidates": [
+          "which",
+          "what_one",
+          "what_size"
+        ],
+        "expected": "which",
+        "selected": "what_size",
+        "correct": false,
+        "confidence": 0.54,
+        "probabilities": {
+          "what_one": 0.02,
+          "which": 0.29,
+          "what_size": 0.69
+        },
+        "latencyMs": 808.3285530000003,
+        "usage": {
+          "cost": 0.000027888,
+          "inputTokens": 664,
+          "outputTokens": 41
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452904-QesANmlBSRzhdY7fuqGL",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "police",
+        "decisionId": "police_01",
+        "currentFragment": "phone missing",
+        "gesture": "QUESTION_LOCATION",
+        "candidates": [
+          "where",
+          "which_place",
+          "near"
+        ],
+        "expected": "where",
+        "selected": "where",
+        "correct": true,
+        "confidence": 0.77,
+        "probabilities": {
+          "where": 0.85,
+          "which_place": 0.15,
+          "near": 0
+        },
+        "latencyMs": 456.227175,
+        "usage": {
+          "cost": 0.000029862,
+          "inputTokens": 711,
+          "outputTokens": 39
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452904-UoFhPhbj9OV49hIvB3Oi",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "police",
+        "decisionId": "police_02",
+        "currentFragment": "bus maybe",
+        "gesture": "QUESTION_LOCATION",
+        "candidates": [
+          "where",
+          "which_bus",
+          "near"
+        ],
+        "expected": "where",
+        "selected": "which_bus",
+        "correct": false,
+        "confidence": 0.46,
+        "probabilities": {
+          "where": 0.36,
+          "which_bus": 0.64,
+          "near": 0
+        },
+        "latencyMs": 457.7495030000009,
+        "usage": {
+          "cost": 0.000029862,
+          "inputTokens": 711,
+          "outputTokens": 40
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452905-tusfmFkFRLADc386iu0r",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "police",
+        "decisionId": "police_03",
+        "currentFragment": "yes bus",
+        "gesture": "QUESTION_LOCATION",
+        "candidates": [
+          "where",
+          "which_stop",
+          "location"
+        ],
+        "expected": "where",
+        "selected": "which_stop",
+        "correct": false,
+        "confidence": 0.67,
+        "probabilities": {
+          "location": 0.03,
+          "which_stop": 0.78,
+          "where": 0.19
+        },
+        "latencyMs": 519.671339999999,
+        "usage": {
+          "cost": 0.000029862,
+          "inputTokens": 711,
+          "outputTokens": 40
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452905-iEhP2CuJrY76jwoEE0kD",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "hospital",
+        "decisionId": "hospital_01",
+        "currentFragment": "chest little",
+        "gesture": "QUESTION_LOCATION",
+        "candidates": [
+          "where",
+          "which_part",
+          "location"
+        ],
+        "expected": "where",
+        "selected": "location",
+        "correct": false,
+        "confidence": 0.33,
+        "probabilities": {
+          "location": 0.56,
+          "where": 0.31,
+          "which_part": 0.13
+        },
+        "latencyMs": 394.9553569999989,
+        "usage": {
+          "cost": 0.0000315,
+          "inputTokens": 750,
+          "outputTokens": 39
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452906-eILxTvSL5gOWupVqjAb4",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "hospital",
+        "decisionId": "hospital_02",
+        "currentFragment": "come go",
+        "gesture": "QUESTION_TIME",
+        "candidates": [
+          "when",
+          "how_often",
+          "duration"
+        ],
+        "expected": "when",
+        "selected": "how_often",
+        "correct": false,
+        "confidence": 0.84,
+        "probabilities": {
+          "duration": 0.05,
+          "how_often": 0.9,
+          "when": 0.05
+        },
+        "latencyMs": 398.75294699999904,
+        "usage": {
+          "cost": 0.000031584,
+          "inputTokens": 752,
+          "outputTokens": 42
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452906-bJYsS5QPaMX2FpQxBLSc",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "hospital",
+        "decisionId": "hospital_03",
+        "currentFragment": "dizzy morning",
+        "gesture": "QUESTION_TIME",
+        "candidates": [
+          "when",
+          "what_time",
+          "duration"
+        ],
+        "expected": "when",
+        "selected": "what_time",
+        "correct": false,
+        "confidence": 0.22,
+        "probabilities": {
+          "duration": 0.08,
+          "when": 0.43,
+          "what_time": 0.49
+        },
+        "latencyMs": 445.35336199999983,
+        "usage": {
+          "cost": 0.000031542,
+          "inputTokens": 751,
+          "outputTokens": 40
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452907-MBKWc3I4xMAieqvlbDje",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "classroom",
+        "decisionId": "class_01",
+        "currentFragment": "assignment tomorrow",
+        "gesture": "QUESTION_TIME",
+        "candidates": [
+          "when",
+          "what_time",
+          "deadline"
+        ],
+        "expected": "when",
+        "selected": "deadline",
+        "correct": false,
+        "confidence": 0.57,
+        "probabilities": {
+          "deadline": 0.71,
+          "when": 0.06,
+          "what_time": 0.23
+        },
+        "latencyMs": 451.1534309999988,
+        "usage": {
+          "cost": 0.000029904,
+          "inputTokens": 712,
+          "outputTokens": 39
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452907-Tkh6fIUaHopghQ3apNRp",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "classroom",
+        "decisionId": "class_02",
+        "currentFragment": "portal submit",
+        "gesture": "QUESTION_LOCATION",
+        "candidates": [
+          "where",
+          "which_link",
+          "which_page"
+        ],
+        "expected": "where",
+        "selected": "where",
+        "correct": true,
+        "confidence": 0.64,
+        "probabilities": {
+          "where": 0.76,
+          "which_page": 0.07,
+          "which_link": 0.17
+        },
+        "latencyMs": 400.90392299999985,
+        "usage": {
+          "cost": 0.00003003,
+          "inputTokens": 715,
+          "outputTokens": 40
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452908-mDBBlkiolMlflwpQ5V3i",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "classroom",
+        "decisionId": "class_03",
+        "currentFragment": "upload ZIP",
+        "gesture": "QUESTION_MANNER",
+        "candidates": [
+          "how",
+          "why",
+          "procedure"
+        ],
+        "expected": "how",
+        "selected": "how",
+        "correct": true,
+        "confidence": 0.6,
+        "probabilities": {
+          "procedure": 0.26,
+          "how": 0.74,
+          "why": 0
+        },
+        "latencyMs": 404.3728260000007,
+        "usage": {
+          "cost": 0.000029862,
+          "inputTokens": 711,
+          "outputTokens": 38
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452908-lFaZrbZQUa8yuwPSZv4v",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "street_emergency",
+        "decisionId": "emergency_01",
+        "currentFragment": "accident car",
+        "gesture": "QUESTION_ENTITY",
+        "candidates": [
+          "what",
+          "which_car",
+          "details"
+        ],
+        "expected": "what",
+        "selected": "which_car",
+        "correct": false,
+        "confidence": 0.52,
+        "probabilities": {
+          "what": 0.09,
+          "details": 0.23,
+          "which_car": 0.68
+        },
+        "latencyMs": 435.2897439999997,
+        "usage": {
+          "cost": 0.000030492,
+          "inputTokens": 726,
+          "outputTokens": 40
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452909-bfGBm5yaKNMnKAgzDuWD",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "street_emergency",
+        "decisionId": "emergency_02",
+        "currentFragment": "person injured",
+        "gesture": "QUESTION_ENTITY",
+        "candidates": [
+          "who",
+          "which_person",
+          "details"
+        ],
+        "expected": "who",
+        "selected": "which_person",
+        "correct": false,
+        "confidence": 0.25,
+        "probabilities": {
+          "which_person": 0.5,
+          "details": 0.31,
+          "who": 0.19
+        },
+        "latencyMs": 603.3161080000009,
+        "usage": {
+          "cost": 0.00003045,
+          "inputTokens": 725,
+          "outputTokens": 40
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452909-ISeH1zpFLuL4XfVvozgx",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "street_emergency",
+        "decisionId": "emergency_03",
+        "currentFragment": "car person",
+        "gesture": "QUESTION_LOCATION",
+        "candidates": [
+          "where",
+          "which_spot",
+          "inside"
+        ],
+        "expected": "where",
+        "selected": "inside",
+        "correct": false,
+        "confidence": 0.61,
+        "probabilities": {
+          "which_spot": 0,
+          "inside": 0.74,
+          "where": 0.26
+        },
+        "latencyMs": 454.9617099999996,
+        "usage": {
+          "cost": 0.000030576,
+          "inputTokens": 728,
+          "outputTokens": 40
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452910-GoNyx9gfDRQTB4nntqy9",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "hotel",
+        "decisionId": "hotel_01",
+        "currentFragment": "reservation Vinit",
+        "gesture": "QUESTION_ENTITY",
+        "candidates": [
+          "what",
+          "which_name",
+          "status"
+        ],
+        "expected": "what",
+        "selected": "which_name",
+        "correct": false,
+        "confidence": 0.29,
+        "probabilities": {
+          "what": 0.09,
+          "status": 0.38,
+          "which_name": 0.53
+        },
+        "latencyMs": 481.61291300000084,
+        "usage": {
+          "cost": 0.000027888,
+          "inputTokens": 664,
+          "outputTokens": 40
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452910-CJISdqx27POUHNska61k",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "hotel",
+        "decisionId": "hotel_02",
+        "currentFragment": "two nights room",
+        "gesture": "QUESTION_ENTITY",
+        "candidates": [
+          "which",
+          "what_room",
+          "type"
+        ],
+        "expected": "which",
+        "selected": "what_room",
+        "correct": false,
+        "confidence": 0.72,
+        "probabilities": {
+          "type": 0.13,
+          "which": 0.06,
+          "what_room": 0.81
+        },
+        "latencyMs": 400.39328899999964,
+        "usage": {
+          "cost": 0.000027888,
+          "inputTokens": 664,
+          "outputTokens": 40
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452911-4jt1hBAZ5L70LnKM4ZsF",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "hotel",
+        "decisionId": "hotel_03",
+        "currentFragment": "room fourth floor",
+        "gesture": "QUESTION_LOCATION",
+        "candidates": [
+          "where",
+          "which_side",
+          "elevator"
+        ],
+        "expected": "where",
+        "selected": "where",
+        "correct": true,
+        "confidence": 0.92,
+        "probabilities": {
+          "where": 0.95,
+          "elevator": 0.04,
+          "which_side": 0.01
+        },
+        "latencyMs": 429.6410739999992,
+        "usage": {
+          "cost": 0.00002814,
+          "inputTokens": 670,
+          "outputTokens": 41
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452911-RLwocphKvIaCdIq7cvOS",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "descriptive_compliment",
+        "decisionId": "compliment_01",
+        "currentFragment": "you suit looking",
+        "gesture": "COMPLIMENT",
+        "candidates": [
+          "handsome",
+          "beautiful",
+          "delicious",
+          "tasty"
+        ],
+        "expected": "handsome",
+        "selected": "handsome",
+        "correct": true,
+        "confidence": 1,
+        "probabilities": {
+          "delicious": 0,
+          "tasty": 0,
+          "beautiful": 0,
+          "handsome": 1
+        },
+        "latencyMs": 577.6180009999989,
+        "usage": {
+          "cost": 0.000026586,
+          "inputTokens": 633,
+          "outputTokens": 50
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452912-URDKbuYdAXWk64HUdhLN",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "descriptive_compliment_female",
+        "decisionId": "compliment_02",
+        "currentFragment": "dress you looking",
+        "gesture": "COMPLIMENT",
+        "candidates": [
+          "handsome",
+          "beautiful",
+          "delicious",
+          "spicy"
+        ],
+        "expected": "beautiful",
+        "selected": "beautiful",
+        "correct": true,
+        "confidence": 1,
+        "probabilities": {
+          "handsome": 0,
+          "beautiful": 1,
+          "delicious": 0,
+          "spicy": 0
+        },
+        "latencyMs": 390.3070579999985,
+        "usage": {
+          "cost": 0.000026376,
+          "inputTokens": 628,
+          "outputTokens": 49
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452912-VdJs38ZCHPRZ0dHNLMqy",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "descriptive_compliment_food",
+        "decisionId": "compliment_03",
+        "currentFragment": "pasta food tasting",
+        "gesture": "COMPLIMENT",
+        "candidates": [
+          "handsome",
+          "beautiful",
+          "delicious",
+          "smart"
+        ],
+        "expected": "delicious",
+        "selected": "delicious",
+        "correct": true,
+        "confidence": 1,
+        "probabilities": {
+          "handsome": 0,
+          "beautiful": 0,
+          "smart": 0,
+          "delicious": 1
+        },
+        "latencyMs": 455.5776540000006,
+        "usage": {
+          "cost": 0.000026124,
+          "inputTokens": 622,
+          "outputTokens": 50
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452913-weeGN0MQ1e3dza8zsA8A",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "need_assistance_medical",
+        "decisionId": "need_01",
+        "currentFragment": "fever high call",
+        "gesture": "NEED_HELP",
+        "candidates": [
+          "doctor",
+          "mechanic",
+          "police",
+          "waiter"
+        ],
+        "expected": "doctor",
+        "selected": "doctor",
+        "correct": true,
+        "confidence": 1,
+        "probabilities": {
+          "waiter": 0,
+          "mechanic": 0,
+          "doctor": 1,
+          "police": 0
+        },
+        "latencyMs": 464.57795799999985,
+        "usage": {
+          "cost": 0.000024906,
+          "inputTokens": 593,
+          "outputTokens": 49
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452913-U6isHEHMWh4cqJQxCwuY",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "need_assistance_roadside",
+        "decisionId": "need_02",
+        "currentFragment": "car engine broken call",
+        "gesture": "NEED_HELP",
+        "candidates": [
+          "doctor",
+          "mechanic",
+          "police",
+          "waiter"
+        ],
+        "expected": "mechanic",
+        "selected": "mechanic",
+        "correct": true,
+        "confidence": 0.97,
+        "probabilities": {
+          "doctor": 0,
+          "police": 0.03,
+          "mechanic": 0.97,
+          "waiter": 0
+        },
+        "latencyMs": 758.0940610000016,
+        "usage": {
+          "cost": 0.000025074,
+          "inputTokens": 597,
+          "outputTokens": 51
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452914-BzsgfhVTAOhrK51P0qb3",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "drink_cold_weather",
+        "decisionId": "drink_01",
+        "currentFragment": "cold drink want",
+        "gesture": "WANT_DRINK",
+        "candidates": [
+          "hot_tea",
+          "ice_water",
+          "cold_soda",
+          "lemonade"
+        ],
+        "expected": "hot_tea",
+        "selected": "hot_tea",
+        "correct": true,
+        "confidence": 0.97,
+        "probabilities": {
+          "cold_soda": 0.01,
+          "lemonade": 0,
+          "hot_tea": 0.98,
+          "ice_water": 0.01
+        },
+        "latencyMs": 576.7130429999997,
+        "usage": {
+          "cost": 0.00002688,
+          "inputTokens": 640,
+          "outputTokens": 54
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452915-77w17UZogPsF1ZBP7hMt",
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "drink_hot_weather",
+        "decisionId": "drink_02",
+        "currentFragment": "sweating drink want",
+        "gesture": "WANT_DRINK",
+        "candidates": [
+          "hot_tea",
+          "ice_water",
+          "hot_coffee",
+          "soup"
+        ],
+        "expected": "ice_water",
+        "selected": "ice_water",
+        "correct": true,
+        "confidence": 1,
+        "probabilities": {
+          "hot_coffee": 0,
+          "ice_water": 1,
+          "hot_tea": 0,
+          "soup": 0
+        },
+        "latencyMs": 433.6293519999999,
+        "usage": {
+          "cost": 0.000026754,
+          "inputTokens": 637,
+          "outputTokens": 52
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452915-GCZTHkWuX6VR81ZkooZE",
+        "error": null
+      }
+    ],
+    "summary": {
+      "totalTests": 30,
+      "successful": 30,
+      "errors": 0,
+      "invalidOutputs": 0,
+      "correct": 14,
+      "incorrect": 16,
+      "accuracyPercent": 46.67,
+      "confidence": {
+        "all": 0.685,
+        "correct": 0.831,
+        "incorrect": 0.557
+      },
+      "latencyMs": {
+        "min": 390.3070579999985,
+        "average": 473.19,
+        "p50": 450.17,
+        "p90": 580.19,
+        "p95": 688.44,
+        "p99": 793.76,
+        "max": 808.3285530000003
+      },
+      "byGesture": {
+        "QUESTION_TIME": {
+          "total": 5,
+          "correct": 0,
+          "accuracyPercent": 0
+        },
+        "QUESTION_LOCATION": {
+          "total": 9,
+          "correct": 5,
+          "accuracyPercent": 55.56
+        },
+        "QUESTION_ENTITY": {
+          "total": 8,
+          "correct": 1,
+          "accuracyPercent": 12.5
+        },
+        "QUESTION_MANNER": {
+          "total": 1,
+          "correct": 1,
+          "accuracyPercent": 100
+        },
+        "COMPLIMENT": {
+          "total": 3,
+          "correct": 3,
+          "accuracyPercent": 100
+        },
+        "NEED_HELP": {
+          "total": 2,
+          "correct": 2,
+          "accuracyPercent": 100
+        },
+        "WANT_DRINK": {
+          "total": 2,
+          "correct": 2,
+          "accuracyPercent": 100
+        }
+      },
+      "byCandidateCount": {
+        "3": {
+          "total": 21,
+          "correct": 6,
+          "accuracyPercent": 28.57
+        },
+        "4": {
+          "total": 9,
+          "correct": 8,
+          "accuracyPercent": 88.89
+        }
+      }
+    }
+  },
+  "strategyB": {
+    "results": [
+      {
+        "strategy": "B",
+        "sessionId": "solo_trip",
+        "decisionId": "solo_trip_01",
+        "currentFragment": "train Jaipur",
+        "gesture": "QUESTION_TIME",
+        "candidates": [
+          "when",
+          "what_time",
+          "how_long",
+          "date"
+        ],
+        "expected": "when",
+        "selected": "when",
+        "correct": true,
+        "confidence": 0.36,
+        "probabilities": {
+          "how_long": 0,
+          "when": 0.52,
+          "what_time": 0.44,
+          "date": 0.04
+        },
+        "latencyMs": 758.2857820000027,
+        "usage": {
+          "cost": 0.000028602,
+          "inputTokens": 681,
+          "outputTokens": 47
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452916-KyzGs6M2oWYCxcvV6LLF",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "solo_trip",
+        "decisionId": "solo_trip_02",
+        "currentFragment": "need ticket",
+        "gesture": "QUESTION_LOCATION",
+        "candidates": [
+          "where",
+          "which_counter",
+          "which_website",
+          "near"
+        ],
+        "expected": "where",
+        "selected": "where",
+        "correct": true,
+        "confidence": 0.64,
+        "probabilities": {
+          "where": 0.74,
+          "which_website": 0.19,
+          "which_counter": 0.07,
+          "near": 0
+        },
+        "latencyMs": 562.0093029999989,
+        "usage": {
+          "cost": 0.000028686,
+          "inputTokens": 683,
+          "outputTokens": 48
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452917-do63PjphvBjNs0gD7Stm",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "railway_station",
+        "decisionId": "railway_01",
+        "currentFragment": "brother meet station",
+        "gesture": "QUESTION_LOCATION",
+        "candidates": [
+          "where",
+          "which_gate",
+          "near"
+        ],
+        "expected": "where",
+        "selected": "where",
+        "correct": true,
+        "confidence": 0.84,
+        "probabilities": {
+          "where": 0.89,
+          "near": 0.01,
+          "which_gate": 0.1
+        },
+        "latencyMs": 430.14221499999985,
+        "usage": {
+          "cost": 0.000031962,
+          "inputTokens": 761,
+          "outputTokens": 39
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452917-Hhy20yefEL81GXb2TJd7",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "railway_station",
+        "decisionId": "railway_02",
+        "currentFragment": "I go platform",
+        "gesture": "QUESTION_ENTITY",
+        "candidates": [
+          "which",
+          "what_number",
+          "what_platform"
+        ],
+        "expected": "which",
+        "selected": "what_platform",
+        "correct": false,
+        "confidence": 0.63,
+        "probabilities": {
+          "which": 0.15,
+          "what_platform": 0.75,
+          "what_number": 0.1
+        },
+        "latencyMs": 447.0072300000029,
+        "usage": {
+          "cost": 0.000032046,
+          "inputTokens": 763,
+          "outputTokens": 41
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452918-Y9YWn6UCQm2mEy0gAZ0V",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "railway_station",
+        "decisionId": "railway_03",
+        "currentFragment": "brother train",
+        "gesture": "QUESTION_TIME",
+        "candidates": [
+          "when",
+          "what_time",
+          "delay"
+        ],
+        "expected": "when",
+        "selected": "what_time",
+        "correct": false,
+        "confidence": 0.63,
+        "probabilities": {
+          "what_time": 0.75,
+          "delay": 0.02,
+          "when": 0.23
+        },
+        "latencyMs": 440.5928989999993,
+        "usage": {
+          "cost": 0.00003192,
+          "inputTokens": 760,
+          "outputTokens": 40
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452918-xBcT2pRJ9gCi7MyCmgHs",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "shop",
+        "decisionId": "shop_01",
+        "currentFragment": "blue shirt this",
+        "gesture": "QUESTION_ENTITY",
+        "candidates": [
+          "which",
+          "what_price",
+          "what_material"
+        ],
+        "expected": "which",
+        "selected": "what_price",
+        "correct": false,
+        "confidence": 0.41,
+        "probabilities": {
+          "what_price": 0.61,
+          "which": 0.36,
+          "what_material": 0.03
+        },
+        "latencyMs": 391.2702289999979,
+        "usage": {
+          "cost": 0.000030198,
+          "inputTokens": 719,
+          "outputTokens": 41
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452919-VYnZ2HpJJYFmORj5qshb",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "shop",
+        "decisionId": "shop_02",
+        "currentFragment": "another size",
+        "gesture": "QUESTION_ENTITY",
+        "candidates": [
+          "which",
+          "what_sizes",
+          "what_color"
+        ],
+        "expected": "which",
+        "selected": "what_sizes",
+        "correct": false,
+        "confidence": 0.92,
+        "probabilities": {
+          "what_color": 0,
+          "which": 0.05,
+          "what_sizes": 0.95
+        },
+        "latencyMs": 449.70920099999785,
+        "usage": {
+          "cost": 0.000030156,
+          "inputTokens": 718,
+          "outputTokens": 41
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452919-4Xj9BHAnERRsUE91OYij",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "shop",
+        "decisionId": "shop_03",
+        "currentFragment": "medium large",
+        "gesture": "QUESTION_ENTITY",
+        "candidates": [
+          "which",
+          "what_one",
+          "what_size"
+        ],
+        "expected": "which",
+        "selected": "what_size",
+        "correct": false,
+        "confidence": 0.43,
+        "probabilities": {
+          "which": 0.36,
+          "what_size": 0.62,
+          "what_one": 0.02
+        },
+        "latencyMs": 504.24428799999805,
+        "usage": {
+          "cost": 0.000030156,
+          "inputTokens": 718,
+          "outputTokens": 41
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452920-B6mBWW3R6rqBj4GsZgth",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "police",
+        "decisionId": "police_01",
+        "currentFragment": "phone missing",
+        "gesture": "QUESTION_LOCATION",
+        "candidates": [
+          "where",
+          "which_place",
+          "near"
+        ],
+        "expected": "where",
+        "selected": "where",
+        "correct": true,
+        "confidence": 0.85,
+        "probabilities": {
+          "where": 0.9,
+          "which_place": 0.09,
+          "near": 0.01
+        },
+        "latencyMs": 468.28480599999966,
+        "usage": {
+          "cost": 0.00003213,
+          "inputTokens": 765,
+          "outputTokens": 39
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452920-OyWFsSzc1wG6K3FjDHdX",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "police",
+        "decisionId": "police_02",
+        "currentFragment": "bus maybe",
+        "gesture": "QUESTION_LOCATION",
+        "candidates": [
+          "where",
+          "which_bus",
+          "near"
+        ],
+        "expected": "where",
+        "selected": "which_bus",
+        "correct": false,
+        "confidence": 0.51,
+        "probabilities": {
+          "which_bus": 0.68,
+          "near": 0.01,
+          "where": 0.31
+        },
+        "latencyMs": 447.42167699999845,
+        "usage": {
+          "cost": 0.00003213,
+          "inputTokens": 765,
+          "outputTokens": 40
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452921-Fz2sPec00z2p5vJgtQeV",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "police",
+        "decisionId": "police_03",
+        "currentFragment": "yes bus",
+        "gesture": "QUESTION_LOCATION",
+        "candidates": [
+          "where",
+          "which_stop",
+          "location"
+        ],
+        "expected": "where",
+        "selected": "which_stop",
+        "correct": false,
+        "confidence": 0.72,
+        "probabilities": {
+          "location": 0.01,
+          "where": 0.18,
+          "which_stop": 0.81
+        },
+        "latencyMs": 459.0004200000003,
+        "usage": {
+          "cost": 0.00003213,
+          "inputTokens": 765,
+          "outputTokens": 40
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452921-4KrzpezLkZIBaOMTXn1Q",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "hospital",
+        "decisionId": "hospital_01",
+        "currentFragment": "chest little",
+        "gesture": "QUESTION_LOCATION",
+        "candidates": [
+          "where",
+          "which_part",
+          "location"
+        ],
+        "expected": "where",
+        "selected": "where",
+        "correct": true,
+        "confidence": 0.15,
+        "probabilities": {
+          "location": 0.38,
+          "which_part": 0.19,
+          "where": 0.43
+        },
+        "latencyMs": 416.9118149999995,
+        "usage": {
+          "cost": 0.000033768,
+          "inputTokens": 804,
+          "outputTokens": 39
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452922-b8PSrcWTB8yN2uzfYWp1",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "hospital",
+        "decisionId": "hospital_02",
+        "currentFragment": "come go",
+        "gesture": "QUESTION_TIME",
+        "candidates": [
+          "when",
+          "how_often",
+          "duration"
+        ],
+        "expected": "when",
+        "selected": "how_often",
+        "correct": false,
+        "confidence": 0.79,
+        "probabilities": {
+          "when": 0.04,
+          "how_often": 0.86,
+          "duration": 0.1
+        },
+        "latencyMs": 806.5309249999991,
+        "usage": {
+          "cost": 0.000033852,
+          "inputTokens": 806,
+          "outputTokens": 42
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452922-YW8XAaAiQepF9z4I3Iga",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "hospital",
+        "decisionId": "hospital_03",
+        "currentFragment": "dizzy morning",
+        "gesture": "QUESTION_TIME",
+        "candidates": [
+          "when",
+          "what_time",
+          "duration"
+        ],
+        "expected": "when",
+        "selected": "when",
+        "correct": true,
+        "confidence": 0.1,
+        "probabilities": {
+          "duration": 0.22,
+          "when": 0.4,
+          "what_time": 0.38
+        },
+        "latencyMs": 478.11554199999955,
+        "usage": {
+          "cost": 0.00003381,
+          "inputTokens": 805,
+          "outputTokens": 39
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452923-9LV2TSEGLppRJ4eEWWYd",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "classroom",
+        "decisionId": "class_01",
+        "currentFragment": "assignment tomorrow",
+        "gesture": "QUESTION_TIME",
+        "candidates": [
+          "when",
+          "what_time",
+          "deadline"
+        ],
+        "expected": "when",
+        "selected": "what_time",
+        "correct": false,
+        "confidence": 0.25,
+        "probabilities": {
+          "deadline": 0.42,
+          "what_time": 0.5,
+          "when": 0.08
+        },
+        "latencyMs": 485.4041309999993,
+        "usage": {
+          "cost": 0.000032172,
+          "inputTokens": 766,
+          "outputTokens": 40
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452924-5eYPNluUgA7eclvTUl2Y",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "classroom",
+        "decisionId": "class_02",
+        "currentFragment": "portal submit",
+        "gesture": "QUESTION_LOCATION",
+        "candidates": [
+          "where",
+          "which_link",
+          "which_page"
+        ],
+        "expected": "where",
+        "selected": "where",
+        "correct": true,
+        "confidence": 0.7,
+        "probabilities": {
+          "which_page": 0.09,
+          "where": 0.8,
+          "which_link": 0.11
+        },
+        "latencyMs": 391.30476500000077,
+        "usage": {
+          "cost": 0.000032298,
+          "inputTokens": 769,
+          "outputTokens": 40
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452924-tJrSNEqJmTpdSnc02aXt",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "classroom",
+        "decisionId": "class_03",
+        "currentFragment": "upload ZIP",
+        "gesture": "QUESTION_MANNER",
+        "candidates": [
+          "how",
+          "why",
+          "procedure"
+        ],
+        "expected": "how",
+        "selected": "how",
+        "correct": true,
+        "confidence": 0.75,
+        "probabilities": {
+          "procedure": 0.17,
+          "why": 0,
+          "how": 0.83
+        },
+        "latencyMs": 473.2011050000001,
+        "usage": {
+          "cost": 0.00003213,
+          "inputTokens": 765,
+          "outputTokens": 38
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452925-QybkYK9NajtEWL3GDxFE",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "street_emergency",
+        "decisionId": "emergency_01",
+        "currentFragment": "accident car",
+        "gesture": "QUESTION_ENTITY",
+        "candidates": [
+          "what",
+          "which_car",
+          "details"
+        ],
+        "expected": "what",
+        "selected": "which_car",
+        "correct": false,
+        "confidence": 0.51,
+        "probabilities": {
+          "which_car": 0.67,
+          "what": 0.09,
+          "details": 0.24
+        },
+        "latencyMs": 452.00012199999765,
+        "usage": {
+          "cost": 0.00003276,
+          "inputTokens": 780,
+          "outputTokens": 40
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452925-ZQdYNhBkJiVLVPjKIgVC",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "street_emergency",
+        "decisionId": "emergency_02",
+        "currentFragment": "person injured",
+        "gesture": "QUESTION_ENTITY",
+        "candidates": [
+          "who",
+          "which_person",
+          "details"
+        ],
+        "expected": "who",
+        "selected": "which_person",
+        "correct": false,
+        "confidence": 0.26,
+        "probabilities": {
+          "which_person": 0.5,
+          "who": 0.2,
+          "details": 0.3
+        },
+        "latencyMs": 435.43046900000263,
+        "usage": {
+          "cost": 0.000032718,
+          "inputTokens": 779,
+          "outputTokens": 40
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452926-ldea4O1jsqteqFeVLBPN",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "street_emergency",
+        "decisionId": "emergency_03",
+        "currentFragment": "car person",
+        "gesture": "QUESTION_LOCATION",
+        "candidates": [
+          "where",
+          "which_spot",
+          "inside"
+        ],
+        "expected": "where",
+        "selected": "inside",
+        "correct": false,
+        "confidence": 0.71,
+        "probabilities": {
+          "where": 0.19,
+          "which_spot": 0,
+          "inside": 0.81
+        },
+        "latencyMs": 464.21465100000205,
+        "usage": {
+          "cost": 0.000032844,
+          "inputTokens": 782,
+          "outputTokens": 40
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452926-2sWjex182tReOGCCL5bE",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "hotel",
+        "decisionId": "hotel_01",
+        "currentFragment": "reservation Vinit",
+        "gesture": "QUESTION_ENTITY",
+        "candidates": [
+          "what",
+          "which_name",
+          "status"
+        ],
+        "expected": "what",
+        "selected": "status",
+        "correct": false,
+        "confidence": 0.18,
+        "probabilities": {
+          "what": 0.12,
+          "status": 0.45,
+          "which_name": 0.43
+        },
+        "latencyMs": 566.9856560000007,
+        "usage": {
+          "cost": 0.000030156,
+          "inputTokens": 718,
+          "outputTokens": 39
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452927-ePunYsA8iuXUBJAH6Z0Q",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "hotel",
+        "decisionId": "hotel_02",
+        "currentFragment": "two nights room",
+        "gesture": "QUESTION_ENTITY",
+        "candidates": [
+          "which",
+          "what_room",
+          "type"
+        ],
+        "expected": "which",
+        "selected": "what_room",
+        "correct": false,
+        "confidence": 0.4,
+        "probabilities": {
+          "what_room": 0.6,
+          "which": 0.23,
+          "type": 0.17
+        },
+        "latencyMs": 392.50381899999775,
+        "usage": {
+          "cost": 0.000030156,
+          "inputTokens": 718,
+          "outputTokens": 40
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452927-bKsvXIQlHtEx90OdU39n",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "hotel",
+        "decisionId": "hotel_03",
+        "currentFragment": "room fourth floor",
+        "gesture": "QUESTION_LOCATION",
+        "candidates": [
+          "where",
+          "which_side",
+          "elevator"
+        ],
+        "expected": "where",
+        "selected": "where",
+        "correct": true,
+        "confidence": 0.85,
+        "probabilities": {
+          "elevator": 0.09,
+          "which_side": 0.01,
+          "where": 0.9
+        },
+        "latencyMs": 444.27628800000093,
+        "usage": {
+          "cost": 0.000030408,
+          "inputTokens": 724,
+          "outputTokens": 41
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452928-1qpqhLU4Lkea0PKmRw8g",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "descriptive_compliment",
+        "decisionId": "compliment_01",
+        "currentFragment": "you suit looking",
+        "gesture": "COMPLIMENT",
+        "candidates": [
+          "handsome",
+          "beautiful",
+          "delicious",
+          "tasty"
+        ],
+        "expected": "handsome",
+        "selected": "handsome",
+        "correct": true,
+        "confidence": 1,
+        "probabilities": {
+          "delicious": 0,
+          "beautiful": 0,
+          "tasty": 0,
+          "handsome": 1
+        },
+        "latencyMs": 492.1768950000005,
+        "usage": {
+          "cost": 0.000029652,
+          "inputTokens": 706,
+          "outputTokens": 50
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452928-TzqCtJibZ2AygmoXGFO6",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "descriptive_compliment_female",
+        "decisionId": "compliment_02",
+        "currentFragment": "dress you looking",
+        "gesture": "COMPLIMENT",
+        "candidates": [
+          "handsome",
+          "beautiful",
+          "delicious",
+          "spicy"
+        ],
+        "expected": "beautiful",
+        "selected": "beautiful",
+        "correct": true,
+        "confidence": 1,
+        "probabilities": {
+          "beautiful": 1,
+          "handsome": 0,
+          "delicious": 0,
+          "spicy": 0
+        },
+        "latencyMs": 453.01680900000065,
+        "usage": {
+          "cost": 0.000029442,
+          "inputTokens": 701,
+          "outputTokens": 49
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452929-HwhCYGBf4Yzh9Yz8YFUX",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "descriptive_compliment_food",
+        "decisionId": "compliment_03",
+        "currentFragment": "pasta food tasting",
+        "gesture": "COMPLIMENT",
+        "candidates": [
+          "handsome",
+          "beautiful",
+          "delicious",
+          "smart"
+        ],
+        "expected": "delicious",
+        "selected": "delicious",
+        "correct": true,
+        "confidence": 1,
+        "probabilities": {
+          "handsome": 0,
+          "beautiful": 0,
+          "smart": 0,
+          "delicious": 1
+        },
+        "latencyMs": 427.1070749999999,
+        "usage": {
+          "cost": 0.00002919,
+          "inputTokens": 695,
+          "outputTokens": 50
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452929-M4i2pr3NwAu7jxNf2IR5",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "need_assistance_medical",
+        "decisionId": "need_01",
+        "currentFragment": "fever high call",
+        "gesture": "NEED_HELP",
+        "candidates": [
+          "doctor",
+          "mechanic",
+          "police",
+          "waiter"
+        ],
+        "expected": "doctor",
+        "selected": "doctor",
+        "correct": true,
+        "confidence": 1,
+        "probabilities": {
+          "police": 0,
+          "waiter": 0,
+          "doctor": 1,
+          "mechanic": 0
+        },
+        "latencyMs": 448.09524500000043,
+        "usage": {
+          "cost": 0.000027972,
+          "inputTokens": 666,
+          "outputTokens": 49
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452930-LXihqEV25Oh0l1SKN3hI",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "need_assistance_roadside",
+        "decisionId": "need_02",
+        "currentFragment": "car engine broken call",
+        "gesture": "NEED_HELP",
+        "candidates": [
+          "doctor",
+          "mechanic",
+          "police",
+          "waiter"
+        ],
+        "expected": "mechanic",
+        "selected": "mechanic",
+        "correct": true,
+        "confidence": 0.95,
+        "probabilities": {
+          "doctor": 0,
+          "mechanic": 0.97,
+          "police": 0.03,
+          "waiter": 0
+        },
+        "latencyMs": 414.6003509999973,
+        "usage": {
+          "cost": 0.00002814,
+          "inputTokens": 670,
+          "outputTokens": 51
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452930-VPltYLEvVz9bJpnbESiO",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "drink_cold_weather",
+        "decisionId": "drink_01",
+        "currentFragment": "cold drink want",
+        "gesture": "WANT_DRINK",
+        "candidates": [
+          "hot_tea",
+          "ice_water",
+          "cold_soda",
+          "lemonade"
+        ],
+        "expected": "hot_tea",
+        "selected": "hot_tea",
+        "correct": true,
+        "confidence": 0.99,
+        "probabilities": {
+          "cold_soda": 0,
+          "ice_water": 0.01,
+          "hot_tea": 0.99,
+          "lemonade": 0
+        },
+        "latencyMs": 389.1975249999996,
+        "usage": {
+          "cost": 0.000029946,
+          "inputTokens": 713,
+          "outputTokens": 54
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452930-AS8sen2BBvItN10QyiZH",
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "drink_hot_weather",
+        "decisionId": "drink_02",
+        "currentFragment": "sweating drink want",
+        "gesture": "WANT_DRINK",
+        "candidates": [
+          "hot_tea",
+          "ice_water",
+          "hot_coffee",
+          "soup"
+        ],
+        "expected": "ice_water",
+        "selected": "ice_water",
+        "correct": true,
+        "confidence": 1,
+        "probabilities": {
+          "hot_coffee": 0,
+          "hot_tea": 0,
+          "ice_water": 1,
+          "soup": 0
+        },
+        "latencyMs": 440.01298300000053,
+        "usage": {
+          "cost": 0.00002982,
+          "inputTokens": 710,
+          "outputTokens": 52
+        },
+        "provider": "TypeSafe",
+        "model": "typesafe/jev-1.13-20260917",
+        "requestId": "gen-dec-1790452931-gUZoeSbGW94Bu2Ad7PtY",
+        "error": null
+      }
+    ],
+    "summary": {
+      "totalTests": 30,
+      "successful": 30,
+      "errors": 0,
+      "invalidOutputs": 0,
+      "correct": 16,
+      "incorrect": 14,
+      "accuracyPercent": 53.33,
+      "confidence": {
+        "all": 0.651,
+        "correct": 0.761,
+        "incorrect": 0.525
+      },
+      "latencyMs": {
+        "min": 389.1975249999996,
+        "average": 474.3,
+        "p50": 448.9,
+        "p90": 562.51,
+        "p95": 672.2,
+        "p99": 792.54,
+        "max": 806.5309249999991
+      },
+      "byGesture": {
+        "QUESTION_TIME": {
+          "total": 5,
+          "correct": 2,
+          "accuracyPercent": 40
+        },
+        "QUESTION_LOCATION": {
+          "total": 9,
+          "correct": 6,
+          "accuracyPercent": 66.67
+        },
+        "QUESTION_ENTITY": {
+          "total": 8,
+          "correct": 0,
+          "accuracyPercent": 0
+        },
+        "QUESTION_MANNER": {
+          "total": 1,
+          "correct": 1,
+          "accuracyPercent": 100
+        },
+        "COMPLIMENT": {
+          "total": 3,
+          "correct": 3,
+          "accuracyPercent": 100
+        },
+        "NEED_HELP": {
+          "total": 2,
+          "correct": 2,
+          "accuracyPercent": 100
+        },
+        "WANT_DRINK": {
+          "total": 2,
+          "correct": 2,
+          "accuracyPercent": 100
+        }
+      },
+      "byCandidateCount": {
+        "3": {
+          "total": 21,
+          "correct": 7,
+          "accuracyPercent": 33.33
+        },
+        "4": {
+          "total": 9,
+          "correct": 9,
+          "accuracyPercent": 100
+        }
+      }
+    }
+  },
+  "concurrencyBenchmark": {
+    "concurrency_1": {
+      "concurrency": 1,
+      "totalTimeMs": 4522.6,
+      "requests": 9,
+      "successCount": 9,
+      "errorCount": 0,
+      "avgLatencyMs": 502.42,
+      "requestsPerSecond": 1.99
+    },
+    "concurrency_3": {
+      "concurrency": 3,
+      "totalTimeMs": 2899.34,
+      "requests": 9,
+      "successCount": 9,
+      "errorCount": 0,
+      "avgLatencyMs": 641.22,
+      "requestsPerSecond": 3.1
+    }
+  }
+}

@@ -1,0 +1,583 @@
+{
+  "timestamp": "2026-09-26T20:21:06.564Z",
+  "model": "typesafe/jev-1.13",
+  "decisionCount": 11,
+  "strategyA": {
+    "results": [
+      {
+        "strategy": "A",
+        "sessionId": "travel_ticket",
+        "decisionId": "travel_01",
+        "currentFragment": "ticket Jaipur",
+        "gesture": "QUESTION_TIME",
+        "candidates": [
+          "when",
+          "duration",
+          "frequency"
+        ],
+        "expected": "when",
+        "selected": "when",
+        "correct": true,
+        "confidence": 1,
+        "probabilities": {
+          "duration": 0,
+          "frequency": 0,
+          "when": 1
+        },
+        "latencyMs": 796.1933139999996,
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "travel_ticket",
+        "decisionId": "travel_02",
+        "currentFragment": "ticket Jaipur",
+        "gesture": "QUESTION_LOCATION",
+        "candidates": [
+          "where",
+          "direction",
+          "distance"
+        ],
+        "expected": "where",
+        "selected": "where",
+        "correct": true,
+        "confidence": 0.9,
+        "probabilities": {
+          "where": 0.93,
+          "distance": 0.01,
+          "direction": 0.06
+        },
+        "latencyMs": 1390.2334470000005,
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "clothing_shop",
+        "decisionId": "shop_01",
+        "currentFragment": "blue shirt size",
+        "gesture": "QUESTION_ENTITY",
+        "candidates": [
+          "which",
+          "who",
+          "what"
+        ],
+        "expected": "which",
+        "selected": "which",
+        "correct": true,
+        "confidence": 0.6,
+        "probabilities": {
+          "which": 0.74,
+          "who": 0,
+          "what": 0.26
+        },
+        "latencyMs": 373.9358540000003,
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "hospital_visit",
+        "decisionId": "hosp_01",
+        "currentFragment": "headache morning",
+        "gesture": "QUESTION_TIME",
+        "candidates": [
+          "when",
+          "duration",
+          "frequency"
+        ],
+        "expected": "when",
+        "selected": "when",
+        "correct": true,
+        "confidence": 0.99,
+        "probabilities": {
+          "when": 0.99,
+          "duration": 0.01,
+          "frequency": 0
+        },
+        "latencyMs": 481.9103729999997,
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "compliment_male",
+        "decisionId": "comp_01",
+        "currentFragment": "you suit looking",
+        "gesture": "COMPLIMENT",
+        "candidates": [
+          "handsome",
+          "beautiful",
+          "delicious",
+          "spicy"
+        ],
+        "expected": "handsome",
+        "selected": "handsome",
+        "correct": true,
+        "confidence": 1,
+        "probabilities": {
+          "handsome": 1,
+          "spicy": 0,
+          "beautiful": 0,
+          "delicious": 0
+        },
+        "latencyMs": 444.0951580000001,
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "compliment_female",
+        "decisionId": "comp_02",
+        "currentFragment": "dress looking",
+        "gesture": "COMPLIMENT",
+        "candidates": [
+          "handsome",
+          "beautiful",
+          "delicious",
+          "tasty"
+        ],
+        "expected": "beautiful",
+        "selected": "beautiful",
+        "correct": true,
+        "confidence": 1,
+        "probabilities": {
+          "beautiful": 1,
+          "tasty": 0,
+          "handsome": 0,
+          "delicious": 0
+        },
+        "latencyMs": 568.0903319999998,
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "food_compliment",
+        "decisionId": "comp_03",
+        "currentFragment": "pasta food tasting",
+        "gesture": "COMPLIMENT",
+        "candidates": [
+          "handsome",
+          "beautiful",
+          "delicious",
+          "smart"
+        ],
+        "expected": "delicious",
+        "selected": "delicious",
+        "correct": true,
+        "confidence": 1,
+        "probabilities": {
+          "beautiful": 0,
+          "delicious": 1,
+          "smart": 0,
+          "handsome": 0
+        },
+        "latencyMs": 412.8931139999995,
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "need_doctor",
+        "decisionId": "need_01",
+        "currentFragment": "fever high call",
+        "gesture": "NEED_HELP",
+        "candidates": [
+          "doctor",
+          "mechanic",
+          "police",
+          "waiter"
+        ],
+        "expected": "doctor",
+        "selected": "doctor",
+        "correct": true,
+        "confidence": 1,
+        "probabilities": {
+          "police": 0,
+          "doctor": 1,
+          "waiter": 0,
+          "mechanic": 0
+        },
+        "latencyMs": 393.0836619999991,
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "need_mechanic",
+        "decisionId": "need_02",
+        "currentFragment": "car engine broken call",
+        "gesture": "NEED_HELP",
+        "candidates": [
+          "doctor",
+          "mechanic",
+          "police",
+          "waiter"
+        ],
+        "expected": "mechanic",
+        "selected": "mechanic",
+        "correct": true,
+        "confidence": 0.98,
+        "probabilities": {
+          "mechanic": 0.98,
+          "waiter": 0,
+          "doctor": 0,
+          "police": 0.02
+        },
+        "latencyMs": 694.1969100000006,
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "hot_tea_winter",
+        "decisionId": "drink_01",
+        "currentFragment": "cold drink want",
+        "gesture": "WANT_DRINK",
+        "candidates": [
+          "hot_tea",
+          "ice_water",
+          "cold_soda"
+        ],
+        "expected": "hot_tea",
+        "selected": "hot_tea",
+        "correct": true,
+        "confidence": 0.77,
+        "probabilities": {
+          "ice_water": 0.11,
+          "hot_tea": 0.85,
+          "cold_soda": 0.04
+        },
+        "latencyMs": 568.1093030000011,
+        "error": null
+      },
+      {
+        "strategy": "A",
+        "sessionId": "ice_water_summer",
+        "decisionId": "drink_02",
+        "currentFragment": "sweating drink want",
+        "gesture": "WANT_DRINK",
+        "candidates": [
+          "hot_tea",
+          "ice_water",
+          "hot_coffee"
+        ],
+        "expected": "ice_water",
+        "selected": "ice_water",
+        "correct": true,
+        "confidence": 1,
+        "probabilities": {
+          "ice_water": 1,
+          "hot_coffee": 0,
+          "hot_tea": 0
+        },
+        "latencyMs": 384.56009399999857,
+        "error": null
+      }
+    ],
+    "summary": {
+      "totalTests": 11,
+      "successful": 11,
+      "errors": 0,
+      "correct": 11,
+      "incorrect": 0,
+      "accuracyPercent": 100,
+      "confidence": {
+        "all": 0.931,
+        "correct": 0.931,
+        "incorrect": 0
+      },
+      "latencyMs": {
+        "min": 373.9358540000003,
+        "average": 591.57,
+        "p50": 481.91,
+        "p90": 796.19,
+        "p95": 1093.21,
+        "p99": 1330.83,
+        "max": 1390.2334470000005
+      }
+    }
+  },
+  "strategyB": {
+    "results": [
+      {
+        "strategy": "B",
+        "sessionId": "travel_ticket",
+        "decisionId": "travel_01",
+        "currentFragment": "ticket Jaipur",
+        "gesture": "QUESTION_TIME",
+        "candidates": [
+          "when",
+          "duration",
+          "frequency"
+        ],
+        "expected": "when",
+        "selected": "when",
+        "correct": true,
+        "confidence": 1,
+        "probabilities": {
+          "when": 1,
+          "frequency": 0,
+          "duration": 0
+        },
+        "latencyMs": 378.696903,
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "travel_ticket",
+        "decisionId": "travel_02",
+        "currentFragment": "ticket Jaipur",
+        "gesture": "QUESTION_LOCATION",
+        "candidates": [
+          "where",
+          "direction",
+          "distance"
+        ],
+        "expected": "where",
+        "selected": "where",
+        "correct": true,
+        "confidence": 0.83,
+        "probabilities": {
+          "distance": 0.04,
+          "direction": 0.07,
+          "where": 0.89
+        },
+        "latencyMs": 540.217646000001,
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "clothing_shop",
+        "decisionId": "shop_01",
+        "currentFragment": "blue shirt size",
+        "gesture": "QUESTION_ENTITY",
+        "candidates": [
+          "which",
+          "who",
+          "what"
+        ],
+        "expected": "which",
+        "selected": "which",
+        "correct": true,
+        "confidence": 0.38,
+        "probabilities": {
+          "which": 0.59,
+          "who": 0,
+          "what": 0.41
+        },
+        "latencyMs": 438.20865500000036,
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "hospital_visit",
+        "decisionId": "hosp_01",
+        "currentFragment": "headache morning",
+        "gesture": "QUESTION_TIME",
+        "candidates": [
+          "when",
+          "duration",
+          "frequency"
+        ],
+        "expected": "when",
+        "selected": "when",
+        "correct": true,
+        "confidence": 0.99,
+        "probabilities": {
+          "frequency": 0,
+          "duration": 0.01,
+          "when": 0.99
+        },
+        "latencyMs": 731.8948339999988,
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "compliment_male",
+        "decisionId": "comp_01",
+        "currentFragment": "you suit looking",
+        "gesture": "COMPLIMENT",
+        "candidates": [
+          "handsome",
+          "beautiful",
+          "delicious",
+          "spicy"
+        ],
+        "expected": "handsome",
+        "selected": "handsome",
+        "correct": true,
+        "confidence": 1,
+        "probabilities": {
+          "spicy": 0,
+          "delicious": 0,
+          "handsome": 1,
+          "beautiful": 0
+        },
+        "latencyMs": 792.0416229999992,
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "compliment_female",
+        "decisionId": "comp_02",
+        "currentFragment": "dress looking",
+        "gesture": "COMPLIMENT",
+        "candidates": [
+          "handsome",
+          "beautiful",
+          "delicious",
+          "tasty"
+        ],
+        "expected": "beautiful",
+        "selected": "beautiful",
+        "correct": true,
+        "confidence": 1,
+        "probabilities": {
+          "handsome": 0,
+          "beautiful": 1,
+          "tasty": 0,
+          "delicious": 0
+        },
+        "latencyMs": 477.4933450000008,
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "food_compliment",
+        "decisionId": "comp_03",
+        "currentFragment": "pasta food tasting",
+        "gesture": "COMPLIMENT",
+        "candidates": [
+          "handsome",
+          "beautiful",
+          "delicious",
+          "smart"
+        ],
+        "expected": "delicious",
+        "selected": "delicious",
+        "correct": true,
+        "confidence": 1,
+        "probabilities": {
+          "smart": 0,
+          "handsome": 0,
+          "delicious": 1,
+          "beautiful": 0
+        },
+        "latencyMs": 575.5579730000009,
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "need_doctor",
+        "decisionId": "need_01",
+        "currentFragment": "fever high call",
+        "gesture": "NEED_HELP",
+        "candidates": [
+          "doctor",
+          "mechanic",
+          "police",
+          "waiter"
+        ],
+        "expected": "doctor",
+        "selected": "doctor",
+        "correct": true,
+        "confidence": 1,
+        "probabilities": {
+          "waiter": 0,
+          "police": 0,
+          "mechanic": 0,
+          "doctor": 1
+        },
+        "latencyMs": 793.1284130000004,
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "need_mechanic",
+        "decisionId": "need_02",
+        "currentFragment": "car engine broken call",
+        "gesture": "NEED_HELP",
+        "candidates": [
+          "doctor",
+          "mechanic",
+          "police",
+          "waiter"
+        ],
+        "expected": "mechanic",
+        "selected": "mechanic",
+        "correct": true,
+        "confidence": 0.98,
+        "probabilities": {
+          "doctor": 0,
+          "police": 0.02,
+          "waiter": 0,
+          "mechanic": 0.98
+        },
+        "latencyMs": 408.9842439999993,
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "hot_tea_winter",
+        "decisionId": "drink_01",
+        "currentFragment": "cold drink want",
+        "gesture": "WANT_DRINK",
+        "candidates": [
+          "hot_tea",
+          "ice_water",
+          "cold_soda"
+        ],
+        "expected": "hot_tea",
+        "selected": "hot_tea",
+        "correct": true,
+        "confidence": 0.9,
+        "probabilities": {
+          "ice_water": 0.04,
+          "hot_tea": 0.93,
+          "cold_soda": 0.02
+        },
+        "latencyMs": 436.06147899999996,
+        "error": null
+      },
+      {
+        "strategy": "B",
+        "sessionId": "ice_water_summer",
+        "decisionId": "drink_02",
+        "currentFragment": "sweating drink want",
+        "gesture": "WANT_DRINK",
+        "candidates": [
+          "hot_tea",
+          "ice_water",
+          "hot_coffee"
+        ],
+        "expected": "ice_water",
+        "selected": "ice_water",
+        "correct": true,
+        "confidence": 1,
+        "probabilities": {
+          "hot_coffee": 0,
+          "hot_tea": 0,
+          "ice_water": 1
+        },
+        "latencyMs": 411.2221669999999,
+        "error": null
+      }
+    ],
+    "summary": {
+      "totalTests": 11,
+      "successful": 11,
+      "errors": 0,
+      "correct": 11,
+      "incorrect": 0,
+      "accuracyPercent": 100,
+      "confidence": {
+        "all": 0.916,
+        "correct": 0.916,
+        "incorrect": 0
+      },
+      "latencyMs": {
+        "min": 378.696903,
+        "average": 543.96,
+        "p50": 477.49,
+        "p90": 792.04,
+        "p95": 792.59,
+        "p99": 793.02,
+        "max": 793.1284130000004
+      }
+    }
+  }
+}

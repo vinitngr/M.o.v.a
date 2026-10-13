@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "author": "Velxio",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-velxio-esp32-cam",
+      "id": "esp32-cam",
+      "top": 0,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_stream",
+      "top": -107,
+      "left": -327,
+      "attrs": {
+        "color": "green",
+        "pressed": false,
+        "label": "STREAM",
+        "xray": false
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_ai",
+      "top": 40,
+      "left": -314,
+      "attrs": {
+        "color": "blue",
+        "pressed": false,
+        "label": "AI",
+        "xray": false
+      }
+    },
+    {
+      "type": "wokwi-resistor-220",
+      "id": "r_led",
+      "top": -266,
+      "left": -70,
+      "rotate": 90,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led_status",
+      "top": -438,
+      "left": -103,
+      "attrs": {
+        "value": false,
+        "brightness": 1,
+        "color": "red",
+        "lightColor": null,
+        "label": "STATUS",
+        "flip": false
+      }
+    }
+  ],
+  "connections": [
+    [
+      "esp32-cam:13",
+      "btn_stream:1.r",
+      "#22c55e",
+      []
+    ],
+    [
+      "btn_stream:2.r",
+      "esp32-cam:GND.1",
+      "black",
+      []
+    ],
+    [
+      "btn_ai:1.r",
+      "esp32-cam:14",
+      "#22c55e",
+      []
+    ],
+    [
+      "btn_ai:2.r",
+      "esp32-cam:GND.1",
+      "black",
+      []
+    ],
+    [
+      "led_status:A",
+      "esp32-cam:2",
+      "#22c55e",
+      []
+    ],
+    [
+      "led_status:C",
+      "r_led:1",
+      "#22c55e",
+      []
+    ],
+    [
+      "r_led:2",
+      "esp32-cam:GND.3",
+      "black",
+      []
+    ]
+  ],
+  "dependencies": {}
+}
