@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MOVA — Live gesture test</title>
+  <style>
+    :root {
+      --mint: #00d4aa;
+      --ink: #17212b;
+      --muted: #63707c;
+      --line: #dfe5e8;
+      --bg: #f3f7f7;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      height: 100dvh;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--ink);
+      font: 14px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .app {
+      height: 100%;
+      max-width: 1440px;
+      margin: auto;
+      padding: clamp(12px, 2vw, 24px);
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: .08em;
+    }
+
+    nav {
+      display: flex;
+      gap: 8px;
+    }
+
+    nav a {
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: var(--muted);
+      font-weight: 650;
+      text-decoration: none;
+    }
+
+    nav a:hover,
+    nav a.active {
+      background: var(--mint);
+      color: var(--ink);
+    }
+
+    .heading h1 {
+      margin: 0;
+      font-size: clamp(22px, 2.5vw, 30px);
+    }
+
+    .heading p {
+      margin: 4px 0 0;
+      color: var(--muted);
+    }
+
+    .workspace {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(360px, 1.3fr) minmax(290px, .7fr);
+      gap: 16px;
+    }
+
+    .panel {
+      min-height: 0;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: clamp(14px, 2vw, 22px);
+    }
+
+    .camera-panel {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      gap: 13px;
+    }
+
+    .camera-title,
+    .scores-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .camera-title h2,
+    .scores-head h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .badge {
+      padding: 5px 9px;
+      border-radius: 99px;
+      background: #edf1f2;
+      color: #596772;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .badge.live {
+      background: #dffaf3;
+      color: #087c67;
+    }
+
+    .stage {
+      position: relative;
+      min-height: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #18242b;
+      display: grid;
+      place-items: center;
+    }
+
+    .stage video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1);
+    }
+
+    .stage canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      transform: scaleX(-1);
+    }
+
+    .empty {
+      position: absolute;
+      color: #d3e0e3;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .stage.live .empty {
+      display: none;
+    }
+
+    button {
+      border: 0;
+      border-radius: 9px;
+      padding: 10px 14px;
+      font: inherit;
+      font-weight: 750;
+      cursor: pointer;
+    }
+
+    .primary {
+      background: var(--mint);
+      color: var(--ink);
+    }
+
+    .secondary {
+      background: #e8edef;
+      color: #394650;
+    }
+
+    .camera-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .camera-actions button {
+      flex: 1;
+    }
+
+    .scores {
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      gap: 14px;
+    }
+
+    .winner {
+      padding: 13px;
+      border-radius: 11px;
+      background: #f0f5f5;
+    }
+
+    .winner small {
+      display: block;
+      color: var(--muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .winner strong {
+      display: block;
+      margin-top: 3px;
+      font-size: 22px;
+    }
+
+    .score-list {
+      min-height: 0;
+      overflow-y: auto;
+      display: grid;
+      align-content: start;
+      gap: 11px;
+      padding-right: 4px;
+    }
+
+    .score-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 6px 10px;
+      align-items: center;
+    }
+
+    .score-name {
+      font-weight: 700;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .score-value {
+      font-variant-numeric: tabular-nums;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .bar {
+      grid-column: 1 / -1;
+      height: 8px;
+      overflow: hidden;
+      border-radius: 99px;
+      background: #e8edef;
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--mint);
+      transition: width .18s ease;
+    }
+
+    .placeholder {
+      color: var(--muted);
+      text-align: center;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .notice {
+      color: #a12738;
+      background: #fff0f1;
+      padding: 10px;
+      border-radius: 9px;
+      font-size: 12px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 760px) {
+      body {
+        height: auto;
+        overflow: auto;
+      }
+      .app {
+        height: auto;
+        min-height: 100dvh;
+      }
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+      .camera-panel {
+        min-height: 60vh;
+      }
+      .scores {
+        min-height: 400px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">MOVA</div>
+      <nav aria-label="Gesture administration">
+        <a href="/admin/register">Register</a>
+        <a href="/admin/gestures">Manage gestures</a>
+        <a class="active" href="/admin/live-test">Live test</a>
+        <a href="/admin/pipeline">Real-Time Buffer</a>
+      </nav>
+    </header>
+
+    <section class="heading">
+      <h1>Live gesture test</h1>
+      <p>Scores update continuously from your camera against every saved gesture.</p>
+    </section>
+
+    <section class="workspace">
+      <!-- Camera Panel -->
+      <section class="panel camera-panel">
+        <div class="camera-title">
+          <h2>Camera feed</h2>
+          <span id="cameraState" class="badge">CAMERA OFF</span>
+        </div>
+        <div id="stage" class="stage">
+          <video id="video" autoplay muted playsinline></video>
+          <canvas id="landmarks" aria-label="Detected hand landmarks"></canvas>
+          <p class="empty">Open the camera and hold a gesture in view.</p>
+        </div>
+        <div class="camera-actions">
+          <button id="start" class="primary" type="button">Start live test</button>
+          <button id="stop" class="secondary" type="button" disabled>Stop camera</button>
+        </div>
+      </section>
+
+      <!-- Scores Panel -->
+      <aside class="panel scores">
+        <div class="scores-head">
+          <h2>Gesture confidence</h2>
+          <span id="handState" class="badge">WAITING</span>
+        </div>
+        <div id="winner" class="winner">
+          <small>Best match</small>
+          <strong>Waiting for a hand</strong>
+        </div>
+        <div id="scoreList" class="score-list">
+          <p class="placeholder">Camera scores will appear here in real time.</p>
+        </div>
+        <p id="notice" class="notice hidden"></p>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    let stream = null;
+    let socket = null;
+    let running = false;
+
+    const canvas = document.createElement('canvas');
+    const overlay = $('landmarks');
+    const overlayContext = overlay.getContext('2d');
+    const context = canvas.getContext('2d');
+
+    function clearLandmarks() {
+      overlayContext.clearRect(0, 0, overlay.width, overlay.height);
+    }
+
+    function stop() {
+      running = false;
+      socket?.close();
+      socket = null;
+      stream?.getTracks().forEach(track => track.stop());
+      stream = null;
+      $('video').srcObject = null;
+      clearLandmarks();
+      $('stage').classList.remove('live');
+      $('cameraState').textContent = 'CAMERA OFF';
+      $('cameraState').classList.remove('live');
+      $('start').disabled = false;
+      $('stop').disabled = true;
+    }
+
+    $('stop').onclick = stop;
+    window.addEventListener('beforeunload', stop);
+
+    function showScores(scores, hands) {
+      $('handState').textContent = hands ? `${hands} HAND${hands === 1 ? '' : 'S'}` : 'NO HAND';
+      const list = $('scoreList');
+      const winner = $('winner').querySelector('strong');
+      list.replaceChildren();
+
+      if (!scores.length) {
+        winner.textContent = 'Nothing matched yet';
+        list.append(Object.assign(document.createElement('p'), {
+          className: 'placeholder',
+          textContent: hands
+            ? 'No compatible saved gestures for this hand count.'
+            : 'Show one or two hands to score gestures.'
+        }));
+        return;
+      }
+
+      const best = scores[0];
+      winner.textContent = `${best.name} · ${best.score.toFixed(1)}%`;
+
+      scores.forEach(score => {
+        const row = document.createElement('div');
+        row.className = 'score-row';
+
+        const name = document.createElement('span');
+        name.className = 'score-name';
+        name.textContent = score.name;
+
+        const value = document.createElement('span');
+        value.className = 'score-value';
+        value.textContent = `${score.score.toFixed(1)}%`;
+
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+
+        const fill = document.createElement('i');
+        fill.style.width = `${Math.max(0, Math.min(100, score.score))}%`;
+
+        bar.append(fill);
+        row.append(name, value, bar);
+        list.append(row);
+      });
+    }
+
+    function drawLandmarks(hands) {
+      const width = overlay.clientWidth;
+      const height = overlay.clientHeight;
+      const scale = devicePixelRatio || 1;
+
+      overlay.width = width * scale;
+      overlay.height = height * scale;
+      overlayContext.setTransform(scale, 0, 0, scale, 0, 0);
+      overlayContext.clearRect(0, 0, width, height);
+
+      if (!hands.length || !$('video').videoWidth) return;
+
+      const sourceRatio = $('video').videoWidth / $('video').videoHeight;
+      const targetRatio = width / height;
+      let drawnWidth, drawnHeight, offsetX, offsetY;
+
+      if (sourceRatio > targetRatio) {
+        drawnHeight = height;
+        drawnWidth = height * sourceRatio;
+        offsetX = (width - drawnWidth) / 2;
+        offsetY = 0;
+      } else {
+        drawnWidth = width;
+        drawnHeight = width / sourceRatio;
+        offsetX = 0;
+        offsetY = (height - drawnHeight) / 2;
+      }
+
+      const point = p => [offsetX + p[0] * drawnWidth, offsetY + p[1] * drawnHeight];
+      const links = [
+        [0, 1], [1, 2], [2, 3], [3, 4],
+        [0, 5], [5, 6], [6, 7], [7, 8],
+        [5, 9], [9, 10], [10, 11], [11, 12],
+        [9, 13], [13, 14], [14, 15], [15, 16],
+        [13, 17], [17, 18], [18, 19], [19, 20],
+        [0, 17]
+      ];
+
+      overlayContext.lineWidth = 2;
+      overlayContext.strokeStyle = '#31d8ff';
+      overlayContext.fillStyle = '#00d4aa';
+
+      hands.forEach(hand => {
+        overlayContext.beginPath();
+        links.forEach(([a, b]) => {
+          const start = point(hand[a]);
+          const end = point(hand[b]);
+          overlayContext.moveTo(...start);
+          overlayContext.lineTo(...end);
+        });
+        overlayContext.stroke();
+
+        hand.forEach(p => {
+          const [x, y] = point(p);
+          overlayContext.beginPath();
+          overlayContext.arc(x, y, 3, 0, Math.PI * 2);
+          overlayContext.fill();
+        });
+      });
+    }
+
+    function sendFrame() {
+      if (!running || socket?.readyState !== WebSocket.OPEN || !$('video').videoWidth) return;
+      canvas.width = $('video').videoWidth;
+      canvas.height = $('video').videoHeight;
+      context.drawImage($('video'), 0, 0);
+      socket.send(JSON.stringify({ image_base64: canvas.toDataURL('image/jpeg', 0.72) }));
+    }
+
+    function connect() {
+      const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+      socket = new WebSocket(`${protocol}://${location.host}/ws/detect`);
+
+      socket.onopen = sendFrame;
+
+      socket.onmessage = event => {
+        const data = JSON.parse(event.data);
+        if (data.error) {
+          $('notice').textContent = data.error;
+          $('notice').classList.remove('hidden');
+        } else {
+          showScores(data.scores || [], data.hand_count || 0);
+          drawLandmarks(data.landmarks || []);
+          $('notice').classList.add('hidden');
+        }
+        if (running) {
+          setTimeout(sendFrame, 120);
+        }
+      };
+
+      socket.onerror = () => {
+        $('notice').textContent = 'Live connection failed.';
+        $('notice').classList.remove('hidden');
+      };
+
+      socket.onclose = () => {
+        if (running) {
+          $('notice').textContent = 'Live connection closed.';
+          $('notice').classList.remove('hidden');
+        }
+      };
+    }
+
+    $('start').onclick = async () => {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        $('notice').textContent = 'Camera access requires HTTPS or localhost.';
+        $('notice').classList.remove('hidden');
+        return;
+      }
+
+      $('start').disabled = true;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user', width: { ideal: 960 }, height: { ideal: 720 } },
+          audio: false
+        });
+        $('video').srcObject = stream;
+        await $('video').play();
+        running = true;
+
+        $('stage').classList.add('live');
+        $('cameraState').textContent = 'LIVE';
+        $('cameraState').classList.add('live');
+        $('stop').disabled = false;
+        connect();
+      } catch (error) {
+        $('notice').textContent = `Could not open camera: ${error.message}`;
+        $('notice').classList.remove('hidden');
+        stop();
+      }
+    };
+  </script>
+</body>
+</html>

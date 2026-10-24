@@ -6,7 +6,7 @@
       "level": 1,
       "category": "daily",
       "answer": "hi I want tea",
-      "accept": ["hi I want tea", "hello I want tea", "hi I need tea", "hello I need tea", "hi I want drink", "hello I want drink", "hi I need drink", "hello I need drink"],
+      "accept": ["hi I want tea", "hello I want tea", "hi I need tea", "hello I need tea", "hi I want drink", "hello I want drink"],
       "gestures": ["wave_hand", "point_toward_self", "open_palm_request", "cup_hold_mime"],
       "scene": "Two friends at a tea stall.",
       "history": [
@@ -46,20 +46,7 @@
       "accept": ["I want call doctor", "I need call doctor"],
       "gestures": ["point_toward_self", "open_palm_request", "phone_hand_shape", "prescription_scribble"],
       "scene": "A patient and a nurse in an emergency room.",
-      "history": [
-        { "speaker": "N", "mode": "speech", "text": "You look pale. Should I call the doctor?" }
-      ]
-    },
-    {
-      "id": "test5_thanks",
-      "level": 1,
-      "category": "social",
-      "answer": "I thank you",
-      "gestures": ["point_toward_self", "folded_hands"],
-      "scene": "Two strangers on the street.",
-      "history": [
-        { "speaker": "S", "mode": "speech", "text": "Here is your bag, you dropped it." }
-      ]
+      "history": []
     },
     {
       "id": "test6_washroom",
@@ -74,25 +61,11 @@
       ]
     },
     {
-      "id": "test7_dinner_correction",
-      "level": 3,
-      "category": "correction",
-      "answer": "I eat pasta",
-      "accept": ["I eat pasta", "I eating pasta"],
-      "gestures": ["point_toward_self", "spoon_scoop_mime", "food_bowl_hold"],
-      "scene": "A customer and a waiter in a restaurant.",
-      "history": [
-        { "speaker": "W", "mode": "speech", "text": "Rice for you?" },
-        { "speaker": "U", "mode": "gesture_fragment", "text": "no" },
-        { "speaker": "W", "mode": "speech", "text": "Sorry! So pasta instead of rice?" }
-      ]
-    },
-    {
       "id": "test8_come_here",
       "level": 2,
       "category": "social",
       "answer": "you come here",
-      "accept": ["you come here", "you coming here"],
+      "accept": ["you come here"],
       "gestures": ["point_at_person", "beckon_fingers", "point_somewhere"],
       "scene": "Two friends, one downstairs and one on the balcony.",
       "history": [

@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MOVA — Register Gesture</title>
+  <style>
+    :root {
+      --mint: #00d4aa;
+      --mint-light: #dffaf3;
+      --ink: #17212b;
+      --muted: #63707c;
+      --line: #dfe5e8;
+      --bg: #f3f7f7;
+      --card-bg: #ffffff;
+      --danger: #c43c4b;
+      --danger-bg: #fff0f1;
+      --success-bg: #e3f8ed;
+      --success: #13763c;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      overflow: hidden;
+      font: 14px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+
+    .app {
+      height: 100dvh;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: clamp(12px, 2vw, 24px);
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      font-size: 18px;
+    }
+
+    nav {
+      display: flex;
+      gap: 8px;
+    }
+
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-weight: 650;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    nav a:hover,
+    nav a.active {
+      background: var(--mint);
+      color: var(--ink);
+    }
+
+    .workspace {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(260px, 0.8fr) minmax(400px, 1.4fr) minmax(220px, 0.7fr);
+      gap: 16px;
+    }
+
+    .panel {
+      min-height: 0;
+      background: var(--card-bg);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: clamp(14px, 2vw, 22px);
+      box-shadow: 0 8px 28px rgba(24, 47, 55, 0.05);
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: clamp(20px, 2vw, 28px);
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 15px;
+    }
+
+    .muted {
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .form {
+      margin-top: 22px;
+      display: grid;
+      gap: 14px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #44515d;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid #cfd9de;
+      border-radius: 9px;
+      padding: 11px 12px;
+      font: inherit;
+      color: inherit;
+      background: #fff;
+    }
+
+    input:focus {
+      outline: 3px solid rgba(0, 212, 170, 0.2);
+      border-color: var(--mint);
+    }
+
+    .label-row {
+      display: flex;
+      gap: 7px;
+    }
+
+    .label-row input {
+      min-width: 0;
+    }
+
+    button {
+      border: 0;
+      border-radius: 9px;
+      padding: 10px 13px;
+      font: inherit;
+      font-weight: 750;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    .primary {
+      background: var(--mint);
+      color: var(--ink);
+    }
+
+    .secondary {
+      color: #394650;
+      background: #e7edef;
+    }
+
+    .wide {
+      width: 100%;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-height: 28px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 7px 4px 9px;
+      background: var(--mint-light);
+      border-radius: 999px;
+      font-size: 12px;
+    }
+
+    .tag button {
+      padding: 0;
+      background: transparent;
+      font-size: 16px;
+      line-height: 1;
+      color: #38655c;
+    }
+
+    .capture {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      gap: 12px;
+    }
+
+    .capture-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .badge {
+      white-space: nowrap;
+      padding: 5px 9px;
+      border-radius: 99px;
+      background: #eef2f3;
+      color: #56636e;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .badge.ready {
+      background: var(--mint-light);
+      color: #087c67;
+    }
+
+    .stage {
+      position: relative;
+      min-height: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #18242b;
+      display: grid;
+      place-items: center;
+    }
+
+    video,
+    .capture-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1);
+    }
+
+    .capture-image {
+      display: none;
+    }
+
+    .stage.reviewing video {
+      display: none;
+    }
+
+    .stage.reviewing .capture-image {
+      display: block;
+    }
+
+    .empty-camera {
+      position: absolute;
+      text-align: center;
+      color: #d5e0e4;
+      max-width: 270px;
+      padding: 20px;
+    }
+
+    .stage.live .empty-camera,
+    .stage.reviewing .empty-camera {
+      display: none;
+    }
+
+    .countdown {
+      display: none;
+      position: absolute;
+      inset: 0;
+      place-items: center;
+      background: rgba(4, 15, 20, 0.38);
+      color: #fff;
+      font-size: 72px;
+      font-weight: 800;
+    }
+
+    .countdown.visible {
+      display: grid;
+    }
+
+    .capture-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .capture-actions button {
+      flex: 1;
+    }
+
+    .details {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .status {
+      border-radius: 10px;
+      padding: 12px;
+      background: #f2f5f6;
+      color: #51606b;
+      font-size: 13px;
+    }
+
+    .status.ready {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+
+    .status.error {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+
+    .metric {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+    }
+
+    .metric small {
+      color: var(--muted);
+      display: block;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 22px;
+      margin-top: 2px;
+    }
+
+    .helper {
+      margin-top: auto;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 800px) {
+      body {
+        overflow: auto;
+      }
+      .app {
+        height: auto;
+        min-height: 100dvh;
+      }
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+      .stage {
+        min-height: 42vh;
+      }
+      .details {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+      .helper {
+        margin-top: 0;
+        grid-column: 1 / -1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">MOVA</div>
+      <nav aria-label="Main navigation">
+        <a class="active" href="/admin/register">Register</a>
+        <a href="/admin/gestures">Manage Gestures</a>
+        <a href="/admin/live-test">Live Test</a>
+        <a href="/admin/pipeline">Real-Time Buffer</a>
+      </nav>
+    </header>
+
+    <section class="workspace">
+      <!-- Left: Form Panel -->
+      <aside class="panel">
+        <h1>Register a gesture</h1>
+        <p class="muted">Name it, capture a clear hand pose, then save.</p>
+        <div class="form">
+          <div>
+            <label for="gestureName">Gesture name</label>
+            <input id="gestureName" autocomplete="off" placeholder="e.g. thumbs_up">
+          </div>
+          <div>
+            <label for="labelInput">Meanings / labels</label>
+            <div class="label-row">
+              <input id="labelInput" placeholder="yes, good, okay">
+              <button id="addLabel" class="secondary" type="button">Add</button>
+            </div>
+          </div>
+          <div class="tags" id="tags" aria-live="polite"></div>
+          <button id="openCamera" class="primary wide" type="button">Open camera</button>
+          <button id="saveGesture" class="primary wide" type="button" disabled>Save gesture</button>
+        </div>
+      </aside>
+
+      <!-- Middle: Camera Stage Panel -->
+      <section class="panel capture">
+        <div class="capture-head">
+          <div>
+            <h2>Camera</h2>
+            <p class="muted">Keep your whole hand in the frame.</p>
+          </div>
+          <span id="cameraBadge" class="badge">CAMERA OFF</span>
+        </div>
+        <div id="stage" class="stage">
+          <video id="video" autoplay muted playsinline></video>
+          <img id="captureImage" class="capture-image" alt="Captured hand gesture">
+          <div class="empty-camera">Open the camera to see a live preview.</div>
+          <div id="countdown" class="countdown">3</div>
+        </div>
+        <div class="capture-actions">
+          <button id="captureFrame" class="primary" type="button" disabled>Capture pose</button>
+          <button id="retake" class="secondary hidden" type="button">Retake</button>
+        </div>
+      </section>
+
+      <!-- Right: Status / Details Panel -->
+      <aside class="panel details">
+        <div>
+          <h2>Capture status</h2>
+          <div id="status" class="status">Open the camera when you are ready.</div>
+        </div>
+        <div class="metric">
+          <small>Detected hands</small>
+          <strong id="handCount">—</strong>
+        </div>
+        <div class="metric">
+          <small>Saved frame</small>
+          <strong id="frameState">No</strong>
+        </div>
+        <p class="helper">You can register either one or two hands. The detector records the hand count from the frame you save.</p>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const state = {
+      stream: null,
+      captureId: null,
+      hasFeatures: false,
+      labels: new Set(),
+      busy: false
+    };
+
+    const setStatus = (message, type = '') => {
+      $('status').textContent = message;
+      $('status').className = `status ${type}`;
+    };
+
+    const renderLabels = () => {
+      const tags = $('tags');
+      tags.replaceChildren(...[...state.labels].map(label => {
+        const tag = document.createElement('span');
+        tag.className = 'tag';
+        tag.append(document.createTextNode(label));
+
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.textContent = '×';
+        remove.ariaLabel = `Remove ${label}`;
+        remove.onclick = () => {
+          state.labels.delete(label);
+          renderLabels();
+        };
+
+        tag.append(remove);
+        return tag;
+      }));
+    };
+
+    const addLabels = () => {
+      $('labelInput').value
+        .split(',')
+        .map(x => x.trim())
+        .filter(Boolean)
+        .forEach(x => state.labels.add(x));
+      $('labelInput').value = '';
+      renderLabels();
+    };
+
+    $('addLabel').onclick = addLabels;
+    $('labelInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        addLabels();
+      }
+    });
+
+    async function startSession() {
+      const response = await fetch('/api/capture/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hand_count: 2 })
+      });
+      if (!response.ok) throw new Error('Could not start a capture session');
+      state.captureId = (await response.json()).capture_id;
+    }
+
+    $('openCamera').onclick = async () => {
+      if (!$('gestureName').value.trim()) {
+        setStatus('Add a gesture name before opening the camera.', 'error');
+        $('gestureName').focus();
+        return;
+      }
+      if (!navigator.mediaDevices?.getUserMedia) {
+        setStatus('This browser does not support camera access. Use HTTPS or localhost.', 'error');
+        return;
+      }
+
+      $('openCamera').disabled = true;
+      try {
+        state.stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+          audio: false
+        });
+        $('video').srcObject = state.stream;
+        await $('video').play();
+        await startSession();
+
+        $('stage').classList.add('live');
+        $('cameraBadge').textContent = 'LIVE';
+        $('cameraBadge').classList.add('ready');
+        $('captureFrame').disabled = false;
+        $('openCamera').textContent = 'Camera ready';
+        setStatus('Position your hand, then capture the pose.');
+      } catch (error) {
+        console.error(error);
+        stopCamera();
+        $('openCamera').disabled = false;
+        setStatus(`Could not open the camera: ${error.message}`, 'error');
+      }
+    };
+
+    const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+    $('captureFrame').onclick = async () => {
+      if (state.busy || !$('video').videoWidth || !state.captureId) return;
+      state.busy = true;
+      $('captureFrame').disabled = true;
+      const countdown = $('countdown');
+
+      try {
+        for (const number of [3, 2, 1]) {
+          countdown.textContent = number;
+          countdown.classList.add('visible');
+          await wait(550);
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = $('video').videoWidth;
+        canvas.height = $('video').videoHeight;
+        canvas.getContext('2d').drawImage($('video'), 0, 0);
+
+        const response = await fetch('/api/capture/frame', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            capture_id: state.captureId,
+            image_base64: canvas.toDataURL('image/jpeg', 0.9)
+          })
+        });
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || 'Could not analyse this frame');
+
+        $('handCount').textContent = data.hand_count || '0';
+        state.hasFeatures = Boolean(data.has_features);
+
+        if (!state.hasFeatures) {
+          $('frameState').textContent = 'Try again';
+          setStatus(
+            data.hand_count
+              ? 'A hand was found, but the pose was not clear enough. Try again.'
+              : 'No hand found. Center your hand and try again.',
+            'error'
+          );
+          return;
+        }
+
+        $('captureImage').src = `data:image/jpeg;base64,${data.image_base64}`;
+        $('stage').classList.add('reviewing');
+        $('retake').classList.remove('hidden');
+        $('captureFrame').textContent = 'Capture again';
+        $('saveGesture').disabled = false;
+        $('frameState').textContent = 'Ready';
+        setStatus(`${data.hand_count} hand${data.hand_count === 1 ? '' : 's'} captured. Save it when it looks right.`, 'ready');
+      } catch (error) {
+        console.error(error);
+        setStatus(error.message, 'error');
+      } finally {
+        countdown.classList.remove('visible');
+        $('captureFrame').disabled = false;
+        state.busy = false;
+      }
+    };
+
+    $('retake').onclick = () => {
+      $('stage').classList.remove('reviewing');
+      $('retake').classList.add('hidden');
+      state.hasFeatures = false;
+      $('saveGesture').disabled = true;
+      $('frameState').textContent = 'No';
+      setStatus('Ready for another capture.');
+    };
+
+    $('saveGesture').onclick = async () => {
+      if (!state.hasFeatures || !state.captureId) return;
+      const button = $('saveGesture');
+      button.disabled = true;
+      button.textContent = 'Saving…';
+      try {
+        const response = await fetch('/api/gestures/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            capture_id: state.captureId,
+            name: $('gestureName').value.trim(),
+            labels: [...state.labels]
+          })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || 'Could not save gesture');
+        window.location.href = '/admin/gestures';
+      } catch (error) {
+        setStatus(error.message, 'error');
+        button.disabled = false;
+        button.textContent = 'Save gesture';
+      }
+    };
+
+    function stopCamera() {
+      state.stream?.getTracks().forEach(track => track.stop());
+      state.stream = null;
+    }
+
+    window.addEventListener('beforeunload', stopCamera);
+  </script>
+</body>
+</html>

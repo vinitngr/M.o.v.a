@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MOVA — Manage Gestures</title>
+  <style>
+    :root {
+      --mint: #00d4aa;
+      --mint-light: #dffaf3;
+      --mint-dark: #087c67;
+      --ink: #17212b;
+      --muted: #63707c;
+      --line: #dfe5e8;
+      --bg: #f3f7f7;
+      --card-bg: #ffffff;
+      --danger: #c43c4b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      height: 100dvh;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--ink);
+      font: 14px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .app {
+      height: 100%;
+      max-width: 1440px;
+      margin: auto;
+      padding: clamp(12px, 2vw, 24px);
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    nav {
+      display: flex;
+      gap: 8px;
+    }
+
+    nav a {
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: var(--muted);
+      font-weight: 650;
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    nav a:hover,
+    nav a.active {
+      background: var(--mint);
+      color: var(--ink);
+    }
+
+    .heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+    }
+
+    .heading h1 {
+      margin: 0;
+      font-size: clamp(22px, 2.5vw, 30px);
+    }
+
+    .heading p {
+      margin: 4px 0 0;
+      color: var(--muted);
+    }
+
+    .library {
+      min-height: 0;
+      background: var(--card-bg);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: clamp(14px, 2vw, 22px);
+      box-shadow: 0 8px 28px rgba(24, 47, 55, 0.05);
+    }
+
+    .grid {
+      height: 100%;
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding-right: 4px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      align-content: start;
+      gap: 14px;
+    }
+
+    .card {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .preview {
+      width: 100%;
+      height: clamp(90px, 15vh, 145px);
+      object-fit: cover;
+      border-radius: 8px;
+      background: #eef3f4;
+    }
+
+    .card-head {
+      display: flex;
+      gap: 8px;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 15px;
+      overflow-wrap: anywhere;
+    }
+
+    .badge {
+      padding: 4px 7px;
+      border-radius: 99px;
+      background: #e9eeef;
+      font-size: 10px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .badge.two {
+      background: var(--mint-light);
+      color: var(--mint-dark);
+    }
+
+    .labels {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      min-height: 23px;
+    }
+
+    .label {
+      padding: 3px 7px;
+      border-radius: 99px;
+      background: var(--mint-light);
+      font-size: 11px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 7px;
+      margin-top: auto;
+    }
+
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 750;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .primary {
+      background: var(--mint);
+      color: var(--ink);
+    }
+
+    .secondary {
+      background: #e8edef;
+      color: #394650;
+    }
+
+    .danger {
+      background: var(--danger);
+      color: #ffffff;
+    }
+
+    .empty {
+      grid-column: 1 / -1;
+      place-self: center;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      padding: 20px;
+      background: rgba(12, 25, 30, 0.45);
+      z-index: 100;
+    }
+
+    .modal.open {
+      display: grid;
+    }
+
+    .dialog {
+      width: min(420px, 100%);
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.2);
+    }
+
+    .dialog h2 {
+      margin: 0 0 16px;
+    }
+
+    .dialog label {
+      display: block;
+      margin: 12px 0 5px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .dialog input,
+    .dialog textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cfd9de;
+      border-radius: 8px;
+      font: inherit;
+    }
+
+    .dialog textarea {
+      resize: vertical;
+    }
+
+    .dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    @media (max-width: 900px) {
+      body {
+        height: auto;
+        overflow: auto;
+      }
+      .app {
+        height: auto;
+        min-height: 100dvh;
+      }
+      .library {
+        min-height: 520px;
+      }
+      .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 500px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      .heading {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .app {
+        grid-template-rows: auto auto auto;
+      }
+      .library {
+        min-height: 500px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">MOVA</div>
+      <nav aria-label="Main navigation">
+        <a href="/admin/register">Register</a>
+        <a class="active" href="/admin/gestures">Manage Gestures</a>
+        <a href="/admin/live-test">Live Test</a>
+        <a href="/admin/pipeline">Real-Time Buffer</a>
+      </nav>
+    </header>
+
+    <section class="heading">
+      <div>
+        <h1>Gesture library</h1>
+        <p>All gestures are available below — scroll only this library.</p>
+      </div>
+      <a href="/admin/register"><button class="primary" type="button">+ Register gesture</button></a>
+    </section>
+
+    <section class="library">
+      <div id="grid" class="grid" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <!-- Edit Gesture Modal -->
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <form id="editForm" class="dialog">
+      <h2 id="modalTitle">Edit gesture</h2>
+      <label for="editName">Gesture name</label>
+      <input id="editName" required>
+      <label for="editLabels">Labels (comma-separated)</label>
+      <textarea id="editLabels" rows="3"></textarea>
+      <div class="dialog-actions">
+        <button id="cancel" class="secondary" type="button">Cancel</button>
+        <button class="primary" type="submit">Save changes</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    let gestures = [];
+    let editingId = null;
+
+    const element = (tag, className, text) => {
+      const el = document.createElement(tag);
+      if (className) el.className = className;
+      if (text !== undefined) el.textContent = text;
+      return el;
+    };
+
+    function render() {
+      const grid = $('grid');
+      grid.replaceChildren();
+
+      if (!gestures.length) {
+        grid.append(element('div', 'empty', 'No gestures registered yet.'));
+        return;
+      }
+
+      gestures.forEach(g => {
+        const card = element('article', 'card');
+        if (g.preview_path) {
+          const img = element('img', 'preview');
+          img.src = g.preview_path;
+          img.alt = `${g.name} gesture preview`;
+          card.append(img);
+        }
+
+        const head = element('div', 'card-head');
+        const title = element('h2', '', g.name);
+        const badge = element(
+          'span',
+          `badge ${g.hand_count === 2 ? 'two' : ''}`,
+          `${g.hand_count} hand${g.hand_count === 1 ? '' : 's'}`
+        );
+        head.append(title, badge);
+        card.append(head);
+
+        const labels = element('div', 'labels');
+        (g.labels || []).forEach(label => labels.append(element('span', 'label', label)));
+        if (!(g.labels || []).length) {
+          labels.append(element('span', 'label', 'No labels'));
+        }
+        card.append(labels);
+
+        const actions = element('div', 'actions');
+        const edit = element('button', 'secondary', 'Edit');
+        const remove = element('button', 'danger', 'Delete');
+        edit.type = remove.type = 'button';
+        edit.onclick = () => openEdit(g);
+        remove.onclick = () => removeGesture(g);
+        actions.append(edit, remove);
+        card.append(actions);
+
+        grid.append(card);
+      });
+    }
+
+    async function load() {
+      try {
+        const response = await fetch('/api/gestures');
+        if (!response.ok) throw new Error('Could not load gestures');
+        gestures = (await response.json()).gestures || [];
+        render();
+      } catch (error) {
+        $('grid').replaceChildren(element('div', 'empty', error.message));
+      }
+    }
+
+    function openEdit(g) {
+      editingId = g.id;
+      $('editName').value = g.name;
+      $('editLabels').value = (g.labels || []).join(', ');
+      $('modal').classList.add('open');
+      $('editName').focus();
+    }
+
+    function closeEdit() {
+      $('modal').classList.remove('open');
+      editingId = null;
+    }
+
+    $('editForm').onsubmit = async event => {
+      event.preventDefault();
+      const name = $('editName').value.trim();
+      const labels = $('editLabels').value
+        .split(',')
+        .map(x => x.trim())
+        .filter(Boolean);
+
+      if (!name) return;
+
+      const response = await fetch(`/api/gestures/${editingId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, labels })
+      });
+
+      if (!response.ok) {
+        alert('Could not save changes.');
+        return;
+      }
+      closeEdit();
+      load();
+    };
+
+    async function removeGesture(g) {
+      if (!confirm(`Delete "${g.name}"? This cannot be undone.`)) return;
+      const response = await fetch(`/api/gestures/${g.id}`, {
+        method: 'DELETE'
+      });
+      if (!response.ok) {
+        alert('Could not delete this gesture.');
+        return;
+      }
+      load();
+    }
+
+    $('cancel').onclick = closeEdit;
+    $('modal').onclick = e => {
+      if (e.target === $('modal')) closeEdit();
+    };
+
+    load();
+  </script>
+</body>
+</html>
