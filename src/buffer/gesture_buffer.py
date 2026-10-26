@@ -261,6 +261,18 @@ class GestureBuffer:
         self.duplicates_log.clear()
         self.events.clear()
 
+    def set_window_size(self, size: int) -> None:
+        """Resize the sliding window (kept odd). Persistence tracking
+        scales with it: min_gesture_persistence = half window + 1."""
+        size = int(size)
+        size = size if size % 2 == 1 else size + 1
+        # Sensible bounds: below 3 there is no real outlier context,
+        # above 9 the analyzer reacts too slowly for interactive use.
+        self.window_size = max(3, min(9, size))
+        self.half_window = self.window_size // 2
+        self.min_gesture_persistence = self.half_window + 1
+        self.window = deque(self.window, maxlen=self.window_size)
+
     def get_state(self) -> Dict[str, Any]:
         """Return full state dictionary for real-time frontend monitoring."""
         inactivity_progress = min(1.0, self.inactive_frames / max(1, self.end_signal_frames))

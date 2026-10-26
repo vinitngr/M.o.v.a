@@ -142,11 +142,26 @@ $('pgResetBtn').onclick = () => {
 const pgSettings = { fps: TARGET_FPS, threshold: 65, timeoutFrames: 14 };
 const settingsModal = $('pgSettingsModal');
 
+// The analysis window auto-scales with fps (odd, clamped 3-9 on the
+// server): at 6 fps, 5 frames ≈ 0.8s of context for outlier and
+// persistence decisions.
+function windowForFps(fps) {
+  return Math.max(3, (Math.round(fps * 0.8) | 1));
+}
+
 function applyFpsSetting(v) {
   pgSettings.fps = v;
   TARGET_FPS = v;
   FRAME_INTERVAL = Math.round(1000 / v);
   $('pgSetFpsVal').textContent = `${v} fps`;
+  const w = windowForFps(v);
+  $('pgSetWindowVal').textContent = `${w} fr auto`;
+  sendControl({
+    action: 'init',
+    threshold: pgSettings.threshold,
+    frames: pgSettings.timeoutFrames,
+    window: w,
+  });
 }
 
 function applyTimeoutSetting(v) {
@@ -217,6 +232,7 @@ function connect() {
           action: 'init',
           threshold: pgSettings.threshold,
           frames: pgSettings.timeoutFrames,
+          window: windowForFps(pgSettings.fps),
         }));
         sendFrame();
       };

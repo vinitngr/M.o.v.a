@@ -36,6 +36,9 @@ class RealTimePipeline:
     def set_threshold(self, threshold: float) -> None:
         self.threshold = float(np.clip(threshold, 10.0, 95.0))
 
+    def set_window_size(self, size: int) -> None:
+        self.buffer.set_window_size(int(size))
+
     def reset_buffer(self) -> None:
         self.buffer.clear()
 

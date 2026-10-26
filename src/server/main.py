@@ -345,6 +345,8 @@ async def pipeline_stream(websocket: WebSocket):
                     pipeline.set_threshold(float(payload["threshold"]))
                 if "frames" in payload:
                     pipeline.buffer.end_signal_frames = int(payload["frames"])
+                if "window" in payload:
+                    pipeline.set_window_size(int(payload["window"]))
                 continue
 
             image_base64 = payload.get("image_base64")
