@@ -124,6 +124,28 @@ async def gestures_page(request: Request):
     return templates.TemplateResponse("gestures.html", {"request": request})
 
 
+@app.get("/playground", response_class=HTMLResponse)
+async def playground_page(request: Request):
+    return templates.TemplateResponse("playground.html", {"request": request})
+
+
+@app.get("/api/playground/library")
+async def playground_library():
+    """Lightweight gesture metadata (no feature vectors) for playground cards."""
+    return {
+        "gestures": [
+            {
+                "id": g.get("id"),
+                "name": g.get("name"),
+                "hand_count": g.get("hand_count", 1),
+                "preview_path": g.get("preview_path"),
+                "landmarks": g.get("landmarks", []),
+            }
+            for g in store.get_all()
+        ]
+    }
+
+
 @app.post("/api/capture/start")
 async def start_capture(req: CaptureStartRequest):
     capture_id = str(int(time.time() * 1000))

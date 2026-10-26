@@ -1,0 +1,528 @@
+/* ============================================================
+   MOVA Playground — dark dashboard theme (card styles)
+   Page shell:
+   ============================================================ */
+:root {
+  --pg-bg: #070d15;
+  --pg-card: #0e1922;
+  --pg-card-ghost: rgba(14, 25, 34, 0.45);
+  --pg-line: #1c2c3a;
+  --pg-line-soft: #15222e;
+  --pg-row: #101c26;
+  --pg-row-line: #182836;
+  --pg-text: #e8f2ec;
+  --pg-muted: #758592;
+  --pg-mint: #00e6a8;
+  --pg-mint-2: #12f7c0;
+  --pg-mint-soft: rgba(0, 230, 168, 0.12);
+  --pg-mint-line: rgba(0, 230, 168, 0.35);
+  --pg-green: #34d399;
+  --pg-red: #ff4d5e;
+  --pg-skeleton: #38bdf8;
+  --pg-radius: 16px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background:
+    radial-gradient(1100px 500px at 85% -10%, rgba(0, 230, 168, 0.06), transparent 60%),
+    radial-gradient(900px 420px at -10% 110%, rgba(56, 189, 248, 0.05), transparent 60%),
+    var(--pg-bg);
+  color: var(--pg-text);
+  font: 13.5px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.pg-app {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pg-grid {
+  width: 100%;
+  max-width: 1680px;
+  padding: 20px;
+  height: 80dvh;
+  min-height: 500px;
+  max-height: 700px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+@media (max-width: 1250px) {
+  .pg-grid {
+    height: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .pg-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
+   Card base
+   ============================================================ */
+.pg-card {
+  min-width: 0;
+  min-height: 0;
+  background: var(--pg-card);
+  border: 1px solid var(--pg-line);
+  border-radius: var(--pg-radius);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow:
+    0 18px 40px -24px rgba(0, 0, 0, 0.55),
+    0 1px 0 rgba(255, 255, 255, 0.03) inset;
+  animation: pgRise 0.5s ease both;
+}
+
+.pg-card:nth-child(2) { animation-delay: 0.05s; }
+.pg-card:nth-child(3) { animation-delay: 0.1s; }
+.pg-card:nth-child(4) { animation-delay: 0.15s; }
+.pg-card:nth-child(5) { animation-delay: 0.2s; }
+
+@keyframes pgRise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.pg-card--ghost {
+  background: var(--pg-card-ghost);
+  border: 1px dashed #22344a;
+  box-shadow: none;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.pg-ghost-num {
+  font-size: 30px;
+  font-weight: 800;
+  color: #24394c;
+  letter-spacing: 0.04em;
+}
+
+.pg-ghost-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #40566b;
+}
+
+.pg-ghost-note {
+  font-size: 11px;
+  color: #2b4257;
+}
+
+@media (max-width: 1250px) {
+  .pg-card--ghost {
+    min-height: 180px;
+  }
+}
+
+/* ============================================================
+   Card 1 — header
+   ============================================================ */
+.pg-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.pg-head-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 750;
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.pg-head-icon {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: var(--pg-mint-soft);
+  border: 1px solid var(--pg-mint-line);
+  display: grid;
+  place-items: center;
+  color: var(--pg-mint);
+}
+
+.pg-head-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.pg-head-sub {
+  margin: 2px 0 0;
+  font-size: 11px;
+  color: var(--pg-muted);
+}
+
+/* Camera toggle pill */
+.pg-cam-wrap {
+  position: relative;
+  flex: none;
+}
+
+.pg-cam-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--pg-mint-line);
+  background: rgba(52, 211, 153, 0.1);
+  color: var(--pg-green);
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 7px 11px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+
+.pg-cam-toggle svg {
+  width: 14px;
+  height: 14px;
+}
+
+.pg-cam-toggle:hover {
+  background: rgba(52, 211, 153, 0.18);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px -8px rgba(0, 230, 168, 0.35);
+}
+
+.pg-cam-toggle.is-off {
+  border-color: #33475b;
+  background: rgba(41, 56, 71, 0.25);
+  color: #8ba1b3;
+}
+
+.pg-cam-toggle .pg-chev {
+  opacity: 0.7;
+  margin-left: -2px;
+}
+
+.pg-cam-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 30;
+  min-width: 150px;
+  padding: 6px;
+  background: #0b151e;
+  border: 1px solid var(--pg-line);
+  border-radius: 12px;
+  box-shadow: 0 16px 34px -12px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pg-cam-menu[hidden] {
+  display: none;
+}
+
+.pg-cam-item {
+  border: 0;
+  background: transparent;
+  color: var(--pg-text);
+  font: inherit;
+  font-size: 11.5px;
+  text-align: left;
+  padding: 7px 9px;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+.pg-cam-item:hover {
+  background: var(--pg-mint-soft);
+}
+
+.pg-cam-item.is-active {
+  color: var(--pg-mint);
+  font-weight: 700;
+}
+
+/* ============================================================
+   Card 1 — video stage
+   ============================================================ */
+.pg-stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 150px;
+  border-radius: 12px;
+  border: 1px solid var(--pg-line-soft);
+  background: #060d13;
+  overflow: hidden;
+}
+
+.pg-stage video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+.pg-stage canvas.pg-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transform: scaleX(-1);
+}
+
+.pg-stage-badges {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 4;
+  display: flex;
+  gap: 5px;
+}
+
+.pg-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  background: rgba(6, 14, 20, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  color: #c4d4dd;
+  backdrop-filter: blur(4px);
+}
+
+.pg-badge-live {
+  color: #ff8f9a;
+  border-color: rgba(255, 77, 94, 0.4);
+  background: rgba(255, 77, 94, 0.14);
+  display: none;
+}
+
+.pg-badge-live .pg-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 99px;
+  background: var(--pg-red);
+  animation: pgPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pgPulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(255, 77, 94, 0.5); }
+  50% { opacity: 0.55; box-shadow: 0 0 0 4px rgba(255, 77, 94, 0); }
+}
+
+.pg-stage.is-live .pg-badge-live {
+  display: inline-flex;
+}
+
+.pg-expand {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 4;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border-radius: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(6, 14, 20, 0.78);
+  color: #b9cbd6;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.pg-expand svg {
+  width: 12px;
+  height: 12px;
+}
+
+.pg-expand:hover {
+  color: var(--pg-mint);
+  background: rgba(10, 22, 30, 0.9);
+}
+
+.pg-empty {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  text-align: center;
+  font-size: 11.5px;
+  color: #55707f;
+}
+
+.pg-stage.is-live .pg-empty {
+  display: none;
+}
+
+/* ============================================================
+   Card 1 — Top 5 predictions
+   ============================================================ */
+.pg-pred-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.pg-pred-head h3 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+}
+
+.pg-handpill {
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--pg-muted);
+}
+
+.pg-handpill.is-hands {
+  color: var(--pg-mint);
+}
+
+.pg-top5 {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.pg-row {
+  height: 34px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px 0 4px;
+  background: var(--pg-row);
+  border: 1px solid var(--pg-row-line);
+  border-radius: 10px;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.pg-row.is-active {
+  border-color: rgba(0, 230, 168, 0.35);
+  background: linear-gradient(90deg, rgba(0, 230, 168, 0.08), var(--pg-row) 70%);
+}
+
+.pg-row.is-empty {
+  opacity: 0.45;
+}
+
+.pg-thumb {
+  position: relative;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: #0a141d;
+  border: 1px solid var(--pg-row-line);
+  overflow: hidden;
+}
+
+.pg-thumb canvas,
+.pg-thumb img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.pg-thumb img {
+  object-fit: cover;
+}
+
+.pg-row-name {
+  flex: 0 1 auto;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--pg-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pg-row-bar {
+  flex: 1 1 auto;
+  min-width: 24px;
+  height: 6px;
+  border-radius: 999px;
+  background: #1a2a38;
+  overflow: hidden;
+}
+
+.pg-row-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #00b38a, var(--pg-mint) 60%, var(--pg-mint-2));
+  box-shadow: 0 0 8px rgba(0, 230, 168, 0.45);
+  transition: width 0.25s ease;
+}
+
+.pg-row-score {
+  flex: none;
+  width: 30px;
+  text-align: right;
+  font-size: 11px;
+  font-weight: 700;
+  color: #cfe0d8;
+  font-variant-numeric: tabular-nums;
+}
+
+.pg-row.is-empty .pg-row-score {
+  color: #4c5f6d;
+}
+
+/* Small screens: let the stage breathe */
+@media (max-width: 720px) {
+  .pg-stage {
+    min-height: 46vh;
+  }
+}
