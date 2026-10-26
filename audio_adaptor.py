@@ -215,6 +215,19 @@ class PiperProvider:
 
     _voice_cache: dict[str, object] = {}
 
+    def warm_up(self) -> list[str]:
+        """Pre-load every voice model (male + female) into the cache so the
+        first Generate in the app is already fast. Failures are reported as
+        strings instead of raising — a missing voice must never break the
+        server from starting."""
+        problems: list[str] = []
+        for name in (self.MALE_VOICE, self.FEMALE_VOICE):
+            try:
+                self._voice(name)
+            except Exception as exc:
+                problems.append(f"{name}: {exc}")
+        return problems
+
     def voice_for_gender(self, gender: str | None) -> str:
         return self.FEMALE_VOICE if (gender or "").lower() == "female" else self.MALE_VOICE
 
@@ -279,6 +292,14 @@ class TextToSpeechAdapter:
 
     def available_voices(self) -> Sequence[str]:
         return self.provider.available_voices()
+
+    def warm_up(self) -> list[str]:
+        """Pre-load provider state (e.g. neural voice models). No-op for
+        providers without a warm_up; returns human-readable problem strings."""
+        warm = getattr(self.provider, "warm_up", None)
+        if callable(warm):
+            return warm()
+        return []
 
     def voice_for_gender(self, gender: str | None) -> str:
         """Resolve "male"/"female" via the active provider (robotic or neural)."""

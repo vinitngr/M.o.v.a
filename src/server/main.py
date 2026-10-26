@@ -27,6 +27,23 @@ from src.buffer.gesture_buffer import GestureBuffer
 
 app = FastAPI(title="MOVA Gesture Registration")
 
+
+@app.on_event("startup")
+def _warm_tts() -> None:
+    """Pre-load neural TTS voices in the background so the first Generate
+    doesn't stall on model loading. Never blocks or breaks startup."""
+    def _load():
+        from audio_adaptor import get_speech_adaptor
+        problems = get_speech_adaptor().warm_up()
+        for problem in problems:
+            print(f"[tts-warmup] {problem}", flush=True)
+
+    import os as _os
+    import threading as _threading
+    if (_os.environ.get("TTS_PROVIDER") or "piper").strip().lower() in ("piper", "piper-tts"):
+        _threading.Thread(target=_load, name="tts-warmup", daemon=True).start()
+
+
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 PREVIEW_DIR = BASE_DIR / "data" / "gesture_previews"
 PREVIEW_DIR.mkdir(parents=True, exist_ok=True)
@@ -320,9 +337,9 @@ async def save_gesture(req: SaveGestureRequest):
             store.delete(gesture_id)
             raise HTTPException(400, "Spoken sentences belong to one_shot groups")
         try:
-            await _bake_gesture_speech(gesture_id, req.sentence, req.voice_gender)
+            baked_key = await _bake_gesture_speech(gesture_id, req.sentence, req.voice_gender)
             store.set_shot(gesture_id, sentence=req.sentence, gender=req.voice_gender,
-                           audio_key=f"gest_{gesture_id}.mp3", ready=True)
+                           audio_key=baked_key, ready=True)
         except Exception as exc:
             speech_error = str(exc.detail if hasattr(exc, "detail") else exc)
 
