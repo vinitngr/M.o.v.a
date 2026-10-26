@@ -6,7 +6,10 @@ from typing import Dict, List, Optional, Any
 from threading import RLock
 
 
-class GestureStore:
+class GestureStore:    # Runtime roles. "normal" = standard matching pool; everything else
+    # belongs to a sign space (see docs/005-spell-mode.md).
+    ROLES = {"normal", "space-sign", "space-entry", "space-exit", "space-toggle"}
+
     def __init__(self, filepath: str = "data/gestures.json"):
         self.filepath = Path(filepath)
         self.filepath.parent.mkdir(parents=True, exist_ok=True)
@@ -29,6 +32,16 @@ class GestureStore:
                         removed_legacy_previews = True
                 if removed_legacy_previews:
                     self.save()
+                # Backfill sign-space roles for gestures saved before this
+                # feature existed. Migration is idempotent.
+                missing_roles = [
+                    g for g in self._data.get("gestures", [])
+                    if g.get("role") not in self.ROLES
+                ]
+                if missing_roles:
+                    for g in missing_roles:
+                        g["role"] = "normal"
+                    self.save()
             else:
                 self._data = {"schema_version": 2, "gestures": []}
                 self.save()
@@ -41,6 +54,12 @@ class GestureStore:
     def get_all(self) -> List[Dict[str, Any]]:
         with self._lock:
             return self._data.get("gestures", [])
+
+    def get_by_role(self, roles: Any) -> List[Dict[str, Any]]:
+        """Return gestures whose role is in `roles` (str or iterable)."""
+        wanted = {roles} if isinstance(roles, str) else set(roles)
+        with self._lock:
+            return [g for g in self._data.get("gestures", []) if g.get("role") in wanted]
 
     def get_by_id(self, gesture_id: str) -> Optional[Dict[str, Any]]:
         with self._lock:
@@ -60,11 +79,13 @@ class GestureStore:
                features: List[float], labels: List[str] = None,
                preview_path: Optional[str] = None,
                gesture_id: Optional[str] = None,
-               handedness: Optional[Any] = None) -> Dict[str, Any]:
+               handedness: Optional[Any] = None,
+               role: str = "normal") -> Dict[str, Any]:
         with self._lock:
             gesture = {
                 "id": gesture_id or str(uuid.uuid4())[:8],
                 "name": name,
+                "role": role if role in self.ROLES else "normal",
                 "hand_count": hand_count,
                 "handedness": handedness,
                 "feature_version": 2,
@@ -97,6 +118,16 @@ class GestureStore:
             for i, g in enumerate(gestures):
                 if g.get("id") == gesture_id:
                     gestures.pop(i)
+                    self.save()
+                    return True
+        return False
+
+    def set_role(self, gesture_id: str, role: str) -> bool:
+        with self._lock:
+            for g in self._data.get("gestures", []):
+                if g.get("id") == gesture_id:
+                    g["role"] = role if role in self.ROLES else "normal"
+                    g["updated_at"] = __import__('time').time()
                     self.save()
                     return True
         return False

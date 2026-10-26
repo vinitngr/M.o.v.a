@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "spaces": [
+    {
+      "id": "spc_94207702",
+      "key": "SPELL",
+      "name": "SPELL",
+      "join_mode": "spell",
+      "toggle_mode": "shared",
+      "created_at": 1792998056.870339,
+      "gesture_ids": [
+        "8c76745e",
+        "1bfee927",
+        "e2bc9e30",
+        "6994f52a",
+        "3f547fc9",
+        "e53ba9e0",
+        "d8ba0db8",
+        "358cb190",
+        "2d61d044"
+      ],
+      "updated_at": 1792999389.0513747
+    },
+    {
+      "id": "spc_4904765c",
+      "key": "COLOR",
+      "name": "COLOR",
+      "join_mode": "words",
+      "toggle_mode": "shared",
+      "created_at": 1792998981.781675,
+      "gesture_ids": [
+        "e349642f",
+        "bb3e5bc1",
+        "633b4dda"
+      ],
+      "updated_at": 1792999060.3131793
+    }
+  ]
+}

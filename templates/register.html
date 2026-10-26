@@ -349,6 +349,40 @@
       font-size: 12px;
     }
 
+    select {
+      width: 100%;
+      border: 1px solid #cfd9de;
+      border-radius: 9px;
+      padding: 10px 11px;
+      font: inherit;
+      color: inherit;
+      background: #fff;
+    }
+
+    select:focus {
+      outline: 3px solid rgba(0, 212, 170, 0.2);
+      border-color: var(--mint);
+    }
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    .field-note {
+      font-size: 11.5px;
+      color: var(--muted);
+      margin: 4px 0 0;
+    }
+
     .hidden {
       display: none !important;
     }
@@ -385,6 +419,7 @@
       <nav aria-label="Main navigation">
         <a class="active" href="/admin/register">Register</a>
         <a href="/admin/gestures">Manage Gestures</a>
+        <a href="/admin/groups">Groups</a>
         <a href="/admin/live-test">Live Test</a>
         <a href="/admin/pipeline">Real-Time Buffer</a>
       </nav>
@@ -399,6 +434,11 @@
           <div>
             <label for="gestureName">Gesture name</label>
             <input id="gestureName" autocomplete="off" placeholder="e.g. thumbs_up">
+          </div>
+          <div>
+            <label for="groupSelect">Group</label>
+            <p class="field-note" id="groupNote">Standard by default. Pick a group to keep this sign in its own matching pool.</p>
+            <select id="groupSelect"><option value="">Standard</option></select>
           </div>
           <div>
             <label for="labelInput">Meanings / labels</label>
@@ -460,8 +500,25 @@
       captureId: null,
       hasFeatures: false,
       labels: new Set(),
-      busy: false
+      busy: false,
+      spaces: []
     };
+
+    async function loadGroups(selectId) {
+      const res = await fetch('/api/spaces');
+      if (!res.ok) return;
+      state.spaces = (await res.json()).spaces;
+      const sel = $('groupSelect');
+      sel.replaceChildren(
+        Object.assign(document.createElement('option'), { value: '', textContent: 'Standard' }),
+        ...state.spaces.map(s => Object.assign(document.createElement('option'), {
+          value: s.id,
+          textContent: `${s.key}${s.join_mode === 'spell' ? ' (spell)' : ''}`
+        }))
+      );
+      if (selectId) sel.value = selectId;
+    }
+    loadGroups();
 
     const setStatus = (message, type = '') => {
       $('status').textContent = message;
@@ -498,6 +555,8 @@
       $('labelInput').value = '';
       renderLabels();
     };
+
+    loadGroups();
 
     $('addLabel').onclick = addLabels;
     $('labelInput').addEventListener('keydown', e => {
@@ -629,6 +688,7 @@
       const button = $('saveGesture');
       button.disabled = true;
       button.textContent = 'Saving…';
+      const gid = $('groupSelect').value;
       try {
         const response = await fetch('/api/gestures/save', {
           method: 'POST',
@@ -636,7 +696,9 @@
           body: JSON.stringify({
             capture_id: state.captureId,
             name: $('gestureName').value.trim(),
-            labels: [...state.labels]
+            labels: [...state.labels],
+            role: gid ? 'space-sign' : 'normal',
+            space_id: gid || null
           })
         });
         const data = await response.json();

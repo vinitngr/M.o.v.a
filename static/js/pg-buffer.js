@@ -15,6 +15,30 @@ let queuedHintTimer = null;
 let renderedBufferKey = '';
 let liveRowRefs = null; // { tile, ring:{prog,circ} } for the current Detecting row
 
+// Live group strip: while a sign space is open, shows `KEY ▸ AB` growing as
+// letters/spells accumulate, instead of loose keyword rows.
+const spellStrip = document.createElement('div');
+spellStrip.className = 'pg-spell-strip';
+spellStrip.hidden = true;
+const spellKeyEl = document.createElement('i');
+const spellWordEl = document.createElement('b');
+const spellHintEl = document.createElement('span');
+spellHintEl.textContent = 'spelling…';
+spellStrip.append(spellKeyEl, spellWordEl, spellHintEl);
+bufList.before(spellStrip);
+
+function updateSpellStrip(bState) {
+  const key = bState.active_space || null;
+  if (!key) {
+    spellStrip.hidden = true;
+    return;
+  }
+  spellStrip.hidden = false;
+  if (spellKeyEl.textContent !== key) spellKeyEl.textContent = key;
+  const word = (bState.space_buffer || []).join('');
+  if (spellWordEl.textContent !== word) spellWordEl.textContent = word || '…';
+}
+
 function createRing() {
   const svg = document.createElementNS(SVG_NS, 'svg');
   svg.setAttribute('viewBox', '0 0 30 30');
@@ -95,6 +119,7 @@ function renderBuffer(data) {
   const seq = bState.accepted_sequence || [];
   const best = data.best_match;
   const stable = !!best && bState.last_accepted_gesture === best.name;
+  updateSpellStrip(bState);
 
   // Live streak drives the "Detecting…" ring before the buffer accepts
   if (best && best.name === liveName) liveStreak += 1;
@@ -177,4 +202,5 @@ function clearBufferCard() {
   prevBufferStatus = 'idle';
   renderedBufferKey = '';
   liveRowRefs = null;
+  spellStrip.hidden = true;
 }

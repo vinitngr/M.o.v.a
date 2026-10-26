@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MOVA — Groups</title>
+  <style>
+    :root {
+      --mint: #00d4aa;
+      --mint-light: #dffaf3;
+      --ink: #17212b;
+      --muted: #63707c;
+      --line: #dfe5e8;
+      --bg: #f3f7f7;
+      --card-bg: #ffffff;
+      --danger: #c43c4b;
+      --danger-bg: #fff0f1;
+      --success-bg: #e3f8ed;
+      --success: #13763c;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      font: 14px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+
+    .app {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: clamp(12px, 2vw, 24px);
+      display: grid;
+      gap: 16px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand { font-weight: 800; letter-spacing: 0.08em; font-size: 18px; }
+
+    nav { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-weight: 650;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    nav a:hover, nav a.active { background: var(--mint); color: var(--ink); }
+
+    h1 { margin: 0 0 4px; font-size: clamp(20px, 2vw, 26px); }
+
+    p.muted { color: var(--muted); margin: 0; font-size: 13px; }
+
+    .panel {
+      background: var(--card-bg);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: clamp(14px, 2vw, 22px);
+      box-shadow: 0 8px 28px rgba(24, 47, 55, 0.05);
+    }
+
+    label { display: block; margin: 10px 0 6px; font-size: 12px; font-weight: 700; color: #44515d; }
+
+    input, select {
+      width: 100%;
+      border: 1px solid #cfd9de;
+      border-radius: 9px;
+      padding: 10px 11px;
+      font: inherit;
+      color: inherit;
+      background: #fff;
+    }
+
+    input:focus, select:focus {
+      outline: 3px solid rgba(0, 212, 170, 0.2);
+      border-color: var(--mint);
+    }
+
+    button {
+      border: 0;
+      border-radius: 9px;
+      padding: 10px 13px;
+      font: inherit;
+      font-weight: 750;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+
+    button:hover:not(:disabled) { transform: translateY(-1px); }
+
+    .primary { background: var(--mint); color: var(--ink); }
+    .secondary { color: #394650; background: #e7edef; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(240px, 0.7fr) minmax(400px, 2fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .create-row button { width: 100%; margin-top: 12px; }
+
+    .mode-note { color: var(--muted); font-size: 12px; margin-top: 4px; }
+
+    .groups { display: grid; gap: 14px; }
+
+    .group-card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .group-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      background: #fbfdfd;
+      border-bottom: 1px solid var(--line);
+      flex-wrap: wrap;
+    }
+
+    .group-head .gkey { font-weight: 800; letter-spacing: 0.04em; font-size: 15px; }
+
+    .pill {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 9px;
+      border-radius: 99px;
+      background: #eef2f3;
+      color: #56636e;
+    }
+
+    .pill.spell { background: var(--mint-light); color: #087c67; }
+
+    .group-head .actions { margin-left: auto; display: flex; gap: 6px; }
+
+    .group-head .actions button {
+      padding: 6px 10px;
+      font-size: 12px;
+      background: #e7edef;
+    }
+
+    .group-head .actions button.danger { background: var(--danger-bg); color: var(--danger); }
+
+    .group-body { padding: 12px 14px; display: grid; gap: 10px; }
+
+    .members { display: grid; gap: 6px; }
+
+    .member {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr) auto auto;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 8px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .member img {
+      width: 42px;
+      height: 30px;
+      object-fit: cover;
+      border-radius: 6px;
+      background: #eef2f3;
+    }
+
+    .member .mname { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .member .mrole {
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 99px;
+      background: #eef2f3;
+      color: #56636e;
+      text-transform: uppercase;
+    }
+
+    .member .mrole.ctl { background: #e8f0fb; color: #245aa8; }
+
+    .member .row-btns { display: flex; gap: 4px; }
+
+    .member .row-btns button {
+      padding: 5px 8px;
+      font-size: 11px;
+      background: #e7edef;
+    }
+
+    .member .row-btns button.danger { background: var(--danger-bg); color: var(--danger); }
+
+    .attach-row {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: end;
+    }
+
+    .attach-row select { margin: 0; }
+
+    .attach-row button { padding: 10px 14px; }
+
+    .empty { color: var(--muted); font-size: 12.5px; }
+
+    @media (max-width: 800px) {
+      .layout { grid-template-columns: 1fr; }
+      .attach-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">MOVA</div>
+      <nav aria-label="Main navigation">
+        <a href="/admin/register">Register</a>
+        <a href="/admin/gestures">Manage Gestures</a>
+        <a class="active" href="/admin/groups">Groups</a>
+        <a href="/admin/live-test">Live Test</a>
+        <a href="/admin/pipeline">Real-Time Buffer</a>
+      </nav>
+    </header>
+
+    <h1>Sign groups</h1>
+    <p class="muted">A group is its own matching pool. While its toggle sign is active, only this group's signs are
+      matched — the rest of the library is ignored. Spell groups join their signs into one word; normal groups
+      keep each sign as its own word.</p>
+
+    <section class="layout">
+      <aside class="panel create-row">
+        <label for="groupName">Group name</label>
+        <input id="groupName" autocomplete="off" placeholder="e.g._colors, spell">
+        <label for="groupJoin">What do signs in this group do?</label>
+        <select id="groupJoin">
+          <option value="words" selected>Normal — each sign stays its own word</option>
+          <option value="spell">Spell — signs chain into one word (A + B + C → ABC, BLUE + PLUE → BLUEPLUE)</option>
+        </select>
+        <p class="mode-note">Any groups you create appear as a choice on the Register page.</p>
+        <button id="createGroup" class="primary" type="button">Create group</button>
+        <div id="createStatus" class="mode-note"></div>
+      </aside>
+
+      <section class="panel">
+        <div class="groups" id="groups"></div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const state = { spaces: [], gestures: [] };
+
+    async function load() {
+      const [sp, ge] = await Promise.all([
+        fetch('/api/spaces').then(r => r.json()),
+        fetch('/api/gestures').then(r => r.json())
+      ]);
+      state.spaces = sp.spaces;
+      state.gestures = ge.gestures;
+      render();
+    }
+
+    const spaceOf = gid => state.spaces.find(s => (s.gesture_ids || []).includes(gid)) || null;
+
+    function render() {
+      $('groups').replaceChildren(...state.spaces.map(sp => {
+        const card = document.createElement('article');
+        card.className = 'group-card';
+
+        const head = document.createElement('div');
+        head.className = 'group-head';
+        head.append(
+          Object.assign(document.createElement('span'), { className: 'gkey', textContent: sp.key }),
+          Object.assign(document.createElement('span'), { className: 'pill' + (sp.join_mode === 'spell' ? ' spell' : ''), textContent: sp.join_mode }),
+          Object.assign(document.createElement('span'), { className: 'pill', textContent: sp.toggle_mode })
+        );
+        if (sp.built_in) head.append(Object.assign(document.createElement('span'), { className: 'pill spell', textContent: 'built-in' }));
+        const actions = document.createElement('span');
+        actions.className = 'actions';
+        const del = document.createElement('button');
+        del.type = 'button';
+        del.className = 'danger';
+        del.textContent = 'delete';
+        del.onclick = async () => {
+          if (!confirm(`Delete ${sp.key}? Its signs return to Standard.`)) return;
+          await fetch(`/api/spaces/${sp.id}`, { method: 'DELETE' });
+          load();
+        };
+        actions.append(del);
+        head.append(actions);
+        card.append(head);
+
+        const body = document.createElement('div');
+        body.className = 'group-body';
+        const members = document.createElement('div');
+        members.className = 'members';
+
+        const ids = sp.gesture_ids || [];
+        if (!ids.length) {
+          members.append(Object.assign(document.createElement('div'), { className: 'empty', textContent: 'No signs yet. Use the Register page (Group select) or attach saved gestures below.' }));
+        }
+        for (const gid of ids) {
+          const g = state.gestures.find(x => x.id === gid) || { id: gid, name: gid };
+          const row = document.createElement('div');
+          row.className = 'member';
+          row.append(
+            g.preview_path ? (() => { const i = document.createElement('img'); i.src = g.preview_path; return i; })()
+                           : Object.assign(document.createElement('img'), {}),
+            Object.assign(document.createElement('span'), { className: 'mname', textContent: g.name }),
+            roleChip(g),
+            rowButtons(sp, g)
+          );
+          members.append(row);
+        }
+        body.append(members);
+        body.append(attachRow(sp));
+        card.append(body);
+        return card;
+      }));
+    }
+
+    function roleChip(g) {
+      const chip = document.createElement('span');
+      const r = g.role === undefined ? 'normal' : g.role;
+      chip.className = 'mrole' + (r.startsWith('space-') ? ' ctl' : '');
+      chip.textContent = r === 'space-sign' ? 'member' : r.replace('space-', '');
+      if (r === 'normal') chip.textContent = 'standard';
+      return chip;
+    }
+
+    function roleBtns(sp, g) {
+      const wrap = [];
+      const mk = (label, role) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = label;
+        b.onclick = async () => {
+          await fetch(`/api/gestures/${g.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ role, space_id: role === 'normal' ? null : sp.id })
+          });
+          load();
+        };
+        return b;
+      };
+      wrap.push(mk('member', 'space-sign'), mk('toggle', 'space-toggle'), mk('entry', 'space-entry'), mk('exit', 'space-exit'), mk('remove', 'normal'));
+      return wrap;
+    }
+
+    function rowButtons(sp, g) {
+      const div = document.createElement('div');
+      div.className = 'row-btns';
+      div.append(...roleBtns(sp, g));
+      const del = div.querySelector('button:last-child');
+      del.classList.add('danger');
+      return div;
+    }
+
+    function attachRow(sp) {
+      const nonMembers = state.gestures.filter(g => !spaceOf(g.id) && (g.role || 'normal') === 'normal');
+      const wrap = document.createElement('div');
+      wrap.className = 'attach-row';
+      const sel = document.createElement('select');
+      if (!nonMembers.length) {
+        sel.innerHTML = '<option>All standard gestures are grouped already</option>';
+        sel.disabled = true;
+      } else {
+        sel.append(...nonMembers.map(g => Object.assign(document.createElement('option'), { value: g.id, textContent: g.name })));
+      }
+      const roleSel = document.createElement('select');
+      roleSel.append(
+        Object.assign(document.createElement('option'), { value: 'space-sign', textContent: 'as member' }),
+        Object.assign(document.createElement('option'), { value: 'space-toggle', textContent: 'as toggle sign' }),
+        Object.assign(document.createElement('option'), { value: 'space-entry', textContent: 'as entry sign' }),
+        Object.assign(document.createElement('option'), { value: 'space-exit', textContent: 'as exit sign' })
+      );
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'primary';
+      btn.textContent = 'Attach';
+      btn.disabled = !nonMembers.length;
+      btn.onclick = async () => {
+        await fetch(`/api/gestures/${sel.value}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ role: roleSel.value, space_id: sp.id })
+        });
+        load();
+      };
+      const label = document.createElement('label');
+      label.textContent = `Attach standard gesture to ${sp.key}`;
+      const label2 = document.createElement('label');
+      label2.textContent = 'Role';
+      const col1 = document.createElement('div'); col1.append(label, sel);
+      const col2 = document.createElement('div'); col2.append(label2, roleSel);
+      wrap.append(col1, col2, btn);
+      return wrap;
+    }
+
+    $('createGroup').onclick = async () => {
+      const name = $('groupName').value.trim();
+      if (!name) { $('groupName').focus(); return; }
+      const res = await fetch('/api/spaces', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, join_mode: $('groupJoin').value })
+      });
+      const data = await res.json();
+      if (!res.ok) { $('createStatus').textContent = data.detail || 'Could not create group'; return; }
+      $('groupName').value = '';
+      $('createStatus').textContent = `Created ${data.space.key}. Register its signs on /admin/register or attach saved ones here.`;
+      load();
+    };
+
+    load();
+  </script>
+</body>
+</html>

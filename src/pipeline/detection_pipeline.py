@@ -13,6 +13,8 @@ import numpy as np
 import time
 
 from src.buffer.gesture_buffer import GestureBuffer, Detection
+from src.storage.sign_space_store import get_space_store
+from src.spaces.space_tracker import SpaceTracker
 from src.vision.mediapipe_processor import (
     extract_features,
     extract_two_hand_features,
@@ -27,11 +29,22 @@ class RealTimePipeline:
         processor_getter,
         threshold: float = 72.0,
         buffer: Optional[GestureBuffer] = None,
+        space_store: Optional[Any] = None,
     ):
         self.store = store
         self.processor_getter = processor_getter
         self.threshold = threshold
         self.buffer = buffer or GestureBuffer()
+        # Sign spaces: while a space is active, only its members (+ controls)
+        # are scored. group-vs-group competition never enters the scorer.
+        self.space_store = space_store or get_space_store()
+        self.spaces = SpaceTracker(store, self.space_store)
+        # Space tokens captured during the CURRENT collection span, each with
+        # the raw sequence index where it happened — the queue renders rows
+        # chronologically from this.
+        self._span_serial = 0
+        self._prev_buffer_status = 'idle'
+        self.space_tokens: List[Dict[str, Any]] = []
 
     def set_threshold(self, threshold: float) -> None:
         self.threshold = float(np.clip(threshold, 10.0, 95.0))
@@ -41,6 +54,15 @@ class RealTimePipeline:
 
     def reset_buffer(self) -> None:
         self.buffer.clear()
+        self.spaces.on_reset()
+        self._begin_span()
+
+    def _begin_span(self) -> None:
+        self._span_serial += 1
+        self.space_tokens = []
+
+    def _space_token_frame(self, token: Dict[str, Any]) -> Dict[str, Any]:
+        return {"pos": len(self.buffer.accepted_sequence), **token}
 
     def process_frame(self, frame_bgr: np.ndarray) -> Dict[str, Any]:
         """
@@ -67,10 +89,12 @@ class RealTimePipeline:
             if left is not None and right is not None:
                 live_features = extract_two_hand_features(left, right)
 
-        # Match features against stored gesture library
+        # Match features against the scoped gesture library: while a sign
+        # space is active, only that space's members compete.
         scores: List[Dict[str, Any]] = []
         if live_features:
-            scores = score_gestures(live_features, self.store.get_all(), live_handedness=handedness)
+            candidates = self.spaces.scoped_candidates()
+            scores = score_gestures(live_features, candidates, live_handedness=handedness)
 
         best_match: Optional[Dict[str, Any]] = None
         detected_name: Optional[str] = None
@@ -92,11 +116,35 @@ class RealTimePipeline:
         )
         buffer_event = self.buffer.add_detection(detection)
 
+        # New collection span begins when a sequence restarts after
+        # completion — tokens from the previous sentence stop being shown.
+        prev_status = self._prev_buffer_status
+        cur_status = self.buffer.status
+        if prev_status == "completed" and cur_status == "collecting":
+            self._begin_span()
+        self._prev_buffer_status = cur_status
+
+        # Space transitions ride on buffer events (same acceptance logic the
+        # window analyzer already computed). Tokens are stamped with their
+        # position in the raw sequence so the queue can interleave them.
+        space_token: Optional[Dict[str, Any]] = None
+        if buffer_event is not None:
+            if buffer_event.event_type == "accepted":
+                space_token = self.spaces.on_accepted(buffer_event.gesture)
+            elif buffer_event.event_type == "completed":
+                space_token = self.spaces.on_completed()
+            if space_token:
+                self.space_tokens.append(self._space_token_frame(space_token))
+
         # Build landmarks for overlay rendering
         simplified_landmarks = [
             [[point[0], point[1]] for point in hand]
             for hand in hands
         ]
+
+        buffer_state = self.buffer.get_state()
+        buffer_state.update(self.spaces.get_state())
+        buffer_state["sequence_tokens"] = list(self.space_tokens)
 
         return {
             "hand_count": hand_count,
@@ -104,7 +152,8 @@ class RealTimePipeline:
             "scores": scores[:5],  # top 5 matches
             "best_match": best_match,
             "threshold": self.threshold,
-            "buffer_state": self.buffer.get_state(),
+            "buffer_state": buffer_state,
+            "space_token": space_token,
             "latest_event": {
                 "event_type": buffer_event.event_type,
                 "gesture": buffer_event.gesture,

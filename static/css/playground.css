@@ -910,6 +910,78 @@ body {
   color: #3a5266;
 }
 
+/* Live group strip (card 3, shown while a sign space is open) */
+.pg-spell-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  margin-bottom: 8px;
+  border: 1px solid var(--pg-line);
+  border-radius: 12px;
+  background: rgba(0, 212, 170, 0.08);
+}
+
+.pg-spell-strip i {
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 3px 8px;
+  border-radius: 99px;
+  background: var(--pg-mint);
+  color: var(--pg-ink);
+}
+
+.pg-spell-strip b {
+  font-size: 13.5px;
+  letter-spacing: 0.12em;
+  color: var(--pg-ink);
+  text-transform: uppercase;
+}
+
+.pg-spell-strip span {
+  margin-left: auto;
+  font-size: 10px;
+  color: #4c5f6d;
+}
+
+/* Space token chip (card 4 queue) — grouped output instead of
+   loose control/member keyword tiles */
+.pg-queue-token {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  align-self: stretch;
+  min-width: 64px;
+  padding: 6px 10px;
+  border: 1.5px solid var(--pg-mint);
+  border-radius: 10px;
+  background: rgba(0, 212, 170, 0.1);
+}
+
+.pg-queue-token b {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pg-ink);
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pg-queue-token i {
+  font-style: normal;
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #08736a;
+}
+
 /* Inactivity timeout footer */
 .pg-inactivity {
   flex: none;

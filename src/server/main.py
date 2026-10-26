@@ -14,6 +14,7 @@ import uuid
 from pathlib import Path
 
 from src.storage.gesture_store import get_store
+from src.storage.sign_space_store import get_space_store
 from src.vision.mediapipe_processor import (
     MediaPipeProcessor, 
     extract_features, 
@@ -36,6 +37,7 @@ templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 # Lazy-loaded processor
 processor = None
 store = get_store()
+space_store = get_space_store()
 
 def get_processor():
     global processor
@@ -64,11 +66,44 @@ class SaveGestureRequest(BaseModel):
     capture_id: str
     name: str
     labels: List[str] = []
+    role: str = "normal"          # see GestureStore.ROLES
+    space_id: Optional[str] = None  # required for any space-* role
 
 
 class UpdateGestureRequest(BaseModel):
     name: Optional[str] = None
     labels: Optional[List[str]] = None
+    role: Optional[str] = None
+    space_id: Optional[str] = None
+
+
+class SpaceRequest(BaseModel):
+    name: str
+    toggle_mode: str = "shared"
+    join_mode: str = "words"   # "spell" concatenates letters, "words" keeps per-sign tokens
+
+
+class SpaceUpdateRequest(BaseModel):
+    name: Optional[str] = None
+    toggle_mode: Optional[str] = None
+    join_mode: Optional[str] = None
+
+
+def _link_gesture_to_space(gesture_id: str, space_id: str, role: str) -> Optional[str]:
+    """Attach a gesture to a space and set its role. Returns an error message
+    or None on success."""
+    space = space_store.get_by_id(space_id)
+    if not space:
+        return "Sign space not found"
+    if gesture_id not in space["gesture_ids"]:
+        space_store.add_member(space_id, gesture_id)
+    store.set_role(gesture_id, role)
+    return None
+
+
+def _unlink_gesture_from_all_spaces(gesture_id: str) -> None:
+    for space in space_store.get_all():
+        space_store.remove_member(space["id"], gesture_id)
 
 
 def decode_base64_image(data: str) -> np.ndarray:
@@ -97,6 +132,11 @@ async def admin_root(request: Request):
 @app.get("/admin/register", response_class=HTMLResponse)
 async def admin_register(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
+
+
+@app.get("/admin/groups", response_class=HTMLResponse)
+async def admin_groups(request: Request):
+    return templates.TemplateResponse("groups.html", {"request": request})
 
 
 @app.get("/admin/gestures", response_class=HTMLResponse)
@@ -140,9 +180,11 @@ async def playground_library():
                 "hand_count": g.get("hand_count", 1),
                 "preview_path": g.get("preview_path"),
                 "landmarks": g.get("landmarks", []),
+                "role": g.get("role", "normal"),
             }
             for g in store.get_all()
-        ]
+        ],
+        "spaces": space_store.get_state(),
     }
 
 
@@ -225,7 +267,12 @@ async def save_gesture(req: SaveGestureRequest):
     
     if store.get_by_name(req.name):
         raise HTTPException(400, f"Gesture with name '{req.name}' already exists")
-    
+
+    role = req.role if req.role in store.ROLES else "normal"
+    is_space_role = role.startswith("space-")
+    if is_space_role and not req.space_id:
+        raise HTTPException(400, "A sign space must be selected for space roles")
+
     landmarks = capture["landmarks"]
     if isinstance(landmarks, dict):
         landmarks_list = landmarks["left"] + landmarks["right"]
@@ -245,8 +292,15 @@ async def save_gesture(req: SaveGestureRequest):
         handedness=capture.get("handedness", ["Right"])[0] if capture.get("handedness") and len(capture["handedness"]) == 1 else capture.get("handedness"),
         features=capture["features"],
         labels=req.labels,
-        preview_path=f"/gesture-previews/{preview_file.name}"
+        preview_path=f"/gesture-previews/{preview_file.name}",
+        role=role
     )
+
+    if is_space_role:
+        error = _link_gesture_to_space(gesture_id, req.space_id, role)
+        if error:
+            store.delete(gesture_id)
+            raise HTTPException(400, error)
     
     del active_captures[req.capture_id]
     
@@ -392,11 +446,28 @@ async def update_gesture(gesture_id: str, req: UpdateGestureRequest):
     gesture = store.update(gesture_id, name=req.name, labels=req.labels)
     if not gesture:
         raise HTTPException(404, "Gesture not found")
+
+    if req.role is not None:
+        if req.role in store.ROLES:
+            if req.role.startswith("space-"):
+                if req.space_id:
+                    _unlink_gesture_from_all_spaces(gesture_id)
+                    error = _link_gesture_to_space(gesture_id, req.space_id, req.role)
+                    if error:
+                        raise HTTPException(400, error)
+                else:
+                    raise HTTPException(400, "A sign space must be selected for space roles")
+            elif req.role == "normal":
+                _unlink_gesture_from_all_spaces(gesture_id)
+                store.set_role(gesture_id, "normal")
+        return {"success": True, "gesture": store.get_by_id(gesture_id)}
+
     return {"success": True, "gesture": gesture}
 
 
 @app.delete("/api/gestures/{gesture_id}")
 async def delete_gesture(gesture_id: str):
+    _unlink_gesture_from_all_spaces(gesture_id)
     if store.delete(gesture_id):
         return {"success": True}
     raise HTTPException(404, "Gesture not found")
@@ -407,6 +478,36 @@ async def cancel_capture(capture_id: str):
     if capture_id in active_captures:
         del active_captures[capture_id]
     return {"success": True}
+
+
+@app.get("/api/spaces")
+async def list_spaces():
+    """Sign spaces with lightweight display fields."""
+    return {"spaces": space_store.get_state()}
+
+
+@app.post("/api/spaces")
+async def create_space(req: SpaceRequest):
+    space = space_store.create(req.name, req.toggle_mode, req.join_mode)
+    if not space:
+        raise HTTPException(400, f"Space key already exists for '{req.name}'")
+    return {"success": True, "space": space}
+
+
+@app.patch("/api/spaces/{space_id}")
+async def update_space(space_id: str, req: SpaceUpdateRequest):
+    space = space_store.update(space_id, name=req.name, toggle_mode=req.toggle_mode, join_mode=req.join_mode)
+    if not space:
+        raise HTTPException(404, "Space not found")
+    return {"success": True, "space": space}
+
+
+@app.delete("/api/spaces/{space_id}")
+async def delete_space(space_id: str):
+    member_ids = space_store.delete(space_id)
+    for gid in member_ids:
+        store.set_role(gid, "normal")
+    return {"success": True, "released": member_ids}
 
 
 @app.get("/health")

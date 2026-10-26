@@ -56,6 +56,11 @@ function dispatchPipelineData(data) {
 
 let libraryByName = new Map();
 
+// Sign-space metadata: maps let us tell keywords apart from group control
+// signs and space members purely by role — no name parsing anywhere.
+let roleByGestureName = new Map();
+let spaceByGestureId = new Map();     // gesture id -> space key
+
 function ensureLibrary() {
   if (!libraryPromise) {
     libraryPromise = fetch('/api/playground/library')
@@ -63,9 +68,17 @@ function ensureLibrary() {
       .then(data => {
         libraryById = new Map();
         libraryByName = new Map();
+        roleByGestureName = new Map();
+        spaceByGestureId = new Map();
         for (const g of (data.gestures || [])) {
           libraryById.set(g.id, g);
           libraryByName.set(g.name, g);
+          roleByGestureName.set(g.name, g.role || 'normal');
+        }
+        for (const sp of (data.spaces || [])) {
+          for (const gid of (sp.gesture_ids || [])) {
+            spaceByGestureId.set(gid, sp.key);
+          }
         }
         // Cached buffer rows may lack thumbnails — force one rebuild
         renderedBufferKey = '';
