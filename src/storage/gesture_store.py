@@ -122,6 +122,34 @@ class GestureStore:    # Runtime roles. "normal" = standard matching pool; every
                     return True
         return False
 
+    def set_shot(self, gesture_id: str, sentence: Optional[str] = None, gender: Optional[str] = None,
+                 audio_key: Optional[str] = None, ready: Optional[bool] = None) -> Optional[Dict[str, Any]]:
+        """One-shot payload on the gesture: transcript, voice, baked audio,
+        readiness flag. The payload lives on the gesture (not its group) so a
+        one-shot group can hold many different spoken sentences."""
+        with self._lock:
+            for g in self._data.get("gestures", []):
+                if g.get("id") == gesture_id:
+                    shot = g.setdefault("shot", {})
+                    if sentence is not None:
+                        shot["sentence"] = sentence.strip()
+                    if gender in ("male", "female"):
+                        shot["gender"] = gender
+                    if audio_key is not None:
+                        shot["audio_key"] = audio_key
+                    if ready is not None:
+                        shot["ready"] = ready
+                        if not ready:
+                            shot.pop("audio_key", None)
+                            for f in ("sentence", "gender", "ready"):
+                                g.setdefault("shot", {}).pop(f, None)
+                            if not g["shot"]:
+                                g.pop("shot", None)
+                    g["updated_at"] = __import__('time').time()
+                    self.save()
+                    return g
+        return None
+
     def set_role(self, gesture_id: str, role: str) -> bool:
         with self._lock:
             for g in self._data.get("gestures", []):

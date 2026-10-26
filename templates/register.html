@@ -440,6 +440,18 @@
             <p class="field-note" id="groupNote">Standard by default. Pick a group to keep this sign in its own matching pool.</p>
             <select id="groupSelect"><option value="">Standard</option></select>
           </div>
+          <div id="shotBlock" style="display:none">
+            <label for="shotSentence">Spoken sentence</label>
+            <p class="field-note">One-shot group: the moment this sign is detected, this sentence is spoken immediately, then the group turns itself off.</p>
+            <textarea id="shotSentence" rows="2" maxlength="300" placeholder="e.g. Hi, how are you?" style="width:100%;resize:vertical;font-family:inherit"></textarea>
+            <div style="display:flex;gap:8px;margin-top:6px;align-items:center">
+              <select id="shotGender" style="width:auto">
+                <option value="male" selected>Male voice</option>
+                <option value="female">Female voice</option>
+              </select>
+              <span class="field-note">speech is generated automatically on save</span>
+            </div>
+          </div>
           <div>
             <label for="labelInput">Meanings / labels</label>
             <div class="label-row">
@@ -513,12 +525,21 @@
         Object.assign(document.createElement('option'), { value: '', textContent: 'Standard' }),
         ...state.spaces.map(s => Object.assign(document.createElement('option'), {
           value: s.id,
-          textContent: `${s.key}${s.join_mode === 'spell' ? ' (spell)' : ''}`
+          textContent: `${s.key}${s.join_mode === 'spell' ? ' (spell)' : s.join_mode === 'one_shot' ? ' (one-shot)' : ''}`
         }))
       );
       if (selectId) sel.value = selectId;
+      syncShotBlock();
+      sel.onchange = syncShotBlock;
     }
     loadGroups();
+
+    // one-shot groups need a spoken sentence for the gesture being registered
+    function syncShotBlock() {
+      const chosen = state.spaces.find(s => s.id === $('groupSelect').value);
+      const oneShot = !!chosen && chosen.join_mode === 'one_shot';
+      $('shotBlock').style.display = oneShot ? '' : 'none';
+    }
 
     const setStatus = (message, type = '') => {
       $('status').textContent = message;
@@ -698,11 +719,15 @@
             name: $('gestureName').value.trim(),
             labels: [...state.labels],
             role: gid ? 'space-sign' : 'normal',
-            space_id: gid || null
+            space_id: gid || null,
+            sentence: $('shotBlock').style.display !== 'none' ? $('shotSentence').value : null,
+            voice_gender: $('shotGender') ? $('shotGender').value : 'male'
           })
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.detail || 'Could not save gesture');
+        if (data.speech_error) setStatus(`Saved, but speech failed: ${data.speech_error}. You can regenerate it on the Groups page.`, 'error');
+        if (data.speech_error) { button.textContent = 'Save gesture'; return; }
         window.location.href = '/admin/gestures';
       } catch (error) {
         setStatus(error.message, 'error');

@@ -30,8 +30,11 @@ app = FastAPI(title="MOVA Gesture Registration")
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 PREVIEW_DIR = BASE_DIR / "data" / "gesture_previews"
 PREVIEW_DIR.mkdir(parents=True, exist_ok=True)
+AUDIO_DIR = BASE_DIR / "data" / "audio"
+AUDIO_DIR.mkdir(parents=True, exist_ok=True)
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 app.mount("/gesture-previews", StaticFiles(directory=str(PREVIEW_DIR)), name="gesture-previews")
+app.mount("/audio", StaticFiles(directory=str(AUDIO_DIR)), name="audio")
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 # Lazy-loaded processor
@@ -68,6 +71,8 @@ class SaveGestureRequest(BaseModel):
     labels: List[str] = []
     role: str = "normal"          # see GestureStore.ROLES
     space_id: Optional[str] = None  # required for any space-* role
+    sentence: Optional[str] = None  # one-shot members: spoken transcript
+    voice_gender: str = "male"      # "male" | "female"
 
 
 class UpdateGestureRequest(BaseModel):
@@ -80,13 +85,18 @@ class UpdateGestureRequest(BaseModel):
 class SpaceRequest(BaseModel):
     name: str
     toggle_mode: str = "shared"
-    join_mode: str = "words"   # "spell" concatenates letters, "words" keeps per-sign tokens
+    join_mode: str = "words"  # "spell", "words", "one_shot"
 
 
 class SpaceUpdateRequest(BaseModel):
     name: Optional[str] = None
     toggle_mode: Optional[str] = None
     join_mode: Optional[str] = None
+
+
+class GestureSentenceRequest(BaseModel):
+    sentence: str
+    gender: str = "male"  # "male" | "female"
 
 
 def _link_gesture_to_space(gesture_id: str, space_id: str, role: str) -> Optional[str]:
@@ -301,9 +311,26 @@ async def save_gesture(req: SaveGestureRequest):
         if error:
             store.delete(gesture_id)
             raise HTTPException(400, error)
-    
+
+    # One-shot members get their sentence baked as audio right at save time
+    speech_error = None
+    if req.sentence is not None and req.sentence.strip():
+        space = space_store.get_by_id(req.space_id) if req.space_id else None
+        if not space or space.get("join_mode") != "one_shot":
+            store.delete(gesture_id)
+            raise HTTPException(400, "Spoken sentences belong to one_shot groups")
+        try:
+            await _bake_gesture_speech(gesture_id, req.sentence, req.voice_gender)
+            store.set_shot(gesture_id, sentence=req.sentence, gender=req.voice_gender,
+                           audio_key=f"gest_{gesture_id}.mp3", ready=True)
+        except Exception as exc:
+            speech_error = str(exc.detail if hasattr(exc, "detail") else exc)
+
     del active_captures[req.capture_id]
-    
+
+    if speech_error:
+        return {"success": True, "gesture": gesture, "speech_error": speech_error}
+
     return {"success": True, "gesture": gesture}
 
 
@@ -508,6 +535,60 @@ async def delete_space(space_id: str):
     for gid in member_ids:
         store.set_role(gid, "normal")
     return {"success": True, "released": member_ids}
+
+
+async def _bake_gesture_speech(gesture_id: str, sentence: str, gender: str):
+    """Synthesize & cache a gesture's one-shot sentence speech (ElevenLabs)."""
+    sentence = sentence.strip()
+    if not sentence:
+        raise HTTPException(400, "Sentence cannot be empty")
+    if len(sentence) > 300:
+        raise HTTPException(400, "Sentence too long (max 300 chars)")
+
+    from audio_adaptor import get_speech_adaptor
+    adaptor = get_speech_adaptor()
+    audio_key = f"gest_{gesture_id}.mp3"
+    dest = AUDIO_DIR / audio_key
+    try:
+        voice = adaptor.voice_for_gender(gender)
+        await asyncio.to_thread(adaptor.synthesize_and_save, sentence, dest, voice=voice)
+    except Exception as exc:  # API/auth errors surface to the admin UI
+        raise HTTPException(400, f"Speech generation failed: {exc}")
+    return audio_key
+
+
+def _one_shot_space_of_gesture(gesture_id: str):
+    """Return the gesture's space when it belongs to a one_shot group, else None."""
+    space = space_store.space_of_gesture(gesture_id)
+    return space if space and space.get("join_mode") == "one_shot" else None
+
+
+@app.post("/api/gestures/{gesture_id}/sentence")
+async def set_gesture_sentence(gesture_id: str, req: GestureSentenceRequest):
+    """(Re)generate & cache the one-shot sentence audio for a gesture."""
+    gesture = store.get_by_id(gesture_id)
+    if not gesture:
+        raise HTTPException(404, "Gesture not found")
+    if not _one_shot_space_of_gesture(gesture_id):
+        raise HTTPException(400, "Spoken sentences belong to gestures inside one_shot groups")
+    audio_key = await _bake_gesture_speech(gesture_id, req.sentence, req.gender)
+    updated = store.set_shot(gesture_id, sentence=req.sentence, gender=req.gender,
+                             audio_key=audio_key, ready=True)
+    return {"success": True, "gesture": updated, "audio_url": f"/audio/{audio_key}"}
+
+
+@app.get("/api/gestures/{gesture_id}/sentence/audio")
+async def get_gesture_sentence_audio(gesture_id: str):
+    """Serve the cached speech file (used later by the playground runtime card)."""
+    gesture = store.get_by_id(gesture_id)
+    shot = (gesture or {}).get("shot") or {}
+    if not shot.get("audio_key"):
+        raise HTTPException(404, "No speech generated for this gesture")
+    path = AUDIO_DIR / shot["audio_key"]
+    if not path.exists():
+        raise HTTPException(404, "Speech file missing — regenerate it")
+    from fastapi.responses import FileResponse
+    return FileResponse(path, media_type="audio/mpeg", filename=shot["audio_key"])
 
 
 @app.get("/health")

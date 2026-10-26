@@ -25,6 +25,7 @@ test
 # gestures.json
 signs
 data/gesture_previews/
+data/audio/
 node_modules/
 PLANNING.md
 models/

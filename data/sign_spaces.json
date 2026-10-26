@@ -39,6 +39,26 @@
         "a9cc7d27"
       ],
       "updated_at": 1793002961.1485655
+    },
+    {
+      "id": "spc_0d681012",
+      "key": "ONESHOT",
+      "name": "ONESHOT",
+      "join_mode": "one_shot",
+      "toggle_mode": "shared",
+      "created_at": 1793022667.0869908,
+      "gesture_ids": [
+        "0fe7685c",
+        "22c403f6",
+        "1784bd13",
+        "8296935d",
+        "7de3ab72",
+        "8f97960e",
+        "98c789be",
+        "9ed53e5c",
+        "1aabc647"
+      ],
+      "updated_at": 1793023191.9086149
     }
   ]
 }

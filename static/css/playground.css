@@ -1206,6 +1206,22 @@ body {
   color: var(--pg-mint);
 }
 
+/* quiet gray badge describing what the playground is about */
+.pg-badge {
+  margin-left: 4px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #17283a;
+  border: 1px solid #2a4156;
+  color: #8ba2b6;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  line-height: 1;
+  user-select: none;
+}
+
 .pg-topbar-actions {
   display: inline-flex;
   align-items: center;

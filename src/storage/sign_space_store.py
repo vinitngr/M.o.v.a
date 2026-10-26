@@ -43,7 +43,7 @@ class SignSpaceStore:
             # Backfill join_mode for spaces created before this field existed.
             migrated = False
             for s in self._data.setdefault("spaces", []):
-                if s.get("join_mode") not in ("spell", "words"):
+                if s.get("join_mode") not in ("spell", "words", "one_shot"):
                     s["join_mode"] = "words"
                     migrated = True
             if migrated:
@@ -84,7 +84,7 @@ class SignSpaceStore:
                 "id": f"spc_{str(uuid.uuid4())[:8]}",
                 "key": key,
                 "name": name,
-                "join_mode": join_mode if join_mode in ("spell", "words") else "words",
+                "join_mode": join_mode if join_mode in ("spell", "words", "one_shot") else "words",
                 "toggle_mode": toggle_mode if toggle_mode in ("shared", "separate") else "shared",
                 "created_at": time.time(),
                 "gesture_ids": [],
@@ -113,7 +113,7 @@ class SignSpaceStore:
                 space["key"] = new_key
             if toggle_mode in ("shared", "separate"):
                 space["toggle_mode"] = toggle_mode
-            if join_mode in ("spell", "words"):
+            if join_mode in ("spell", "words", "one_shot"):
                 space["join_mode"] = join_mode
             space["updated_at"] = time.time()
             self.save()

@@ -233,6 +233,27 @@
 
     .empty { color: var(--muted); font-size: 12.5px; }
 
+    .sentence-box {
+      margin-bottom: 14px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fbfcfd;
+      display: grid;
+      gap: 8px;
+    }
+
+    .sentence-box textarea { resize: vertical; min-height: 52px; font-family: inherit; }
+
+    .sentence-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .sentence-row select { width: auto; }
+
     @media (max-width: 800px) {
       .layout { grid-template-columns: 1fr; }
       .attach-row { grid-template-columns: 1fr; }
@@ -265,6 +286,7 @@
         <select id="groupJoin">
           <option value="words" selected>Normal — each sign stays its own word</option>
           <option value="spell">Spell — signs chain into one word (A + B + C → ABC, BLUE + PLUE → BLUEPLUE)</option>
+          <option value="one_shot">One-shot — pre-recorded full sentence; one sign triggers it, then the group turns off</option>
         </select>
         <p class="mode-note">Any groups you create appear as a choice on the Register page.</p>
         <button id="createGroup" class="primary" type="button">Create group</button>
@@ -351,6 +373,7 @@
             rowButtons(sp, g)
           );
           members.append(row);
+          if (sp.join_mode === 'one_shot') members.append(sentenceRow(sp, g));
         }
         body.append(members);
         body.append(attachRow(sp));
@@ -366,6 +389,68 @@
       chip.textContent = r === 'space-sign' ? 'member' : r.replace('space-', '');
       if (r === 'normal') chip.textContent = 'standard';
       return chip;
+    }
+
+    // one-shot: per-gesture spoken sentence editor (each sign = its own sentence)
+    function sentenceRow(sp, g) {
+      const box = document.createElement('div');
+      box.className = 'sentence-box';
+      const row = document.createElement('div');
+      row.className = 'sentence-row';
+
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.maxLength = 300;
+      input.value = (g.shot && g.shot.sentence) || '';
+      input.placeholder = `sentence spoken when "${g.name}" is signed`;
+      input.style.flex = '1';
+
+      const sel = document.createElement('select');
+      [['male', 'Male'], ['female', 'Female']].forEach(([v, t]) => {
+        const o = document.createElement('option');
+        o.value = v; o.textContent = t;
+        if ((g.shot && g.shot.gender || 'male') === v) o.selected = true;
+        sel.append(o);
+      });
+
+      const status = document.createElement('span');
+      status.className = 'mode-note';
+      if (g.shot && g.shot.sentence) status.textContent = `"${g.shot.sentence}"`;
+
+      const play = document.createElement('button');
+      play.type = 'button';
+      play.textContent = '▸ play';
+      play.hidden = !(g.shot && g.shot.audio_key);
+      play.onclick = () => new Audio(`/audio/${encodeURIComponent(g.shot.audio_key)}?t=${Date.now()}`).play();
+
+      const save = document.createElement('button');
+      save.type = 'button';
+      save.className = 'primary';
+      save.textContent = (g.shot && g.shot.sentence) ? 're-generate speech' : 'generate speech';
+      save.onclick = async () => {
+        const sentence = input.value.trim();
+        if (!sentence) { status.textContent = 'type the sentence first'; return; }
+        save.disabled = true;
+        status.textContent = 'generating…';
+        try {
+          const res = await fetch(`/api/gestures/${g.id}/sentence`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sentence, gender: sel.value })
+          });
+          const d = await res.json();
+          if (!res.ok) throw new Error(d.detail || 'failed');
+          status.textContent = `"${sentence}" ✓`;
+          play.hidden = false;
+          new Audio(d.audio_url + '?t=' + Date.now()).play();
+          load();
+        } catch (e) { status.textContent = `error: ${e.message}`; }
+        save.disabled = false;
+      };
+
+      row.append(input, sel, save, play, status);
+      box.append(row);
+      return box;
     }
 
     function roleBtns(sp, g) {
