@@ -140,7 +140,7 @@
     .stage video {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
       transform: scaleX(-1);
     }
 
@@ -326,7 +326,10 @@
       <section class="panel camera-panel">
         <div class="camera-title">
           <h2>Camera feed</h2>
-          <span id="cameraState" class="badge">CAMERA OFF</span>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <span id="fpsBadge" class="badge">0.0 FPS</span>
+            <span id="cameraState" class="badge">CAMERA OFF</span>
+          </div>
         </div>
         <div id="stage" class="stage">
           <video id="video" autoplay muted playsinline></video>
@@ -336,6 +339,10 @@
         <div class="camera-actions">
           <button id="start" class="primary" type="button">Start live test</button>
           <button id="stop" class="secondary" type="button" disabled>Stop camera</button>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 10px; background: #f8fafc; border: 1px solid var(--line); border-radius: 8px; font-size: 12px;">
+          <label for="fpsRange" style="font-weight: 700; color: var(--muted); margin: 0;">Target FPS: <span id="fpsRangeVal">6 FPS</span></label>
+          <input id="fpsRange" type="range" min="2" max="15" value="6" step="1" style="flex: 1; accent-color: var(--mint); cursor: pointer;">
         </div>
       </section>
 
@@ -383,6 +390,8 @@
       $('stage').classList.remove('live');
       $('cameraState').textContent = 'CAMERA OFF';
       $('cameraState').classList.remove('live');
+      $('fpsBadge').textContent = '0.0 FPS';
+      fpsHistory = [];
       $('start').disabled = false;
       $('stop').disabled = true;
     }
@@ -394,50 +403,85 @@
       $('handState').textContent = hands ? `${hands} HAND${hands === 1 ? '' : 'S'}` : 'NO HAND';
       const list = $('scoreList');
       const winner = $('winner').querySelector('strong');
-      list.replaceChildren();
 
       if (!scores.length) {
         winner.textContent = 'Nothing matched yet';
-        list.append(Object.assign(document.createElement('p'), {
-          className: 'placeholder',
-          textContent: hands
-            ? 'No compatible saved gestures for this hand count.'
-            : 'Show one or two hands to score gestures.'
-        }));
+        const msg = hands
+          ? 'No compatible saved gestures for this hand count.'
+          : 'Show one or two hands to score gestures.';
+        if (list.dataset.emptyMsg !== msg) {
+          list.dataset.emptyMsg = msg;
+          list.innerHTML = `<p class="placeholder">${msg}</p>`;
+        }
         return;
       }
 
+      list.dataset.emptyMsg = '';
       const best = scores[0];
       winner.textContent = `${best.name} · ${best.score.toFixed(1)}%`;
 
-      scores.forEach(score => {
+      // In-place DOM update to prevent flickering
+      const displayScores = scores.slice(0, 15);
+      const existingRows = list.querySelectorAll('.score-row');
+
+      // Adjust row count
+      while (list.children.length > displayScores.length) {
+        list.lastElementChild.remove();
+      }
+      for (let i = list.children.length; i < displayScores.length; i++) {
         const row = document.createElement('div');
         row.className = 'score-row';
+        row.innerHTML = `
+          <span class="score-name"></span>
+          <span class="score-value"></span>
+          <div class="bar"><i></i></div>
+        `;
+        list.appendChild(row);
+      }
 
-        const name = document.createElement('span');
-        name.className = 'score-name';
-        name.textContent = score.name;
+      // Update contents
+      displayScores.forEach((score, i) => {
+        const row = list.children[i];
+        if (!row || !row.querySelector) return;
+        const nameEl = row.querySelector('.score-name');
+        const valEl = row.querySelector('.score-value');
+        const fillEl = row.querySelector('.bar i');
 
-        const value = document.createElement('span');
-        value.className = 'score-value';
-        value.textContent = `${score.score.toFixed(1)}%`;
-
-        const bar = document.createElement('div');
-        bar.className = 'bar';
-
-        const fill = document.createElement('i');
-        fill.style.width = `${Math.max(0, Math.min(100, score.score))}%`;
-
-        bar.append(fill);
-        row.append(name, value, bar);
-        list.append(row);
+        const handTag = score.handedness && score.handedness !== 'Unknown' ? ` [${score.handedness[0]}]` : '';
+        const displayName = `${score.name}${handTag}`;
+        if (nameEl && nameEl.textContent !== displayName) nameEl.textContent = displayName;
+        const valText = `${score.score.toFixed(1)}%`;
+        if (valEl && valEl.textContent !== valText) valEl.textContent = valText;
+        if (fillEl) fillEl.style.width = `${Math.max(0, Math.min(100, score.score))}%`;
       });
     }
 
+    function getVideoRenderedRect(video, containerWidth, containerHeight) {
+      if (!video.videoWidth || !video.videoHeight || !containerWidth || !containerHeight) {
+        return { x: 0, y: 0, w: containerWidth, h: containerHeight };
+      }
+      const videoAspect = video.videoWidth / video.videoHeight;
+      const containerAspect = containerWidth / containerHeight;
+      let w, h, x, y;
+      if (containerAspect > videoAspect) {
+        h = containerHeight;
+        w = h * videoAspect;
+        x = (containerWidth - w) / 2;
+        y = 0;
+      } else {
+        w = containerWidth;
+        h = w / videoAspect;
+        x = 0;
+        y = (containerHeight - h) / 2;
+      }
+      return { x, y, w, h };
+    }
+
     function drawLandmarks(hands) {
-      const width = overlay.clientWidth;
-      const height = overlay.clientHeight;
-      const scale = devicePixelRatio || 1;
+      const rect = overlay.getBoundingClientRect();
+      const width = rect.width;
+      const height = rect.height;
+      const scale = window.devicePixelRatio || 1;
 
       overlay.width = width * scale;
       overlay.height = height * scale;
@@ -446,23 +490,9 @@
 
       if (!hands.length || !$('video').videoWidth) return;
 
-      const sourceRatio = $('video').videoWidth / $('video').videoHeight;
-      const targetRatio = width / height;
-      let drawnWidth, drawnHeight, offsetX, offsetY;
+      const vRect = getVideoRenderedRect($('video'), width, height);
+      const point = p => [vRect.x + p[0] * vRect.w, vRect.y + p[1] * vRect.h];
 
-      if (sourceRatio > targetRatio) {
-        drawnHeight = height;
-        drawnWidth = height * sourceRatio;
-        offsetX = (width - drawnWidth) / 2;
-        offsetY = 0;
-      } else {
-        drawnWidth = width;
-        drawnHeight = width / sourceRatio;
-        offsetX = 0;
-        offsetY = (height - drawnHeight) / 2;
-      }
-
-      const point = p => [offsetX + p[0] * drawnWidth, offsetY + p[1] * drawnHeight];
       const links = [
         [0, 1], [1, 2], [2, 3], [3, 4],
         [0, 5], [5, 6], [6, 7], [7, 8],
@@ -495,12 +525,47 @@
       });
     }
 
+    let TARGET_FPS = 6; // Configurable 2-15 FPS for hardware testing
+    let FRAME_INTERVAL = Math.round(1000 / TARGET_FPS); // ~166ms
+    let isSending = false;
+    let lastSendTimestamp = 0;
+    let fpsHistory = [];
+
+    $('fpsRange').oninput = e => {
+      TARGET_FPS = parseInt(e.target.value, 10);
+      FRAME_INTERVAL = Math.round(1000 / TARGET_FPS);
+      $('fpsRangeVal').textContent = `${TARGET_FPS} FPS`;
+    };
+
+    function recordFps() {
+      const now = performance.now();
+      fpsHistory.push(now);
+      if (fpsHistory.length > 8) fpsHistory.shift();
+      if (fpsHistory.length >= 2) {
+        const durationSec = (fpsHistory[fpsHistory.length - 1] - fpsHistory[0]) / 1000;
+        if (durationSec > 0) {
+          const fps = ((fpsHistory.length - 1) / durationSec).toFixed(1);
+          $('fpsBadge').textContent = `${fps} FPS`;
+        }
+      }
+    }
+
     function sendFrame() {
-      if (!running || socket?.readyState !== WebSocket.OPEN || !$('video').videoWidth) return;
-      canvas.width = $('video').videoWidth;
-      canvas.height = $('video').videoHeight;
-      context.drawImage($('video'), 0, 0);
-      socket.send(JSON.stringify({ image_base64: canvas.toDataURL('image/jpeg', 0.72) }));
+      if (!running || isSending || socket?.readyState !== WebSocket.OPEN || !$('video').videoWidth) return;
+
+      const video = $('video');
+      const videoAspect = video.videoWidth / video.videoHeight;
+      // Downscale to 480px width for fast transfer and minimal CPU lag
+      const targetW = 480;
+      const targetH = Math.round(480 / videoAspect);
+
+      canvas.width = targetW;
+      canvas.height = targetH;
+      context.drawImage(video, 0, 0, targetW, targetH);
+
+      isSending = true;
+      lastSendTimestamp = performance.now();
+      socket.send(JSON.stringify({ image_base64: canvas.toDataURL('image/jpeg', 0.68) }));
     }
 
     function connect() {
@@ -510,6 +575,8 @@
       socket.onopen = sendFrame;
 
       socket.onmessage = event => {
+        isSending = false;
+        recordFps();
         const data = JSON.parse(event.data);
         if (data.error) {
           $('notice').textContent = data.error;
@@ -520,16 +587,20 @@
           $('notice').classList.add('hidden');
         }
         if (running) {
-          setTimeout(sendFrame, 120);
+          const elapsed = performance.now() - lastSendTimestamp;
+          const waitTime = Math.max(10, FRAME_INTERVAL - elapsed);
+          setTimeout(sendFrame, waitTime);
         }
       };
 
       socket.onerror = () => {
+        isSending = false;
         $('notice').textContent = 'Live connection failed.';
         $('notice').classList.remove('hidden');
       };
 
       socket.onclose = () => {
+        isSending = false;
         if (running) {
           $('notice').textContent = 'Live connection closed.';
           $('notice').classList.remove('hidden');

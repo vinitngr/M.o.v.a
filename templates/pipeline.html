@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MOVA — Real-Time Gesture Buffer & Processing</title>
+  <style>
+    :root {
+      --mint: #00d4aa;
+      --mint-light: #dffaf3;
+      --mint-dark: #087c67;
+      --ink: #17212b;
+      --muted: #63707c;
+      --line: #dfe5e8;
+      --bg: #f3f7f7;
+      --card-bg: #ffffff;
+      --warning: #d97706;
+      --warning-bg: #fef3c7;
+      --danger: #c43c4b;
+      --danger-bg: #fff0f1;
+      --blue: #2563eb;
+      --blue-bg: #eff6ff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      height: 100dvh;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--ink);
+      font: 14px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .app {
+      height: 100%;
+      max-width: 1560px;
+      margin: auto;
+      padding: clamp(12px, 1.5vw, 20px);
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      gap: 12px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    nav {
+      display: flex;
+      gap: 8px;
+    }
+
+    nav a {
+      padding: 7px 12px;
+      border-radius: 8px;
+      color: var(--muted);
+      font-weight: 650;
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    nav a:hover,
+    nav a.active {
+      background: var(--mint);
+      color: var(--ink);
+    }
+
+    .heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .heading h1 {
+      margin: 0;
+      font-size: clamp(20px, 2vw, 26px);
+    }
+
+    .heading p {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .workspace {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(420px, 1.15fr) minmax(460px, 1.25fr);
+      gap: 14px;
+    }
+
+    .panel {
+      min-height: 0;
+      background: var(--card-bg);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 4px 18px rgba(24, 47, 55, 0.04);
+    }
+
+    .camera-panel {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto auto;
+      gap: 10px;
+    }
+
+    .camera-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .camera-title h2 {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .badge {
+      padding: 4px 8px;
+      border-radius: 99px;
+      background: #edf1f2;
+      color: #596772;
+      font-size: 11px;
+      font-weight: 750;
+      letter-spacing: 0.04em;
+    }
+
+    .badge.live {
+      background: var(--mint-light);
+      color: var(--mint-dark);
+    }
+
+    .badge.completed {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+
+    .badge.collecting {
+      background: #fef08a;
+      color: #854d0e;
+    }
+
+    .stage {
+      position: relative;
+      min-height: 0;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #18242b;
+      display: grid;
+      place-items: center;
+    }
+
+    .stage video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transform: scaleX(-1);
+    }
+
+    .stage canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      transform: scaleX(-1);
+    }
+
+    .empty {
+      position: absolute;
+      color: #d3e0e3;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .stage.live .empty {
+      display: none;
+    }
+
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 9px 12px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .primary {
+      background: var(--mint);
+      color: var(--ink);
+    }
+
+    .secondary {
+      background: #e8edef;
+      color: #394650;
+    }
+
+    .danger-outline {
+      background: transparent;
+      border: 1px solid #f87171;
+      color: #dc2626;
+    }
+
+    .danger-outline:hover:not(:disabled) {
+      background: #fee2e2;
+    }
+
+    .camera-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .camera-actions button {
+      flex: 1;
+    }
+
+    .controls-row {
+      display: flex;
+      gap: 16px;
+      padding: 10px 12px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 12px;
+    }
+
+    .control-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .control-item label {
+      font-weight: 700;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .control-item input[type="range"] {
+      width: 100%;
+      accent-color: var(--mint);
+      cursor: pointer;
+    }
+
+    /* Monitoring Panel (Right Side) */
+    .monitor-panel {
+      overflow-y: auto;
+      padding-right: 6px;
+      gap: 12px;
+    }
+
+    .section-card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+      background: #fafcfc;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .section-header h3 {
+      margin: 0;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .count-pill {
+      padding: 2px 7px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 800;
+      background: #e2e8f0;
+      color: #334155;
+    }
+
+    /* Accepted Sequence Visualizer */
+    .sequence-chain {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      min-height: 38px;
+      padding: 6px 8px;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .sequence-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      background: var(--mint-light);
+      border: 1px solid #a7f3d0;
+      color: var(--mint-dark);
+      border-radius: 8px;
+      font-weight: 750;
+      font-size: 13px;
+    }
+
+    .sequence-index {
+      font-size: 10px;
+      background: rgba(8, 124, 103, 0.15);
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+
+    .sequence-arrow {
+      color: #94a3b8;
+      font-weight: bold;
+      user-select: none;
+    }
+
+    /* Completed Final Sequence */
+    .completed-box {
+      border: 2px dashed #93c5fd;
+      background: #f0fdf4;
+      padding: 10px 12px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .completed-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: #166534;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Progress bar */
+    .progress-bar-wrap {
+      height: 6px;
+      background: #e2e8f0;
+      border-radius: 99px;
+      overflow: hidden;
+      margin-top: 2px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--mint);
+      width: 0%;
+      transition: width 0.15s ease;
+    }
+
+    /* Live Detection Status Grid */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .stat-card {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 10px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .stat-val {
+      font-size: 17px;
+      font-weight: 800;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Event stream & logs */
+    .log-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      max-height: 110px;
+      overflow-y: auto;
+      font-size: 12px;
+    }
+
+    .log-entry {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: #ffffff;
+      border: 1px solid #f1f5f9;
+    }
+
+    .log-entry.outlier {
+      background: var(--danger-bg);
+      border-color: #fecaca;
+      color: #991b1b;
+    }
+
+    .log-entry.duplicate {
+      background: #f8fafc;
+      color: #475569;
+    }
+
+    .log-entry.accepted {
+      background: var(--mint-light);
+      border-color: #a7f3d0;
+      color: #065f46;
+      font-weight: 600;
+    }
+
+    .log-entry.completed {
+      background: #e0f2fe;
+      border-color: #bae6fd;
+      color: #075985;
+      font-weight: 700;
+    }
+
+    .timestamp {
+      color: #94a3b8;
+      font-size: 10px;
+      white-space: nowrap;
+    }
+
+    .empty-note {
+      color: #94a3b8;
+      font-size: 12px;
+      font-style: italic;
+      padding: 6px;
+    }
+
+    @media (max-width: 960px) {
+      body {
+        height: auto;
+        overflow: auto;
+      }
+      .app {
+        height: auto;
+        min-height: 100dvh;
+      }
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+      .stage {
+        min-height: 48vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">MOVA</div>
+      <nav aria-label="Main navigation">
+        <a href="/admin/register">Register</a>
+        <a href="/admin/gestures">Manage Gestures</a>
+        <a href="/admin/live-test">Live Test</a>
+        <a class="active" href="/admin/pipeline">Real-Time Buffer</a>
+      </nav>
+    </header>
+
+    <section class="heading">
+      <div>
+        <h1>Real-Time Gesture Buffer &amp; Monitoring</h1>
+        <p>Continuous frame processing with sliding-window outlier filtering, deduplication, and inactivity sequence buffering.</p>
+      </div>
+      <div>
+        <button id="resetBufferBtn" class="danger-outline" type="button">Reset Buffer</button>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <!-- Left Panel: Live Camera & Controls -->
+      <section class="panel camera-panel">
+        <div class="camera-title">
+          <h2>Live Detection Feed</h2>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <span id="fpsBadge" class="badge">0.0 FPS</span>
+            <span id="handBadge" class="badge">NO HANDS</span>
+            <span id="cameraBadge" class="badge">CAMERA OFF</span>
+          </div>
+        </div>
+
+        <div id="stage" class="stage">
+          <video id="video" autoplay muted playsinline></video>
+          <canvas id="landmarksOverlay" aria-label="Hand landmarks overlay"></canvas>
+          <p class="empty">Start the camera to begin real-time gesture buffering.</p>
+        </div>
+
+        <div class="camera-actions">
+          <button id="startBtn" class="primary" type="button">Start Real-Time Pipeline</button>
+          <button id="stopBtn" class="secondary" type="button" disabled>Stop Camera</button>
+        </div>
+
+        <div class="controls-row">
+          <div class="control-item">
+            <label for="fpsRange">
+              Capture FPS <span id="fpsRangeVal">6 FPS</span>
+            </label>
+            <input id="fpsRange" type="range" min="2" max="15" value="6" step="1">
+          </div>
+          <div class="control-item">
+            <label for="thresholdRange">
+              Confidence <span id="thresholdVal">70%</span>
+            </label>
+            <input id="thresholdRange" type="range" min="30" max="90" value="70" step="5">
+          </div>
+          <div class="control-item">
+            <label for="timeoutRange">
+              Inactivity Limit <span id="timeoutVal">14 frames</span>
+            </label>
+            <input id="timeoutRange" type="range" min="5" max="40" value="14" step="1">
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Panel: Real-Time Monitoring Panel -->
+      <aside class="panel monitor-panel">
+        <!-- 1. Pipeline Status & Inactivity Progress -->
+        <div class="section-card">
+          <div class="section-header">
+            <h3>Pipeline State</h3>
+            <span id="pipelineStatusBadge" class="badge">IDLE</span>
+          </div>
+          <div>
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 2px;">
+              <span>Inactivity Sequence Timer (hand absence)</span>
+              <span id="inactivityText">0 / 25 frames</span>
+            </div>
+            <div class="progress-bar-wrap">
+              <div id="inactivityProgress" class="progress-bar-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Final Retained Completed Sequence -->
+        <div id="completedBox" class="completed-box" style="display: none;">
+          <div class="completed-title">
+            <span>COMPLETED GESTURE SEQUENCE (RETAINED)</span>
+            <span id="completedTime" style="font-weight: normal; font-size: 11px;"></span>
+          </div>
+          <div id="completedChain" class="sequence-chain"></div>
+        </div>
+
+        <!-- 3. Current Unique Gesture Sequence (Active Buffer) -->
+        <div class="section-card">
+          <div class="section-header">
+            <h3>Accepted Sequence (Deduplicated)</h3>
+            <span id="acceptedCount" class="count-pill">0</span>
+          </div>
+          <div id="activeSequenceChain" class="sequence-chain">
+            <span class="empty-note">Waiting for gestures to be recognized...</span>
+          </div>
+        </div>
+
+        <!-- 4. Real-time Detection & Consecutive Duplicate Filter Status -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Raw Detected Gesture</div>
+            <div id="rawGestureVal" class="stat-val">—</div>
+            <div id="rawScoreVal" style="font-size: 11px; color: var(--muted);">Confidence: 0.0%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Consecutive Duplicates</div>
+            <div id="duplicateCountVal" class="stat-val">0</div>
+            <div id="duplicateFilterText" style="font-size: 11px; color: var(--muted);">Filtered consecutive frames</div>
+          </div>
+        </div>
+
+        <!-- 5. Outlier Removal Log -->
+        <div class="section-card">
+          <div class="section-header">
+            <h3>Outliers Filtered (Sliding-Window)</h3>
+            <span id="outlierCount" class="count-pill" style="background: #fee2e2; color: #991b1b;">0</span>
+          </div>
+          <div id="outlierList" class="log-list">
+            <span class="empty-note">No transient outliers detected.</span>
+          </div>
+        </div>
+
+        <!-- 6. Real-Time Pipeline Event Stream -->
+        <div class="section-card" style="flex: 1;">
+          <div class="section-header">
+            <h3>Continuous Pipeline Event Stream</h3>
+            <span class="count-pill">Live</span>
+          </div>
+          <div id="eventsList" class="log-list" style="max-height: 160px;">
+            <span class="empty-note">Pipeline events will stream here in real time.</span>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    let stream = null;
+    let socket = null;
+    let running = false;
+    let isSending = false;
+    let lastSendTimestamp = 0;
+
+    let TARGET_FPS = 6; // Configurable FPS for hardware compatibility & testing
+    let FRAME_INTERVAL = Math.round(1000 / TARGET_FPS); // ~166ms
+    let fpsHistory = [];
+
+    function recordFps() {
+      const now = performance.now();
+      fpsHistory.push(now);
+      if (fpsHistory.length > 8) fpsHistory.shift();
+      if (fpsHistory.length >= 2) {
+        const durationSec = (fpsHistory[fpsHistory.length - 1] - fpsHistory[0]) / 1000;
+        if (durationSec > 0) {
+          const fps = ((fpsHistory.length - 1) / durationSec).toFixed(1);
+          $('fpsBadge').textContent = `${fps} FPS`;
+        }
+      }
+    }
+
+    const canvas = document.createElement('canvas');
+    const overlay = $('landmarksOverlay');
+    const overlayContext = overlay.getContext('2d');
+    const context = canvas.getContext('2d');
+
+    // DOM Caches to prevent tag flickering
+    let cachedAcceptedSeq = '';
+    let cachedCompletedSeq = '';
+    let cachedOutliersHash = '';
+    let cachedEventsHash = '';
+
+    // Controls
+    $('fpsRange').oninput = e => {
+      TARGET_FPS = parseInt(e.target.value, 10);
+      FRAME_INTERVAL = Math.round(1000 / TARGET_FPS);
+      $('fpsRangeVal').textContent = `${TARGET_FPS} FPS`;
+    };
+
+    $('thresholdRange').oninput = e => {
+      const val = e.target.value;
+      $('thresholdVal').textContent = `${val}%`;
+      if (socket?.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({ action: 'set_threshold', threshold: parseFloat(val) }));
+      }
+    };
+
+    $('timeoutRange').oninput = e => {
+      const val = e.target.value;
+      $('timeoutVal').textContent = `${val} frames`;
+      if (socket?.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({ action: 'set_timeout', frames: parseInt(val, 10) }));
+      }
+    };
+
+    $('resetBufferBtn').onclick = () => {
+      if (socket?.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({ action: 'reset' }));
+      }
+      cachedAcceptedSeq = '';
+      cachedCompletedSeq = '';
+      cachedOutliersHash = '';
+      cachedEventsHash = '';
+      $('outlierCount').textContent = '0';
+      $('completedBox').style.display = 'none';
+      renderAcceptedSequence([]);
+    };
+
+    function clearLandmarks() {
+      overlayContext.clearRect(0, 0, overlay.width, overlay.height);
+    }
+
+    function stop() {
+      running = false;
+      isSending = false;
+      socket?.close();
+      socket = null;
+      stream?.getTracks().forEach(track => track.stop());
+      stream = null;
+      $('video').srcObject = null;
+      clearLandmarks();
+      $('stage').classList.remove('live');
+      $('cameraBadge').textContent = 'CAMERA OFF';
+      $('cameraBadge').classList.remove('live');
+      $('fpsBadge').textContent = '0.0 FPS';
+      fpsHistory = [];
+      $('startBtn').disabled = false;
+      $('stopBtn').disabled = true;
+      $('pipelineStatusBadge').textContent = 'IDLE';
+      $('pipelineStatusBadge').className = 'badge';
+    }
+
+    $('stopBtn').onclick = stop;
+    window.addEventListener('beforeunload', stop);
+
+    function renderAcceptedSequence(sequence) {
+      const key = JSON.stringify(sequence);
+      if (key === cachedAcceptedSeq) return; // Prevent DOM re-creation flickering
+      cachedAcceptedSeq = key;
+
+      const chain = $('activeSequenceChain');
+      chain.replaceChildren();
+      $('acceptedCount').textContent = sequence.length;
+
+      if (!sequence.length) {
+        chain.innerHTML = '<span class="empty-note">Waiting for gestures to be recognized...</span>';
+        return;
+      }
+
+      sequence.forEach((name, idx) => {
+        if (idx > 0) {
+          const arrow = document.createElement('span');
+          arrow.className = 'sequence-arrow';
+          arrow.textContent = '➔';
+          chain.append(arrow);
+        }
+        const item = document.createElement('div');
+        item.className = 'sequence-item';
+        item.innerHTML = `<span class="sequence-index">#${idx + 1}</span> ${name}`;
+        chain.append(item);
+      });
+    }
+
+    function renderCompletedSequence(sequence) {
+      const key = JSON.stringify(sequence);
+      if (key === cachedCompletedSeq) return;
+      cachedCompletedSeq = key;
+
+      const box = $('completedBox');
+      const chain = $('completedChain');
+      if (!sequence || !sequence.length) {
+        box.style.display = 'none';
+        return;
+      }
+
+      box.style.display = 'flex';
+      $('completedTime').textContent = new Date().toLocaleTimeString();
+      chain.replaceChildren();
+
+      sequence.forEach((name, idx) => {
+        if (idx > 0) {
+          const arrow = document.createElement('span');
+          arrow.className = 'sequence-arrow';
+          arrow.textContent = '➔';
+          chain.append(arrow);
+        }
+        const item = document.createElement('div');
+        item.className = 'sequence-item';
+        item.style.background = '#dbeafe';
+        item.style.borderColor = '#93c5fd';
+        item.style.color = '#1e40af';
+        item.innerHTML = `<span class="sequence-index">#${idx + 1}</span> ${name}`;
+        chain.append(item);
+      });
+    }
+
+    function updateMonitoringUI(data) {
+      const bState = data.buffer_state || {};
+      const hands = data.hand_count || 0;
+
+      // Hands badge
+      $('handBadge').textContent = hands ? `${hands} HAND${hands === 1 ? '' : 'S'}` : 'NO HANDS';
+      $('handBadge').className = `badge ${hands ? 'live' : ''}`;
+
+      // Status badge
+      const statusBadge = $('pipelineStatusBadge');
+      const status = (bState.status || 'idle').toUpperCase();
+      statusBadge.textContent = status;
+      statusBadge.className = `badge ${status.toLowerCase()}`;
+
+      // Inactivity progress
+      const progress = bState.inactivity_progress || 0;
+      $('inactivityProgress').style.width = `${progress}%`;
+      $('inactivityText').textContent = `${bState.inactive_frames || 0} / ${bState.end_signal_frames || 14} frames`;
+
+      // Raw gesture & confidence
+      if (data.best_match) {
+        const handTag = data.best_match.handedness && data.best_match.handedness !== 'Unknown' ? ` [${data.best_match.handedness[0]}]` : '';
+        $('rawGestureVal').textContent = `${data.best_match.name}${handTag}`;
+        $('rawScoreVal').textContent = `Confidence: ${data.best_match.score.toFixed(1)}%`;
+      } else {
+        $('rawGestureVal').textContent = hands ? 'Unrecognized Pose' : '—';
+        $('rawScoreVal').textContent = hands ? 'Below confidence threshold' : 'No hands visible';
+      }
+
+      // Consecutive duplicates
+      $('duplicateCountVal').textContent = bState.duplicate_count || 0;
+      if (bState.last_accepted_gesture && bState.duplicate_count > 0) {
+        $('duplicateFilterText').textContent = `Filtered ${bState.duplicate_count} duplicate frames of '${bState.last_accepted_gesture}'`;
+      } else {
+        $('duplicateFilterText').textContent = 'No duplicate frames dropped yet';
+      }
+
+      // Accepted sequence (no-flicker cache)
+      renderAcceptedSequence(bState.accepted_sequence || []);
+
+      // Completed sequence
+      if (bState.status === 'completed' && bState.completed_sequence?.length) {
+        renderCompletedSequence(bState.completed_sequence);
+      }
+
+      // Outlier list (cached to prevent flickering)
+      const outliers = bState.outliers || [];
+      const outKey = JSON.stringify(outliers);
+      if (outKey !== cachedOutliersHash) {
+        cachedOutliersHash = outKey;
+        const outlierList = $('outlierList');
+        $('outlierCount').textContent = outliers.length;
+        if (outliers.length) {
+          outlierList.replaceChildren();
+          outliers.forEach(o => {
+            const entry = document.createElement('div');
+            entry.className = 'log-entry outlier';
+            entry.innerHTML = `
+              <span><strong>${o.gesture}</strong> (${o.confidence}%) rejected — ${o.reason}</span>
+              <span class="timestamp">${new Date(o.timestamp * 1000).toLocaleTimeString()}</span>
+            `;
+            outlierList.append(entry);
+          });
+        } else {
+          outlierList.innerHTML = '<span class="empty-note">No transient outliers detected.</span>';
+        }
+      }
+
+      // Event stream list (cached to prevent flickering)
+      const events = bState.events || [];
+      const evKey = JSON.stringify(events);
+      if (evKey !== cachedEventsHash) {
+        cachedEventsHash = evKey;
+        const eventsList = $('eventsList');
+        if (events.length) {
+          eventsList.replaceChildren();
+          events.forEach(e => {
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${e.event_type}`;
+            entry.innerHTML = `
+              <span><strong>[${e.event_type.toUpperCase()}]</strong> ${e.message}</span>
+              <span class="timestamp">${new Date(e.timestamp * 1000).toLocaleTimeString()}</span>
+            `;
+            eventsList.append(entry);
+          });
+        } else {
+          eventsList.innerHTML = '<span class="empty-note">Pipeline events will stream here in real time.</span>';
+        }
+      }
+    }
+
+    function getVideoRenderedRect(video, containerWidth, containerHeight) {
+      if (!video.videoWidth || !video.videoHeight || !containerWidth || !containerHeight) {
+        return { x: 0, y: 0, w: containerWidth, h: containerHeight };
+      }
+      const videoAspect = video.videoWidth / video.videoHeight;
+      const containerAspect = containerWidth / containerHeight;
+      let w, h, x, y;
+      if (containerAspect > videoAspect) {
+        h = containerHeight;
+        w = h * videoAspect;
+        x = (containerWidth - w) / 2;
+        y = 0;
+      } else {
+        w = containerWidth;
+        h = w / videoAspect;
+        x = 0;
+        y = (containerHeight - h) / 2;
+      }
+      return { x, y, w, h };
+    }
+
+    function drawLandmarks(hands) {
+      const rect = overlay.getBoundingClientRect();
+      const width = rect.width;
+      const height = rect.height;
+      const scale = window.devicePixelRatio || 1;
+
+      overlay.width = width * scale;
+      overlay.height = height * scale;
+      overlayContext.setTransform(scale, 0, 0, scale, 0, 0);
+      overlayContext.clearRect(0, 0, width, height);
+
+      if (!hands.length || !$('video').videoWidth) return;
+
+      const vRect = getVideoRenderedRect($('video'), width, height);
+      const point = p => [vRect.x + p[0] * vRect.w, vRect.y + p[1] * vRect.h];
+
+      const links = [
+        [0, 1], [1, 2], [2, 3], [3, 4],
+        [0, 5], [5, 6], [6, 7], [7, 8],
+        [5, 9], [9, 10], [10, 11], [11, 12],
+        [9, 13], [13, 14], [14, 15], [15, 16],
+        [13, 17], [17, 18], [18, 19], [19, 20],
+        [0, 17]
+      ];
+
+      overlayContext.lineWidth = 2;
+      overlayContext.strokeStyle = '#38bdf8';
+      overlayContext.fillStyle = '#00d4aa';
+
+      hands.forEach(hand => {
+        overlayContext.beginPath();
+        links.forEach(([a, b]) => {
+          const start = point(hand[a]);
+          const end = point(hand[b]);
+          overlayContext.moveTo(...start);
+          overlayContext.lineTo(...end);
+        });
+        overlayContext.stroke();
+
+        hand.forEach(p => {
+          const [x, y] = point(p);
+          overlayContext.beginPath();
+          overlayContext.arc(x, y, 3, 0, Math.PI * 2);
+          overlayContext.fill();
+        });
+      });
+    }
+
+    function sendFrame() {
+      if (!running || isSending || socket?.readyState !== WebSocket.OPEN || !$('video').videoWidth) return;
+
+      const video = $('video');
+      const videoAspect = video.videoWidth / video.videoHeight;
+      // Downscale to 480px width for fast transfer and minimal CPU lag
+      const targetW = 480;
+      const targetH = Math.round(480 / videoAspect);
+
+      canvas.width = targetW;
+      canvas.height = targetH;
+      context.drawImage(video, 0, 0, targetW, targetH);
+
+      isSending = true;
+      lastSendTimestamp = performance.now();
+      socket.send(JSON.stringify({
+        image_base64: canvas.toDataURL('image/jpeg', 0.68)
+      }));
+    }
+
+    function connect() {
+      const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+      socket = new WebSocket(`${protocol}://${location.host}/ws/pipeline`);
+
+      socket.onopen = () => {
+        socket.send(JSON.stringify({
+          action: 'init',
+          threshold: parseFloat($('thresholdRange').value),
+          frames: parseInt($('timeoutRange').value, 10)
+        }));
+        sendFrame();
+      };
+
+      socket.onmessage = event => {
+        isSending = false;
+        recordFps();
+        const data = JSON.parse(event.data);
+        if (data.error) {
+          console.warn('Pipeline error:', data.error);
+        } else {
+          updateMonitoringUI(data);
+          drawLandmarks(data.landmarks || []);
+        }
+        if (running) {
+          // Precise 5-8 FPS rate pacing (target 6 FPS)
+          const elapsed = performance.now() - lastSendTimestamp;
+          const waitTime = Math.max(10, FRAME_INTERVAL - elapsed);
+          setTimeout(sendFrame, waitTime);
+        }
+      };
+
+      socket.onerror = err => {
+        isSending = false;
+        console.error('WebSocket error:', err);
+      };
+
+      socket.onclose = () => {
+        isSending = false;
+        if (running) {
+          console.log('WebSocket closed, reconnecting...');
+          setTimeout(() => { if (running) connect(); }, 1000);
+        }
+      };
+    }
+
+    $('startBtn').onclick = async () => {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        alert('Camera access requires HTTPS or localhost.');
+        return;
+      }
+
+      $('startBtn').disabled = true;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user', width: { ideal: 960 }, height: { ideal: 720 } },
+          audio: false
+        });
+        $('video').srcObject = stream;
+        await $('video').play();
+        running = true;
+
+        $('stage').classList.add('live');
+        $('cameraBadge').textContent = 'LIVE';
+        $('cameraBadge').classList.add('live');
+        $('stopBtn').disabled = false;
+        connect();
+      } catch (error) {
+        alert(`Could not open camera: ${error.message}`);
+        stop();
+      }
+    };
+
+    $('startBtn').onclick = async () => {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        alert('Camera access requires HTTPS or localhost.');
+        return;
+      }
+
+      $('startBtn').disabled = true;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user', width: { ideal: 960 }, height: { ideal: 720 } },
+          audio: false
+        });
+        $('video').srcObject = stream;
+        await $('video').play();
+        running = true;
+
+        $('stage').classList.add('live');
+        $('cameraBadge').textContent = 'LIVE';
+        $('cameraBadge').classList.add('live');
+        $('stopBtn').disabled = false;
+        connect();
+      } catch (error) {
+        alert(`Could not open camera: ${error.message}`);
+        stop();
+      }
+    };
+  </script>
+</body>
+</html>

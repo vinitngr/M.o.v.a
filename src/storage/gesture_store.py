@@ -59,12 +59,14 @@ class GestureStore:
     def create(self, name: str, landmarks: List[List[float]], hand_count: int, 
                features: List[float], labels: List[str] = None,
                preview_path: Optional[str] = None,
-               gesture_id: Optional[str] = None) -> Dict[str, Any]:
+               gesture_id: Optional[str] = None,
+               handedness: Optional[Any] = None) -> Dict[str, Any]:
         with self._lock:
             gesture = {
                 "id": gesture_id or str(uuid.uuid4())[:8],
                 "name": name,
                 "hand_count": hand_count,
+                "handedness": handedness,
                 "feature_version": 2,
                 "features": features,
                 "landmarks": landmarks,

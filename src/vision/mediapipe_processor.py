@@ -128,8 +128,42 @@ def extract_two_hand_features(left_landmarks: List[List[float]], right_landmarks
     return left_features + right_features + relative_vec.tolist()
 
 
-def score_gestures(live_features: List[float], gestures: List[dict]) -> List[dict]:
-    """Return every compatible stored gesture, ordered by similarity."""
+def determine_hand_side(landmarks: List[List[float]]) -> str:
+    """Determine whether landmarks correspond to a Left or Right hand using 3D palm geometry."""
+    pts = np.array(landmarks)
+    if pts.shape[0] < 21:
+        return "Unknown"
+    # Wrist 0, Index MCP 5, Pinky MCP 17, Thumb CMC 1
+    v_index = pts[5] - pts[0]
+    v_pinky = pts[17] - pts[0]
+    palm_normal = np.cross(v_index, v_pinky)
+    v_thumb = pts[1] - pts[0]
+    side_vec = np.cross(v_index, palm_normal)
+    val = float(np.dot(side_vec, v_thumb))
+    return "Right" if val > 0 else "Left"
+
+
+def get_gesture_handedness(gesture: dict) -> str:
+    """Return stored handedness, or compute from landmarks for legacy gestures."""
+    h = gesture.get("handedness")
+    if h:
+        return h if isinstance(h, str) else h[0]
+    # Compute from landmarks if present
+    lm = gesture.get("landmarks", [])
+    if isinstance(lm, list) and len(lm) >= 21:
+        return determine_hand_side(lm[:21])
+    return "Unknown"
+
+
+def score_gestures(
+    live_features: List[float],
+    gestures: List[dict],
+    live_handedness: Optional[List[str]] = None,
+) -> List[dict]:
+    """
+    Return every compatible stored gesture, ordered by similarity.
+    Includes contrast separation, inter-finger gap metrics, and left/right handedness differentiation.
+    """
     single_size = 71
     two_hand_size = 145
 
@@ -141,25 +175,68 @@ def score_gestures(live_features: List[float], gestures: List[dict]) -> List[dic
     def single_score(live, stored):
         if len(live) != single_size or len(stored) != single_size:
             return None
-        shape = max(0.0, cosine_similarity(live[:66], stored[:66]))
-        profile = float(np.clip(1.0 - np.mean(np.abs(np.array(live[66:]) - np.array(stored[66:]))), 0.0, 1.0))
-        return (shape * .60 + profile * .40) * 100
+        # 1. Whole-hand shape cosine similarity (stretched range [0.55, 1.0])
+        raw_cos = cosine_similarity(live[:66], stored[:66])
+        shape = max(0.0, min(1.0, (raw_cos - 0.55) / 0.45))
+        
+        # 2. Finger extension profile (5 values: thumb, index, middle, ring, pinky)
+        diff = np.abs(np.array(live[66:]) - np.array(stored[66:]))
+        mean_diff = float(np.mean(diff))
+        max_diff = float(np.max(diff))
+        profile = float(np.clip(1.0 - (mean_diff * 0.70 + max_diff * 0.45), 0.0, 1.0))
+
+        # 3. Inter-finger tip gap distances (from the 63 normalized coords)
+        # Separates close poses like pinch_small vs pointing_towards_someone
+        pts_l = np.array(live[:63]).reshape(21, 3)
+        pts_s = np.array(stored[:63]).reshape(21, 3)
+        gap_pairs = [(4, 8), (4, 12), (8, 12), (12, 16), (16, 20)]
+        gap_diffs = [
+            abs(np.linalg.norm(pts_l[p1] - pts_l[p2]) - np.linalg.norm(pts_s[p1] - pts_s[p2]))
+            for p1, p2 in gap_pairs
+        ]
+        mean_gap_diff = float(np.mean(gap_diffs))
+        max_gap_diff = float(np.max(gap_diffs))
+        gap_score = float(np.clip(1.0 - (mean_gap_diff * 1.5 + max_gap_diff * 1.2), 0.0, 1.0))
+        
+        return (shape * 0.40 + profile * 0.35 + gap_score * 0.25) * 100.0
 
     scores = []
+    live_side = live_handedness[0] if live_handedness and len(live_handedness) > 0 else None
+
     for gesture in gestures:
         stored = gesture.get("features", [])
+        stored_side = get_gesture_handedness(gesture)
         score = None
+        hand_match = True
+
         if len(live_features) == single_size:
             score = single_score(live_features, stored)
-            # Support gestures registered before feature version 2.
             if score is None and len(stored) == 66:
-                score = max(0.0, cosine_similarity(live_features[:66], stored)) * 100
+                raw = cosine_similarity(live_features[:66], stored)
+                score = max(0.0, min(1.0, (raw - 0.55) / 0.45)) * 100.0
+
+            # Handedness penalty for single-hand gestures
+            # If live hand is Left and stored is Right (or vice versa), apply mismatch penalty
+            if score is not None and live_side and stored_side and stored_side != "Unknown":
+                if live_side != stored_side:
+                    hand_match = False
+                    score = score * 0.35  # Strong opposite-hand penalty
+
         elif len(live_features) == two_hand_size and len(stored) == two_hand_size:
             left = single_score(live_features[:single_size], stored[:single_size])
             right = single_score(live_features[single_size:single_size * 2], stored[single_size:single_size * 2])
-            relative = max(0.0, cosine_similarity(live_features[-3:], stored[-3:])) * 100
+            raw_rel = cosine_similarity(live_features[-3:], stored[-3:])
+            relative = max(0.0, min(1.0, (raw_rel - 0.50) / 0.50)) * 100.0
             if left is not None and right is not None:
-                score = left * .40 + right * .40 + relative * .20
+                score = left * 0.40 + right * 0.40 + relative * 0.20
+
         if score is not None:
-            scores.append({"id": gesture["id"], "name": gesture["name"], "score": round(score, 1)})
+            scores.append({
+                "id": gesture.get("id"),
+                "name": gesture["name"],
+                "score": round(score, 1),
+                "handedness": stored_side,
+                "hand_match": hand_match,
+            })
+
     return sorted(scores, key=lambda item: item["score"], reverse=True)

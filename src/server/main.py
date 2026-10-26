@@ -21,6 +21,8 @@ from src.vision.mediapipe_processor import (
     normalize_landmarks,
     score_gestures,
 )
+from src.pipeline.detection_pipeline import RealTimePipeline
+from src.buffer.gesture_buffer import GestureBuffer
 
 app = FastAPI(title="MOVA Gesture Registration")
 
@@ -105,6 +107,16 @@ async def admin_gestures(request: Request):
 @app.get("/admin/live-test", response_class=HTMLResponse)
 async def admin_live_test(request: Request):
     return templates.TemplateResponse("live_test.html", {"request": request})
+
+
+@app.get("/admin/pipeline", response_class=HTMLResponse)
+async def admin_pipeline(request: Request):
+    return templates.TemplateResponse("pipeline.html", {"request": request})
+
+
+@app.get("/pipeline", response_class=HTMLResponse)
+async def pipeline_page(request: Request):
+    return templates.TemplateResponse("pipeline.html", {"request": request})
 
 
 @app.get("/gestures", response_class=HTMLResponse)
@@ -208,6 +220,7 @@ async def save_gesture(req: SaveGestureRequest):
         name=req.name,
         landmarks=landmarks_list,
         hand_count=capture["hand_count"],
+        handedness=capture.get("handedness", ["Right"])[0] if capture.get("handedness") and len(capture["handedness"]) == 1 else capture.get("handedness"),
         features=capture["features"],
         labels=req.labels,
         preview_path=f"/gesture-previews/{preview_file.name}"
@@ -257,7 +270,7 @@ def analyse_live_frame(image_base64: str) -> Dict[str, Any]:
     return {
         "hand_count": len(hands),
         "landmarks": [[[point[0], point[1]] for point in hand] for hand in hands],
-        "scores": score_gestures(live_features, store.get_all()) if live_features else [],
+        "scores": score_gestures(live_features, store.get_all(), live_handedness=handedness) if live_features else [],
     }
 
 
@@ -278,6 +291,62 @@ async def detect_gesture_stream(websocket: WebSocket):
                 await websocket.send_json({"error": str(error)})
     except (WebSocketDisconnect, json.JSONDecodeError):
         return
+
+
+@app.websocket("/ws/pipeline")
+async def pipeline_stream(websocket: WebSocket):
+    """Real-time gesture detection and buffering WebSocket stream."""
+    await websocket.accept()
+    pipeline = RealTimePipeline(store=store, processor_getter=get_processor)
+    try:
+        while True:
+            raw_text = await websocket.receive_text()
+            payload = json.loads(raw_text)
+
+            # Handle control commands
+            action = payload.get("action")
+            if action in ("reset", "clear"):
+                pipeline.reset_buffer()
+                await websocket.send_json({
+                    "action_acknowledged": action,
+                    "buffer_state": pipeline.buffer.get_state()
+                })
+                continue
+            elif action == "set_threshold":
+                pipeline.set_threshold(float(payload.get("threshold", 60.0)))
+                continue
+            elif action == "set_timeout":
+                pipeline.buffer.end_signal_frames = int(payload.get("frames", 25))
+                continue
+            elif action == "init":
+                if "threshold" in payload:
+                    pipeline.set_threshold(float(payload["threshold"]))
+                if "frames" in payload:
+                    pipeline.buffer.end_signal_frames = int(payload["frames"])
+                continue
+
+            image_base64 = payload.get("image_base64")
+            if not image_base64:
+                continue
+
+            try:
+                frame = decode_base64_image(image_base64)
+                if frame is None:
+                    await websocket.send_json({"error": "Invalid camera frame"})
+                    continue
+                result = pipeline.process_frame(frame)
+                await websocket.send_json(result)
+            except (ValueError, cv2.error) as error:
+                await websocket.send_json({"error": str(error)})
+    except (WebSocketDisconnect, json.JSONDecodeError):
+        return
+
+
+@app.get("/api/pipeline/state")
+async def get_pipeline_state():
+    """Diagnostic check for pipeline module."""
+    sample_buf = GestureBuffer()
+    return {"status": "ok", "default_buffer": sample_buf.get_state()}
 
 
 @app.get("/api/gestures")
