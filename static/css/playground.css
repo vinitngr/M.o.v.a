@@ -41,8 +41,7 @@ body {
 .pg-app {
   min-height: 100dvh;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
 }
 
 .pg-grid {
@@ -1002,4 +1001,376 @@ body {
   background: linear-gradient(90deg, #00b38a, var(--pg-mint));
   box-shadow: 0 0 8px rgba(0, 230, 168, 0.45);
   transition: width 0.3s ease;
+}
+
+/* ============================================================
+   Topbar — Stop · Reset · Heart(settings)
+   ============================================================ */
+.pg-topbar {
+  width: 100%;
+  max-width: 1680px;
+  margin: 0 auto;
+  padding: 14px 22px 2px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pg-topbar-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.4px;
+  color: var(--pg-muted);
+}
+
+.pg-topbar-brand svg {
+  width: 15px;
+  height: 15px;
+  color: var(--pg-mint);
+}
+
+.pg-topbar-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pg-hbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 13px;
+  border: 1px solid var(--pg-line);
+  border-radius: 999px;
+  background: var(--pg-card);
+  color: var(--pg-text);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pg-hbtn svg {
+  width: 13px;
+  height: 13px;
+}
+
+.pg-hbtn:hover {
+  border-color: rgba(0, 230, 168, 0.45);
+  background: #12212c;
+}
+
+.pg-hbtn.is-running {
+  color: #ffb4bb;
+  border-color: rgba(255, 77, 94, 0.4);
+}
+
+.pg-hbtn.is-running:hover {
+  background: #2a151a;
+  box-shadow: 0 0 12px rgba(255, 77, 94, 0.14);
+}
+
+.pg-hbtn--heart svg {
+  color: var(--pg-red);
+  filter: drop-shadow(0 0 4px rgba(255, 77, 94, 0.55));
+}
+
+.pg-hbtn--heart:hover {
+  border-color: rgba(255, 77, 94, 0.45);
+}
+
+/* ============================================================
+   Card 4 · Sentence Queue (queue half; sentences/classifier later)
+   ============================================================ */
+.pg-queue-box {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--pg-row);
+  border: 1px solid var(--pg-row-line);
+  border-radius: 14px;
+  padding: 12px 13px;
+}
+
+.pg-queue-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pg-queue-head h3 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.pg-queue-count {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--pg-mint);
+  background: var(--pg-card-ghost);
+  border: 1px solid var(--pg-mint-line);
+  border-radius: 999px;
+  padding: 1px 9px;
+}
+
+.pg-queue-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--pg-line) transparent;
+}
+
+.pg-queue-row {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: var(--pg-card);
+  border: 1px solid var(--pg-line-soft);
+  border-radius: 12px;
+  padding: 9px 11px;
+  animation: pgLogIn 0.2s ease;
+}
+
+.pg-queue-num {
+  flex: none;
+  width: 21px;
+  height: 21px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--pg-mint-soft);
+  border: 1px solid var(--pg-mint-line);
+  color: var(--pg-mint);
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.pg-queue-thumbs {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.pg-queue-tile {
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 9px;
+  background: #0a141d;
+  border: 1px solid var(--pg-line-soft);
+}
+
+.pg-queue-tile canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.pg-queue-arrow {
+  flex: none;
+  color: var(--pg-muted);
+  display: grid;
+  place-items: center;
+}
+
+.pg-queue-status {
+  flex: none;
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #b9becb;
+  background: rgba(148, 163, 184, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.28);
+}
+
+.pg-queue-status svg {
+  width: 12px;
+  height: 12px;
+}
+
+.pg-queue-empty {
+  flex: 1;
+  min-height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px dashed var(--pg-line);
+  border-radius: 12px;
+  color: var(--pg-muted);
+  font-size: 12px;
+}
+
+.pg-queue-empty .pg-buffer-plus {
+  font-size: 16px;
+  color: var(--pg-mint-line);
+}
+
+/* ============================================================
+   Settings modal (heart button)
+   ============================================================ */
+.pg-settings {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+}
+
+.pg-settings[hidden] {
+  display: none;
+}
+
+.pg-settings-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 10, 16, 0.72);
+  backdrop-filter: blur(3px);
+}
+
+.pg-settings-card {
+  position: relative;
+  width: min(460px, calc(100vw - 40px));
+  background: linear-gradient(180deg, #101d28, #0c1720);
+  border: 1px solid var(--pg-line);
+  border-radius: 18px;
+  padding: 18px 20px 14px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
+  animation: pgLogIn 0.18s ease;
+}
+
+.pg-settings-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.pg-settings-copy h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.pg-settings-copy p {
+  margin: 2px 0 0;
+  font-size: 11.5px;
+  color: var(--pg-muted);
+}
+
+.pg-settings-close {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--pg-line);
+  border-radius: 999px;
+  background: var(--pg-row);
+  color: var(--pg-muted);
+  cursor: pointer;
+}
+
+.pg-settings-close svg {
+  width: 12px;
+  height: 12px;
+}
+
+.pg-settings-close:hover {
+  color: var(--pg-text);
+  border-color: var(--pg-mint-line);
+}
+
+.pg-setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 11px 2px;
+  border-top: 1px solid var(--pg-line-soft);
+}
+
+.pg-setting-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.pg-setting-copy b {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.pg-setting-copy i {
+  display: block;
+  font-style: normal;
+  font-size: 11px;
+  color: var(--pg-muted);
+  margin-top: 1px;
+}
+
+.pg-setting-control {
+  flex: none;
+  width: 158px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 3px;
+}
+
+.pg-setting-control input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 5px;
+  border-radius: 999px;
+  background: #1c2c3a;
+  outline: none;
+  cursor: pointer;
+  accent-color: var(--pg-mint);
+}
+
+.pg-setting-control input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--pg-mint);
+  border: 2px solid #06131a;
+  box-shadow: 0 0 8px rgba(0, 230, 168, 0.55);
+}
+
+.pg-setting-control input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #06131a;
+  border-radius: 50%;
+  background: var(--pg-mint);
+}
+
+.pg-setting-control b {
+  text-align: right;
+  font-size: 11px;
+  color: var(--pg-mint);
 }
