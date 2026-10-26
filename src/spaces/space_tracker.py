@@ -126,6 +126,11 @@ class SpaceTracker:
         self.active_space_id = None
         self.space_buffer = []
 
+    def deactivate(self) -> None:
+        """Leave the active space silently (one-shot speech already spoke)."""
+        self.active_space_id = None
+        self.space_buffer = []
+
     def _activate(self, space_id: str) -> None:
         self.active_space_id = space_id
         self.space_buffer = []

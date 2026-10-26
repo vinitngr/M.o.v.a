@@ -4,13 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MOVA — Playground</title>
-  <link rel="stylesheet" href="/static/css/playground.css?v=badge2">
-  <script src="/static/js/pg-common.js?v=badge2" defer></script>
-  <script src="/static/js/pg-card1.js?v=badge2" defer></script>
-  <script src="/static/js/pg-flog.js?v=badge2" defer></script>
-  <script src="/static/js/pg-buffer.js?v=badge2" defer></script>
-  <script src="/static/js/pg-queue.js?v=badge2" defer></script>
-  <script src="/static/js/pg-main.js?v=badge2" defer></script>
+  <link rel="stylesheet" href="/static/css/playground.css?v=speech2">
+  <script src="/static/js/pg-common.js?v=speech2" defer></script>
+  <script src="/static/js/pg-card1.js?v=speech2" defer></script>
+  <script src="/static/js/pg-flog.js?v=speech2" defer></script>
+  <script src="/static/js/pg-buffer.js?v=speech2" defer></script>
+  <script src="/static/js/pg-queue.js?v=speech2" defer></script>
+  <script src="/static/js/pg-speech.js?v=speech2" defer></script>
+  <script src="/static/js/pg-main.js?v=speech2" defer></script>
 </head>
 <body>
   <main class="pg-app">
@@ -171,10 +172,56 @@
         </div>
       </article>
 
-      <article class="pg-card pg-card--ghost">
-        <span class="pg-ghost-num">05</span>
-        <span class="pg-ghost-title">Speech Output</span>
-        <span class="pg-ghost-note">coming soon</span>
+      <!-- Card 5 · Speech Output -->
+      <article class="pg-card" id="pgSpeechCard">
+        <header class="pg-card-head">
+          <div>
+            <h2 class="pg-head-title">
+              <span class="pg-head-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4a1 1 0 0 0 1 1h3l4.3 3.6a.8.8 0 0 0 1.2-.7V6.1a.8.8 0 0 0-1.2-.7L7 9H4a1 1 0 0 0-1 1z"/><path d="M15.5 8.5a5 5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M17.8 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              </span>
+              5. Speech Output
+            </h2>
+            <p class="pg-head-sub">Convert selected sentence to speech</p>
+          </div>
+        </header>
+
+        <div class="pg-speech-final">
+          <div class="pg-speech-final-head">
+            <span>Final Sentence</span>
+            <button id="pgSpeechCopy" class="pg-speech-copy" title="Copy sentence" type="button">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+            </button>
+          </div>
+          <div id="pgSpeechSentence" class="pg-speech-text">—</div>
+        </div>
+
+        <div class="pg-speech-player">
+          <button id="pgSpeakBtn" class="pg-speak-round" title="Replay sentence" type="button">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4a1 1 0 0 0 1 1h3l4.3 3.6a.8.8 0 0 0 1.2-.7V6.1a.8.8 0 0 0-1.2-.7L7 9H4a1 1 0 0 0-1 1z"/><path d="M15.5 8.5a5 5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M17.8 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+          <div class="pg-speech-right">
+            <div id="pgWave" class="pg-wave" aria-hidden="true">
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <span id="pgSpeechStatus" class="pg-speech-status">Idle</span>
+          </div>
+        </div>
+
+        <button id="pgSpeechStop" class="pg-speech-stop" type="button">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2.5"/></svg>
+          Stop Speaking
+        </button>
+
+        <div class="pg-speech-history">
+          <div class="pg-speech-history-head">
+            <span>Conversation History</span>
+            <button id="pgSpeechClear" title="Clear history" type="button">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6m4-6v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>
+            </button>
+          </div>
+          <ol id="pgSpeechHistory" class="pg-speech-history-list"></ol>
+        </div>
       </article>
 
     </section>

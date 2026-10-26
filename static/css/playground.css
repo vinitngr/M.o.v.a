@@ -1583,3 +1583,245 @@ body {
   font-size: 11px;
   color: var(--pg-mint);
 }
+
+/* ============================================================
+   Card 5 · Speech Output
+   One-shot exchange: baked sentence speaks the moment its sign
+   is confirmed (server pushes speech_event; no AI / no queue).
+   ============================================================ */
+.pg-speech-final {
+  flex: none;
+  padding: 10px 14px 14px;
+  border: 1px solid var(--pg-line);
+  border-radius: 12px;
+  background: var(--pg-panel-soft, rgba(22, 40, 58, 0.5));
+}
+
+.pg-speech-final-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10.5px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--pg-muted);
+}
+
+.pg-speech-copy {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1px solid var(--pg-line);
+  background: transparent;
+  color: var(--pg-muted);
+  cursor: pointer;
+}
+
+.pg-speech-copy:hover { color: var(--pg-mint); border-color: var(--pg-mint-line); }
+
+.pg-speech-text {
+  margin-top: 6px;
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #f2f7fb;
+  min-height: 26px;
+}
+
+.pg-speech-player {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.pg-speak-round {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--pg-mint);
+  background: transparent;
+  border: 2px solid var(--pg-mint-line);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pg-speak-round svg { width: 20px; height: 20px; }
+
+.pg-speak-round:hover,
+.pg-speak-round.is-live {
+  box-shadow: 0 0 0 3px rgba(255, 89, 56, 0.15);
+}
+
+.pg-speak-round.is-live { background: rgba(255, 89, 56, 0.12); }
+.pg-speak-round:active { transform: scale(0.94); }
+
+.pg-speech-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.pg-wave {
+  display: flex;
+  align-items: center;
+  gap: 2.5px;
+  height: 28px;
+  flex: 1;
+  min-width: 0;
+}
+
+.pg-wave span {
+  width: 3px;
+  border-radius: 2px;
+  background: rgba(255, 89, 56, 0.35);
+  height: 6px;
+  transition: height 0.12s ease;
+}
+
+.pg-wave.is-speaking span {
+  animation: pgWavePulse 0.9s ease-in-out infinite;
+}
+
+.pg-wave span:nth-child(odd)  { animation-delay: 0.15s; }
+.pg-wave span:nth-child(3n)   { animation-delay: 0.3s; }
+.pg-wave span:nth-child(4n)   { animation-delay: 0.45s; }
+
+@keyframes pgWavePulse {
+  0%, 100% { height: 5px; opacity: 0.5; }
+  50%      { height: 22px; opacity: 1; }
+}
+
+.pg-speech-status {
+  flex: none;
+  font-size: 11px;
+  color: var(--pg-muted);
+}
+
+.pg-speech-status::first-line { color: var(--pg-muted); }
+
+.pg-speech-stop {
+  margin-top: 10px;
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px solid #4b2320;
+  background: rgba(190, 42, 42, 0.14);
+  color: #ff9d94;
+  font-weight: 600;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.pg-speech-stop:hover,
+.pg-speech-stop.is-active {
+  background: rgba(190, 42, 42, 0.28);
+  color: #ffc9c4;
+}
+
+.pg-speech-history {
+  margin-top: 12px;
+  /* fill remaining card height; the list scrolls inside its box */
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.pg-speech-history-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10.5px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--pg-muted);
+}
+
+.pg-speech-history-head button {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1px solid var(--pg-line);
+  background: transparent;
+  color: var(--pg-muted);
+  cursor: pointer;
+}
+
+.pg-speech-history-head button:hover { color: var(--pg-mint); border-color: var(--pg-mint-line); }
+
+.pg-speech-history .pg-speech-history-head button {
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.pg-speech-history-list {
+  list-style: none;
+  margin-top: 8px;
+  display: grid;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #2a4156 transparent;
+}
+
+.pg-speech-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--pg-line);
+  background: rgba(10, 22, 32, 0.55);
+}
+
+.pg-speech-item .pg-speech-text {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #dce8f2;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pg-speech-item .pg-speech-meta {
+  flex: none;
+  font-size: 10px;
+  color: var(--pg-muted);
+}
+
+.pg-speech-dot {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #3a4f61;
+}
+
+.pg-speech-item.is-live .pg-speech-dot {
+  background: var(--pg-mint);
+  box-shadow: 0 0 8px rgba(255, 89, 56, 0.55);
+}
+
+.pg-speech-history-list::-webkit-scrollbar { width: 6px; }
+.pg-speech-history-list::-webkit-scrollbar-thumb { border-radius: 3px; background: #2a4156; }
+.pg-speech-history-list::-webkit-scrollbar-track { background: transparent; }

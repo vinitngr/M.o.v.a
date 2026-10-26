@@ -26,6 +26,7 @@ test
 signs
 data/gesture_previews/
 data/audio/
+data/piper/
 node_modules/
 PLANNING.md
 models/

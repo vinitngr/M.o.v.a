@@ -190,6 +190,78 @@ class ElevenLabsProvider:
         return os.environ.get(env_key, fallback).strip() or fallback
 
 
+class PiperProvider:
+    """Local neural provider backed by the ``piper`` package (already in the
+    venv). Small VITS models run on plain CPU (no GPU needed) and sound
+    natural, conversational, calm — a big step up from espeak-ng.
+
+    Voice files live in ``data/piper/voices`` as ``<name>.onnx`` plus the
+    matching ``.onnx.json``:
+
+        en_US-amy-medium.onnx        (female, calm/neutral)
+        en_US-hfc_male-medium.onnx   (male, calm/neutral)
+
+    Models are loaded once and cached, so every sentence after the first
+    synthesizes in well under a second. Set ``TTS_PROVIDER=piper``.
+    """
+
+    VOICES_DIR = Path(__file__).resolve().parent / "data" / "piper" / "voices"
+    FEMALE_VOICE = "en_US-amy-medium"
+    MALE_VOICE = "en_US-hfc_male-medium"
+    AUDIO_EXT = "wav"
+    # Slightly slower + steadier than model default = calm conversation,
+    # not podcast energy. (1.0 = neutral, >1 = slower/calm.)
+    LENGTH_SCALE = 1.08
+
+    _voice_cache: dict[str, object] = {}
+
+    def voice_for_gender(self, gender: str | None) -> str:
+        return self.FEMALE_VOICE if (gender or "").lower() == "female" else self.MALE_VOICE
+
+    def _voice(self, name: str):
+        cached = self._voice_cache.get(name)
+        if cached is None:
+            try:
+                from piper import PiperVoice
+            except ImportError as exc:  # pragma: no cover - env issue
+                raise AudioSynthesisError(
+                    "piper is not installed in the venv — run: venv/bin/pip install piper-tts"
+                ) from exc
+            model = self.VOICES_DIR / f"{name}.onnx"
+            if not model.is_file():
+                raise AudioSynthesisError(
+                    f"Piper voice file missing: {model} — download it with curl "
+                    f"(see data/piper/voices README section in audio_adaptor.py)"
+                )
+            cached = PiperVoice.load(model)
+            self._voice_cache[name] = cached
+        return cached
+
+    def available_voices(self) -> Sequence[str]:
+        return [self.MALE_VOICE, self.FEMALE_VOICE]
+
+    def synthesize(self, text: str, *, voice: str | None = None, rate: int | None = None) -> SynthesizedAudio:
+        if not isinstance(text, str) or not text.strip():
+            raise ValueError("text must be a non-empty string")
+        import io
+        import wave as wave_mod
+
+        from piper.config import SynthesisConfig
+
+        voice_name = voice or self.MALE_VOICE
+        wav_buffer = io.BytesIO()
+        wav_writer = wave_mod.open(wav_buffer, "wb")
+        try:
+            self._voice(voice_name).synthesize_wav(
+                text.strip(),
+                wav_writer,
+                syn_config=SynthesisConfig(length_scale=self.LENGTH_SCALE),
+            )
+        finally:
+            wav_writer.close()
+        return SynthesizedAudio(data=wav_buffer.getvalue(), voice=voice_name)
+
+
 class TextToSpeechAdapter:
     """Application-facing TTS API; replace ``provider`` without caller changes."""
 
@@ -235,11 +307,17 @@ class TextToSpeechAdapter:
 
 
 def get_speech_adaptor() -> TextToSpeechAdapter:
-    """Adaptor chosen by ``TTS_PROVIDER``: ``espeak`` = lightweight robotic
-    software voice (offline, free), ``elevenlabs`` = neural (default).
-    Switch providers freely — any audio baked earlier keeps its .mp3 cache
+    """Adaptor chosen by ``TTS_PROVIDER``:
+
+        piper       local neural voice (calm, CPU, offline, free — default)
+        espeak      lightweight robotic software voice (quick testing)
+        elevenlabs  best-quality neural via API (needs key + internet)
+
+    Switch providers freely — any audio baked earlier keeps its cache
     until regenerated."""
-    provider_name = (os.environ.get("TTS_PROVIDER") or "elevenlabs").strip().lower()
+    provider_name = (os.environ.get("TTS_PROVIDER") or "piper").strip().lower()
+    if provider_name in ("piper", "piper-tts"):
+        return TextToSpeechAdapter(PiperProvider())
     if provider_name in ("espeak", "espeak-ng", "espeakng"):
         return TextToSpeechAdapter(EspeakNgProvider())
     return TextToSpeechAdapter(ElevenLabsProvider())

@@ -15,6 +15,7 @@ import time
 from src.buffer.gesture_buffer import GestureBuffer, Detection
 from src.storage.sign_space_store import get_space_store
 from src.spaces.space_tracker import SpaceTracker
+from src.spaces.one_shot import OneShotSpeaker
 from src.vision.mediapipe_processor import (
     extract_features,
     extract_two_hand_features,
@@ -39,7 +40,9 @@ class RealTimePipeline:
         # are scored. group-vs-group competition never enters the scorer.
         self.space_store = space_store or get_space_store()
         self.spaces = SpaceTracker(store, self.space_store)
-        # Space tokens captured during the CURRENT collection span, each with
+        # One-shot speech: a member sign of an active one_shot space speaks
+        # its baked sentence instantly and closes the space (see one_shot.py).
+        self.one_shot_speaker = OneShotSpeaker(store, self.space_store, self.spaces)        # Space tokens captured during the CURRENT collection span, each with
         # the raw sequence index where it happened — the queue renders rows
         # chronologically from this.
         self._span_serial = 0
@@ -55,6 +58,7 @@ class RealTimePipeline:
     def reset_buffer(self) -> None:
         self.buffer.clear()
         self.spaces.on_reset()
+        self.one_shot_speaker.on_reset()
         self._begin_span()
 
     def _begin_span(self) -> None:
@@ -128,12 +132,22 @@ class RealTimePipeline:
         # window analyzer already computed). Tokens are stamped with their
         # position in the raw sequence so the queue can interleave them.
         space_token: Optional[Dict[str, Any]] = None
+        speech_event: Optional[Dict[str, Any]] = None
         if buffer_event is not None:
             if buffer_event.event_type == "accepted":
                 space_token = self.spaces.on_accepted(buffer_event.gesture)
+                # One-shot bypass: active one_shot space + confirmed member
+                # sign → speak immediately, bypassing queue and AI layers.
+                speech_event = self.one_shot_speaker.on_accepted(buffer_event.gesture)
+                if speech_event:
+                    # The exchange is done — clear the buffer so the spoken
+                    # sign never lingers in the queue, and start a new span.
+                    self.buffer.clear()
+                    self._begin_span()
             elif buffer_event.event_type == "completed":
                 space_token = self.spaces.on_completed()
-            if space_token:
+            # A spoken one-shot exchange never pollutes the queue/token strip.
+            if space_token and not speech_event:
                 self.space_tokens.append(self._space_token_frame(space_token))
 
         # Build landmarks for overlay rendering
@@ -145,6 +159,12 @@ class RealTimePipeline:
         buffer_state = self.buffer.get_state()
         buffer_state.update(self.spaces.get_state())
         buffer_state["sequence_tokens"] = list(self.space_tokens)
+        # Deferred close: a spoken one-shot exchange only really ends when
+        # the user's hand leaves the frame — until then the space stays
+        # scoped so the lingering pose can't register in Standard mode.
+        if hand_count == 0 and self.one_shot_speaker.flush_hand_off():
+            self.buffer.clear()
+            self._begin_span()
 
         return {
             "hand_count": hand_count,
@@ -154,6 +174,7 @@ class RealTimePipeline:
             "threshold": self.threshold,
             "buffer_state": buffer_state,
             "space_token": space_token,
+            "speech_event": speech_event,
             "latest_event": {
                 "event_type": buffer_event.event_type,
                 "gesture": buffer_event.gesture,

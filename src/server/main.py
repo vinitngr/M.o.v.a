@@ -538,7 +538,7 @@ async def delete_space(space_id: str):
 
 
 async def _bake_gesture_speech(gesture_id: str, sentence: str, gender: str):
-    """Synthesize & cache a gesture's one-shot sentence speech (ElevenLabs)."""
+    """Synthesize & cache a gesture's one-shot sentence speech (piper/espeak/ElevenLabs)."""
     sentence = sentence.strip()
     if not sentence:
         raise HTTPException(400, "Sentence cannot be empty")
@@ -547,9 +547,14 @@ async def _bake_gesture_speech(gesture_id: str, sentence: str, gender: str):
 
     from audio_adaptor import get_speech_adaptor
     adaptor = get_speech_adaptor()
-    audio_key = f"gest_{gesture_id}.mp3"
+    ext = getattr(adaptor.provider, "AUDIO_EXT", "mp3")
+    audio_key = f"gest_{gesture_id}.{ext}"
     dest = AUDIO_DIR / audio_key
     try:
+        # Clean stale baked files from a different provider so /audio never
+        # serves old audio next to the fresh one.
+        for stale in AUDIO_DIR.glob(f"gest_{gesture_id}.*"):
+            stale.unlink(missing_ok=True)
         voice = adaptor.voice_for_gender(gender)
         await asyncio.to_thread(adaptor.synthesize_and_save, sentence, dest, voice=voice)
     except Exception as exc:  # API/auth errors surface to the admin UI
