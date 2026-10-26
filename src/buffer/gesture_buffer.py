@@ -32,6 +32,16 @@ class BufferEvent:
 
 
 class GestureBuffer:
+    # What counts as "user is gone" for the end-of-sequence timer:
+    #   "no_hand_only"   → ONLY zero-hand frames tick the timer. Hands in
+    #                      frame but below threshold keep the sequence
+    #                      alive (the user is still there — between signs
+    #                      or warming up the persistence filter).
+    #   "low_confidence" → previous behavior: weak/below-threshold frames
+    #                      ALSO tick the timer (closes fast while resting
+    #                      a held hand).
+    INACTIVITY_MODE = "no_hand_only"
+
     def __init__(
         self,
         window_size: int = 5,
@@ -48,6 +58,7 @@ class GestureBuffer:
         self.half_window = self.window_size // 2
         self.end_signal_frames = end_signal_frames
         self.min_gesture_persistence = min_gesture_persistence
+        self.inactivity_mode = self.INACTIVITY_MODE
 
         # Window storage: deque of Detection objects
         self.window: deque[Detection] = deque(maxlen=self.window_size)
@@ -86,8 +97,15 @@ class GestureBuffer:
         }
         self.recent_detections.appendleft(raw_info)
 
-        # Handle hand absence / inactivity
-        if detection.hand_count == 0 or detection.gesture_name is None:
+        # Handle hand absence / inactivity.
+        # A frame is "inactivity" when no hand exists in the frame at all;
+        # in "low_confidence" mode (see INACTIVITY_MODE) below-threshold
+        # detections on a present hand tick the timer too.
+        no_hand = detection.hand_count == 0
+        if no_hand or (
+            self.inactivity_mode == "low_confidence"
+            and detection.gesture_name is None
+        ):
             self.inactive_frames += 1
 
             # Check if end of sequence reached
@@ -284,6 +302,7 @@ class GestureBuffer:
             "duplicate_count": self.consecutive_duplicate_count,
             "inactive_frames": self.inactive_frames,
             "end_signal_frames": self.end_signal_frames,
+            "inactivity_mode": self.inactivity_mode,
             "inactivity_progress": round(inactivity_progress * 100, 1),
             "recent_detections": list(self.recent_detections)[:10],
             "outliers": list(self.outliers)[:10],
