@@ -149,6 +149,10 @@ class GestureBuffer:
         # Check for outlier:
         # If candidate appears only once in the entire window (or very low frequency)
         # while surrounding gestures are predominantly a different gesture:
+        # Outlier condition: candidate occupies only 1-2 of the 5 window
+        # frames while a different gesture dominates (>=3 occurrences).
+        # Brief 2-frame jabs (quick hand passes) must be flagged too, not
+        # just isolated single-frame spikes.
         window_counts: Dict[str, int] = {}
         for d in self.window:
             if d.gesture_name:
@@ -156,15 +160,13 @@ class GestureBuffer:
 
         candidate_count = window_counts.get(candidate_gesture, 0)
 
-        # Outlier condition: candidate has only 1 detection in window,
-        # and surrounding contains a dominant gesture with at least (window_size - 2) occurrences
         dominant_other = None
         for g, count in window_counts.items():
             if g != candidate_gesture and count >= (self.window_size - 2):
                 dominant_other = g
                 break
 
-        if candidate_count == 1 and dominant_other is not None:
+        if candidate_count <= 2 and dominant_other is not None:
             # Candidate is an outlier!
             outlier_info = {
                 "gesture": candidate_gesture,

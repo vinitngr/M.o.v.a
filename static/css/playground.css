@@ -46,8 +46,8 @@ body {
 
 .pg-grid {
   width: 100%;
-  max-width: 1680px;
-  padding: 20px;
+  margin: auto;
+  padding: 12px 20px 20px;
   height: 85dvh;
   min-height: 500px;
   max-height: 800px;
@@ -566,6 +566,7 @@ body {
 
 .pg-log-stat.is-selected i { background: var(--pg-mint); }
 .pg-log-stat.is-duplicate i { background: #fbbf24; }
+.pg-log-stat.is-pending i { background: var(--pg-skeleton); }
 .pg-log-stat.is-rejected i { background: var(--pg-red); }
 .pg-log-stat.is-outlier i { background: #c084fc; }
 
@@ -705,6 +706,12 @@ body {
   color: #fbbf24;
   border-color: rgba(251, 191, 36, 0.4);
   background: rgba(251, 191, 36, 0.08);
+}
+
+.pg-log-chip.is-pending {
+  color: #aee8ff;
+  border-color: rgba(56, 189, 248, 0.4);
+  background: rgba(56, 189, 248, 0.08);
 }
 
 .pg-log-chip.is-rejected {
@@ -1008,7 +1015,6 @@ body {
    ============================================================ */
 .pg-topbar {
   width: 100%;
-  max-width: 1680px;
   margin: 0 auto;
   padding: 14px 22px 2px;
   display: flex;

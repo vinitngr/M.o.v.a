@@ -5,7 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MOVA — Playground</title>
   <link rel="stylesheet" href="/static/css/playground.css">
-  <script src="/static/js/playground.js" defer></script>
+  <script src="/static/js/pg-common.js" defer></script>
+  <script src="/static/js/pg-card1.js" defer></script>
+  <script src="/static/js/pg-flog.js" defer></script>
+  <script src="/static/js/pg-buffer.js" defer></script>
+  <script src="/static/js/pg-queue.js" defer></script>
+  <script src="/static/js/pg-main.js" defer></script>
 </head>
 <body>
   <main class="pg-app">
@@ -90,6 +95,7 @@
         <div class="pg-log-stats">
           <span class="pg-log-stat is-selected"><i></i>Selected <b id="pgCntSel">0</b></span>
           <span class="pg-log-stat is-duplicate"><i></i>Duplicate <b id="pgCntDup">0</b></span>
+          <span class="pg-log-stat is-pending"><i></i>Predicted <b id="pgCntPred">0</b></span>
           <span class="pg-log-stat is-rejected"><i></i>Rejected <b id="pgCntRej">0</b></span>
           <span class="pg-log-stat is-outlier"><i></i>Outlier <b id="pgCntOut">0</b></span>
         </div>
