@@ -2,8 +2,37 @@
    3. Card 2 · Frame Analysis (what got selected / filtered)
    ------------------------------------------------------------ */
 const FRAME_LOG_MAX = 36;
+const FLOG_TILE_MAX = 120;
 const frameLogOl = $('pgFrameLog');
+const frameTiles = $('pgFlogTiles');
+const frameCard = $('pgFrameCard');
 let frameSerial = 0;
+
+/* Frame analysis starts as a thin status rail: no text, just the [<]
+   chevron and a vertical stack of status-colored dots. Expanding brings
+   back the full log. Choice persists across reloads. */
+const flogToggleBtn = $('pgFlogToggle');
+const pgGrid = document.querySelector('.pg-grid');
+function setFlogMode(on) {
+  frameCard.dataset.flog = on ? 'on' : 'off';
+  flogToggleBtn.dataset.state = on ? 'on' : 'off';
+  flogToggleBtn.title = on ? 'Collapse frame log' : 'Show frame log';
+  if (pgGrid) pgGrid.classList.toggle('pg-flog-on', on);
+  try { localStorage.setItem('pgFlogMode', on ? 'on' : 'off'); } catch {}
+}
+flogToggleBtn.addEventListener('click', () => {
+  setFlogMode(frameCard.dataset.flog !== 'on');
+});
+try { setFlogMode(localStorage.getItem('pgFlogMode') === 'on'); } catch { setFlogMode(false); }
+
+/* One small colored box per frame, hue = status color, newest on top. */
+function pushFlogTile(info, serial) {
+  const tile = document.createElement('span');
+  tile.className = `pg-flog-tile is-${info.status}`;
+  tile.title = `#${serial} ${chipLabels[info.status]}${info.name ? ` · ${info.name}` : ''}`;
+  frameTiles.prepend(tile);
+  while (frameTiles.children.length > FLOG_TILE_MAX) frameTiles.lastChild.remove();
+}
 
 const chipLabels = {
   selected: 'Selected',
@@ -166,6 +195,7 @@ function renderFrameLog(data) {
   const hasHands = (data.landmarks || []).length > 0;
   if (!hasHands && !data.latest_event) return;
   const info = classifyFrame(data);
+  pushFlogTile(info, frameSerial);
   counters[info.status] = (counters[info.status] || 0) + 1;
 
   $('pgCntSel').textContent = counters.selected;
@@ -216,5 +246,6 @@ function clearFrameLog() {
   $('pgCntRej').textContent = '0';
   $('pgCntOut').textContent = '0';
   frameLogOl.replaceChildren();
+  frameTiles.replaceChildren();
   pushEmptyLogNote();
 }

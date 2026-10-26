@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MOVA — Playground</title>
   <link rel="stylesheet" href="/static/css/playground.css">
-  <script src="/static/js/pg-common.js" defer></script>
-  <script src="/static/js/pg-card1.js" defer></script>
-  <script src="/static/js/pg-flog.js" defer></script>
-  <script src="/static/js/pg-buffer.js" defer></script>
-  <script src="/static/js/pg-queue.js" defer></script>
-  <script src="/static/js/pg-main.js" defer></script>
+  <script src="/static/js/pg-common.js?v=10flog" defer></script>
+  <script src="/static/js/pg-card1.js?v=10flog" defer></script>
+  <script src="/static/js/pg-flog.js?v=10flog" defer></script>
+  <script src="/static/js/pg-buffer.js?v=10flog" defer></script>
+  <script src="/static/js/pg-queue.js?v=10flog" defer></script>
+  <script src="/static/js/pg-main.js?v=10flog" defer></script>
 </head>
 <body>
   <main class="pg-app">
@@ -78,8 +78,8 @@
         <ol id="pgTop5" class="pg-top5" aria-label="Top 5 gesture predictions"></ol>
       </article>
 
-      <!-- Card 2 · Frame Analysis -->
-      <article class="pg-card" id="pgFrameCard">
+      <!-- Card 2 · Frame Analysis (default: slim status rail) -->
+      <article class="pg-card" id="pgFrameCard" data-flog="off">
         <header class="pg-card-head">
           <div>
             <h2 class="pg-head-title">
@@ -90,7 +90,12 @@
             </h2>
             <p class="pg-head-sub">Real-time frame processing logs</p>
           </div>
+          <button type="button" id="pgFlogToggle" class="pg-flog-toggle" title="Show frame log">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg>
+          </button>
         </header>
+
+        <div id="pgFlogTiles" class="pg-flog-tiles" aria-hidden="true"></div>
 
         <div class="pg-log-stats">
           <span class="pg-log-stat is-selected"><i></i>Selected <b id="pgCntSel">0</b></span>
@@ -155,6 +160,11 @@
             <span id="pgQueueCount" class="pg-queue-count">0</span>
           </div>
           <ol id="pgQueueList" class="pg-queue-list" aria-label="Queued gesture sequences"></ol>
+        </div>
+
+        <div class="pg-ai-void" title="Reserved for AI sentence processing">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3m0 12v3M4.5 7l2 1.5m11 7.5 2 1.5M4.5 17l2-1.5m11-7.5 2-1.5"/><circle cx="12" cy="12" r="3.2"/></svg>
+          <span>AI Processing · reserved</span>
         </div>
       </article>
 

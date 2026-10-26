@@ -77,7 +77,7 @@ function renderQueueBoard() {
 
     const thumbs = document.createElement('span');
     thumbs.className = 'pg-queue-thumbs';
-    const shown = item.parts.slice(0, 6);
+    const shown = item.parts.slice(0, 8);
     shown.forEach(part => thumbs.append(buildPart(part)));
     if (item.parts.length > shown.length) {
       const more = document.createElement('span');
@@ -91,8 +91,8 @@ function renderQueueBoard() {
     arrow.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16m-6-6 6 6-6 6"/></svg>';
 
     const status = document.createElement('span');
-    status.className = 'pg-queue-status';
-    status.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.5l3.5 2"/></svg>Queued';
+    status.className = 'pg-queue-dot is-queued';
+    status.title = 'Queued';
 
     row.append(num, thumbs, arrow, status);
     rows.push(row);

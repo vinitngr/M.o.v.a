@@ -570,6 +570,101 @@ body {
 .pg-log-stat.is-rejected i { background: var(--pg-red); }
 .pg-log-stat.is-outlier i { background: #c084fc; }
 
+/* ---- card 2 collapse: slim status rail (default) / full log ------- */
+/* rail = the second grid track becomes a skinny fixed column */
+.pg-grid {
+  grid-template-columns: minmax(0, 1fr) 44px repeat(3, minmax(0, 1fr));
+}
+
+.pg-grid.pg-flog-on {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.pg-flog-toggle {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: #16283a;
+  border: 1px solid #294257;
+  color: #9db4c8;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.pg-flog-toggle svg { width: 14px; height: 14px; transition: transform 0.18s ease; }
+
+.pg-flog-toggle:hover {
+  background: #1d3549;
+  color: #cfe3f3;
+}
+
+.pg-flog-toggle:active { transform: scale(0.92); }
+
+/* off → chevron points right ([>]) to expand; on → points left ([<]) */
+#pgFrameCard[data-flog="off"] .pg-flog-toggle svg { transform: rotate(180deg); }
+
+/* Vertical status dots (the compressed view) */
+.pg-flog-tiles {
+  display: none;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 0;
+}
+
+.pg-flog-tile {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+
+.pg-flog-tile:hover {
+  transform: scale(1.5);
+  filter: brightness(1.35);
+}
+
+.pg-flog-tile.is-selected   { background: var(--pg-mint); box-shadow: 0 0 6px rgba(52, 199, 122, 0.45); }
+.pg-flog-tile.is-duplicate  { background: #fbbf24; }
+.pg-flog-tile.is-pending    { background: var(--pg-skeleton); }
+.pg-flog-tile.is-rejected   { background: var(--pg-red); opacity: 0.9; }
+.pg-flog-tile.is-outlier    { background: #c084fc; box-shadow: 0 0 6px rgba(192, 132, 252, 0.45); }
+.pg-flog-tile.is-completed  { background: #94d0ff; box-shadow: 0 0 6px rgba(148, 208, 255, 0.5); }
+
+/* off → dots only, header text/stats/log all hidden */
+#pgFrameCard[data-flog="off"] {
+  padding: 10px 6px;
+  gap: 0;
+}
+
+#pgFrameCard[data-flog="off"] .pg-card-head > div { display: none; }
+#pgFrameCard[data-flog="off"] .pg-card-head { justify-content: center; }
+#pgFrameCard[data-flog="off"] .pg-log-stats,
+#pgFrameCard[data-flog="off"] .pg-frame-log { display: none; }
+#pgFrameCard[data-flog="off"] .pg-flog-tiles { display: flex; }
+
+/* Responsive: back to stacked layouts like before */
+@media (max-width: 1250px) {
+  .pg-grid,
+  .pg-grid.pg-flog-on {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .pg-grid,
+  .pg-grid.pg-flog-on {
+    grid-template-columns: 1fr;
+  }
+}
+
 .pg-frame-log {
   list-style: none;
   margin: 0;
@@ -946,29 +1041,24 @@ body {
   color: #4c5f6d;
 }
 
-/* Space token chip (card 4 queue) — grouped output instead of
-   loose control/member keyword tiles */
+/* Space token (card 4 queue) — grouped output; deliberately quiet so it
+   doesn't outshout normal gesture tiles */
 .pg-queue-token {
   display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  align-self: stretch;
-  min-width: 64px;
-  padding: 6px 10px;
-  border: 1.5px solid var(--pg-mint);
-  border-radius: 10px;
-  background: rgba(0, 212, 170, 0.1);
+  align-items: baseline;
+  gap: 3px;
+  padding: 1px 5px;
+  border: none;
+  background: transparent;
+  border-radius: 0;
 }
 
 .pg-queue-token b {
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--pg-ink);
-  max-width: 150px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #8ba3b8;
+  max-width: 80px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -976,10 +1066,11 @@ body {
 
 .pg-queue-token i {
   font-style: normal;
-  font-size: 8.5px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  color: #08736a;
+  font-size: 7px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #3c546b;
 }
 
 /* Inactivity timeout footer */
@@ -1165,7 +1256,7 @@ body {
    Card 4 · Sentence Queue (queue half; sentences/classifier later)
    ============================================================ */
 .pg-queue-box {
-  flex: 1;
+  flex: 1 1 52%;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -1174,6 +1265,22 @@ body {
   border: 1px solid var(--pg-row-line);
   border-radius: 14px;
   padding: 12px 13px;
+}
+
+/* Reserved void for the future AI processing half */
+.pg-ai-void {
+  flex: 1 1 36%;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px dashed var(--pg-line);
+  border-radius: 14px;
+  color: #43596e;
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+  background: rgba(255, 255, 255, 0.012);
 }
 
 .pg-queue-head {
@@ -1206,7 +1313,7 @@ body {
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--pg-line) transparent;
@@ -1216,25 +1323,25 @@ body {
   flex: none;
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 6px;
   background: var(--pg-card);
   border: 1px solid var(--pg-line-soft);
-  border-radius: 12px;
-  padding: 9px 11px;
+  border-radius: 9px;
+  padding: 4px 8px;
   animation: pgLogIn 0.2s ease;
 }
 
 .pg-queue-num {
   flex: none;
-  width: 21px;
-  height: 21px;
+  width: 16px;
+  height: 16px;
   display: grid;
   place-items: center;
   border-radius: 999px;
   background: var(--pg-mint-soft);
   border: 1px solid var(--pg-mint-line);
   color: var(--pg-mint);
-  font-size: 10.5px;
+  font-size: 9px;
   font-weight: 700;
 }
 
@@ -1248,9 +1355,9 @@ body {
 
 .pg-queue-tile {
   flex: none;
-  width: 42px;
-  height: 42px;
-  border-radius: 9px;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
   background: #0a141d;
   border: 1px solid var(--pg-line-soft);
 }
@@ -1267,27 +1374,30 @@ body {
   place-items: center;
 }
 
-.pg-queue-status {
-  flex: none;
-  margin-left: auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 11px;
-  border-radius: 999px;
-  font-size: 11.5px;
-  font-weight: 600;
-  color: #b9becb;
-  background: rgba(148, 163, 184, 0.12);
-  border: 1px solid rgba(148, 163, 184, 0.28);
+.pg-queue-arrow svg {
+  width: 11px;
+  height: 11px;
 }
 
-.pg-queue-status svg {
-  width: 12px;
-  height: 12px;
+/* Minimal status dot: amber = queued, mint = processing (once the AI
+   half is live the row's dot flips) */
+.pg-queue-dot {
+  flex: none;
+  margin-left: auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #fbbf24;
+  box-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
+}
+
+.pg-queue-dot.is-processing {
+  background: var(--pg-mint);
+  box-shadow: 0 0 5px rgba(52, 199, 122, 0.5);
 }
 
 .pg-queue-empty {
+  grid-column: 1 / -1;
   flex: 1;
   min-height: 110px;
   display: flex;
