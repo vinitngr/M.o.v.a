@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MOVA · Live speech to text</title>
+  <style>
+    :root { color-scheme: dark; font-family: Inter, system-ui, sans-serif; background: #10131a; color: #f4f6fb; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; }
+    main { width: min(960px, calc(100vw - 32px)); }
+    header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+    h1 { font-size: 1.35rem; margin: 0; } .hint, #status { color: #aeb9ce; font-size: .9rem; }
+    button { border: 0; border-radius: 9px; background: #6c63ff; color: white; padding: 10px 16px; font-weight: 650; cursor: pointer; }
+    button:disabled { opacity: .55; cursor: wait; }
+    .layout { display: grid; grid-template-columns: minmax(0, 1fr) 230px; gap: 16px; }
+    section { background: #181d27; border: 1px solid #293244; border-radius: 14px; padding: 18px; min-height: 360px; }
+    h2 { font-size: .83rem; letter-spacing: .08em; text-transform: uppercase; color: #aeb9ce; margin: 0 0 14px; }
+    #final { line-height: 1.65; white-space: pre-wrap; } #partial { color: #8794b3; min-height: 1.65em; margin-top: 8px; font-style: italic; }
+    .speaker { border-left: 3px solid #6c63ff; padding: 8px 10px; margin: 9px 0; background: #202736; border-radius: 0 7px 7px 0; }
+    .speaker strong { display: block; font-size: .86rem; } .speaker span { font-size: .78rem; color: #aeb9ce; }
+    @media (max-width: 700px) { .layout { grid-template-columns: 1fr; } section { min-height: 190px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div><h1>Live speech to text</h1><div id="status">Press Start and allow microphone access.</div></div>
+      <button id="toggle">Start microphone</button>
+    </header>
+    <div class="layout">
+      <section><h2>Transcript</h2><div id="final"></div><div id="partial"></div></section>
+      <section><h2>Speakers</h2><div id="speakers"><div class="hint">Speaker labels appear after a complete phrase.</div></div></section>
+    </div>
+  </main>
+  <script>
+    const toggle = document.querySelector('#toggle');
+    const status = document.querySelector('#status');
+    const finalText = document.querySelector('#final');
+    const partial = document.querySelector('#partial');
+    const speakers = document.querySelector('#speakers');
+    let context, stream, source, processor, socket;
+    const knownSpeakers = new Map();
+
+    // Resample browser Float32 microphone frames to Vosk's 16 kHz PCM format.
+    function pcm16k(input, inputRate) {
+      const ratio = inputRate / 16000;
+      const output = new Int16Array(Math.round(input.length / ratio));
+      for (let i = 0; i < output.length; i++) {
+        const start = Math.floor(i * ratio), end = Math.min(Math.floor((i + 1) * ratio), input.length);
+        let sum = 0;
+        for (let sample = start; sample < Math.max(start + 1, end); sample++) sum += input[sample];
+        const value = Math.max(-1, Math.min(1, sum / Math.max(1, end - start)));
+        output[i] = value < 0 ? value * 0x8000 : value * 0x7fff;
+      }
+      return output.buffer;
+    }
+
+    function showSpeaker(name, similarity) {
+      if (!name || knownSpeakers.has(name)) return;
+      knownSpeakers.set(name, true);
+      const node = document.createElement('div'); node.className = 'speaker';
+      node.innerHTML = `<strong>${name.replace('_', ' ')}</strong><span>Approximate local voice group</span>`;
+      speakers.querySelector('.hint')?.remove(); speakers.append(node);
+    }
+
+    function stop() {
+      processor?.disconnect(); source?.disconnect(); stream?.getTracks().forEach(track => track.stop()); context?.close();
+      if (socket?.readyState === WebSocket.OPEN) socket.close();
+      context = stream = source = processor = socket = null;
+      toggle.textContent = 'Start microphone'; status.textContent = 'Stopped.';
+    }
+
+    async function start() {
+      toggle.disabled = true; status.textContent = 'Requesting microphone access…';
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true } });
+        const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+        socket = new WebSocket(`${protocol}://${location.host}/ws/transcribe`);
+        socket.binaryType = 'arraybuffer';
+        socket.onmessage = ({ data }) => {
+          const event = JSON.parse(data); if (event.type !== 'transcript') return;
+          const prefix = event.speaker ? `[${event.speaker}] ` : '';
+          if (event.is_final) { finalText.textContent += `${prefix}${event.text}\n`; partial.textContent = ''; showSpeaker(event.speaker, event.speaker_similarity); }
+          else partial.textContent = `${prefix}${event.text}`;
+        };
+        socket.onerror = () => { status.textContent = 'Connection to transcription server failed.'; };
+        socket.onopen = () => {
+          context = new AudioContext(); source = context.createMediaStreamSource(stream);
+          // ScriptProcessor is widely supported and sufficient for this rough-context demo.
+          processor = context.createScriptProcessor(4096, 1, 1);
+          processor.onaudioprocess = event => { if (socket.readyState === WebSocket.OPEN) socket.send(pcm16k(event.inputBuffer.getChannelData(0), context.sampleRate)); };
+          source.connect(processor); processor.connect(context.destination);
+          status.textContent = 'Listening… speak naturally.'; toggle.textContent = 'Stop microphone'; toggle.disabled = false;
+        };
+      } catch (error) { status.textContent = `Microphone unavailable: ${error.message}`; toggle.disabled = false; stop(); }
+    }
+    toggle.addEventListener('click', () => context ? stop() : start());
+  </script>
+</body>
+</html>
