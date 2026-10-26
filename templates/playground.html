@@ -4,19 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MOVA — Playground</title>
-  <link rel="stylesheet" href="/static/css/playground.css">
-  <script src="/static/js/pg-common.js?v=10flog" defer></script>
-  <script src="/static/js/pg-card1.js?v=10flog" defer></script>
-  <script src="/static/js/pg-flog.js?v=10flog" defer></script>
-  <script src="/static/js/pg-buffer.js?v=10flog" defer></script>
-  <script src="/static/js/pg-queue.js?v=10flog" defer></script>
-  <script src="/static/js/pg-main.js?v=10flog" defer></script>
+  <link rel="stylesheet" href="/static/css/playground.css?v=fold1">
+  <script src="/static/js/pg-common.js?v=fold1" defer></script>
+  <script src="/static/js/pg-card1.js?v=fold1" defer></script>
+  <script src="/static/js/pg-flog.js?v=fold1" defer></script>
+  <script src="/static/js/pg-buffer.js?v=fold1" defer></script>
+  <script src="/static/js/pg-queue.js?v=fold1" defer></script>
+  <script src="/static/js/pg-main.js?v=fold1" defer></script>
 </head>
 <body>
   <main class="pg-app">
     <header class="pg-topbar">
       <span class="pg-topbar-brand">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5h6L11 22l8.5-11.5h-6L13 2z"/></svg>
+        <img src="/static/img/mova-logo.svg" alt="" width="24" height="20">
         MOVA · Playground
       </span>
       <div class="pg-topbar-actions">
@@ -67,7 +67,9 @@
           <button id="pgExpand" class="pg-expand" type="button" title="Toggle fullscreen">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
           </button>
-          <p id="pgEmpty" class="pg-empty">Camera is off — tap <strong>Start&nbsp;Camera</strong> to wake it up.</p>
+          <p id="pgEmpty" class="pg-empty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6.5" width="13" height="11" rx="2.5"/><path d="m15.5 10.5 6-3v9l-6-3"/><circle cx="9" cy="12" r="3"/></svg>
+          </p>
         </div>
 
         <div class="pg-pred-head">

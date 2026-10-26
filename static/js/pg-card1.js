@@ -31,7 +31,7 @@ function drawOverlay(hands) {
       const [x, y] = point(p);
       overlayCtx.beginPath();
       overlayCtx.arc(x, y, FINGERTIPS.includes(idx) ? 3.6 : 3, 0, Math.PI * 2);
-      overlayCtx.fillStyle = FINGERTIPS.includes(idx) ? '#00e6a8' : '#5fd8ff';
+      overlayCtx.fillStyle = FINGERTIPS.includes(idx) ? '#ff5938' : '#5fd8ff';
       overlayCtx.fill();
     });
   }
@@ -120,7 +120,7 @@ function drawThumbSkeleton(canvas, points) {
       const [x, y] = pt(flat, i);
       ctx.beginPath();
       ctx.arc(x, y, FINGERTIPS.includes(i) ? 2.6 : 2.1, 0, Math.PI * 2);
-      ctx.fillStyle = FINGERTIPS.includes(i) ? '#00e6a8' : 'rgba(95, 216, 255, 0.95)';
+      ctx.fillStyle = FINGERTIPS.includes(i) ? '#ff5938' : 'rgba(95, 216, 255, 0.95)';
       ctx.fill();
     });
   }

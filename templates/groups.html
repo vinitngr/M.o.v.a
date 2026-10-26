@@ -202,6 +202,24 @@
 
     .member .row-btns button.danger { background: var(--danger-bg); color: var(--danger); }
 
+    .group-card.is-collapsed .group-body { display: none; }
+
+    .group-card .fold {
+      display: grid;
+      place-items: center;
+      width: 26px;
+      height: 26px;
+      padding: 0;
+      border: 0;
+      border-radius: 8px;
+      background: #eef2f3;
+      color: #56636e;
+      flex: none;
+    }
+
+    .group-card .fold svg { transition: transform 0.18s ease; }
+    .group-card.is-collapsed .fold svg { transform: rotate(-90deg); }
+
     .attach-row {
       display: grid;
       grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto;
@@ -278,14 +296,23 @@
     function render() {
       $('groups').replaceChildren(...state.spaces.map(sp => {
         const card = document.createElement('article');
-        card.className = 'group-card';
+        card.className = 'group-card is-collapsed';
 
         const head = document.createElement('div');
         head.className = 'group-head';
+        // fold toggle — collapsed by default so many groups stay compact
+        const fold = document.createElement('button');
+        fold.type = 'button';
+        fold.className = 'fold';
+        fold.title = 'Expand / collapse';
+        fold.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+        fold.onclick = () => card.classList.toggle('is-collapsed');
         head.append(
+          fold,
           Object.assign(document.createElement('span'), { className: 'gkey', textContent: sp.key }),
           Object.assign(document.createElement('span'), { className: 'pill' + (sp.join_mode === 'spell' ? ' spell' : ''), textContent: sp.join_mode }),
-          Object.assign(document.createElement('span'), { className: 'pill', textContent: sp.toggle_mode })
+          Object.assign(document.createElement('span'), { className: 'pill', textContent: sp.toggle_mode }),
+          Object.assign(document.createElement('span'), { className: 'pill', textContent: `${(sp.gesture_ids || []).length} signs` })
         );
         if (sp.built_in) head.append(Object.assign(document.createElement('span'), { className: 'pill spell', textContent: 'built-in' }));
         const actions = document.createElement('span');
